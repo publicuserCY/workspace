@@ -1,6 +1,5 @@
 import { Component, ViewChild, TemplateRef, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { NzMenuItemDirective } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-root',

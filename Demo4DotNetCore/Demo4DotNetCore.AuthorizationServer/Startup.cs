@@ -32,45 +32,37 @@ namespace Demo4DotNetCore.AuthorizationServer
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AspNetIdentityContext>()
                 .AddDefaultTokenProviders();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            //    .ConfigureApiBehaviorOptions(options =>
-            //{
-            //    options.SuppressConsumesConstraintForFormFileParameters = true;
-            //    options.SuppressInferBindingSourcesForParameters = true;
-            //    options.SuppressModelStateInvalidFilter = true;
-            //    options.SuppressMapClientErrors = true;
-            //});
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddJsonOptions(options =>
+                    {
+                        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    });
             services.Configure<IISOptions>(iis =>
-            {
-                iis.AuthenticationDisplayName = "Windows";
-                iis.AutomaticAuthentication = false;
-            });
+                {
+                    iis.AuthenticationDisplayName = "Windows";
+                    iis.AutomaticAuthentication = false;
+                });
             var builder = services.AddIdentityServer(options =>
-            {
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
-                options.UserInteraction.LoginUrl = "/account/login";
-            })
-              .AddAspNetIdentity<ApplicationUser>()
-                // this adds the config data from DB (clients, resources)
+                {
+                    options.Events.RaiseErrorEvents = true;
+                    options.Events.RaiseInformationEvents = true;
+                    options.Events.RaiseFailureEvents = true;
+                    options.Events.RaiseSuccessEvents = true;
+                    options.UserInteraction.LoginUrl = "/account/login";
+                })
+                .AddAspNetIdentity<ApplicationUser>()
                 .AddConfigurationStore(options =>
                 {
-                    options.ConfigureDbContext = b =>
-                        b.UseSqlite(connectionString,
-                            sql => sql.MigrationsAssembly(migrationsAssembly));
+                    options.ConfigureDbContext = b => b.UseSqlite(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
                 })
-                // this adds the operational data from DB (codes, tokens, consents)
                 .AddOperationalStore(options =>
                 {
-                    options.ConfigureDbContext = b =>
-                        b.UseSqlite(connectionString,
-                            sql => sql.MigrationsAssembly(migrationsAssembly));
+                    options.ConfigureDbContext = b => b.UseSqlite(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
 
                     // this enables automatic token cleanup. this is optional.
-                    options.EnableTokenCleanup = false;
-                    // options.TokenCleanupInterval = 15; // frequency in seconds to cleanup stale grants. 15 is useful during debugging
+                    // options.EnableTokenCleanup = true;
+                    // frequency in seconds to cleanup stale grants. 15 is useful during debugging
+                    // options.TokenCleanupInterval = 15; 
                 });
 
             if (Environment.IsDevelopment())
@@ -82,7 +74,7 @@ namespace Demo4DotNetCore.AuthorizationServer
                 throw new Exception("need to configure key material");
 
             }
-            services.AddAuthentication();
+            //services.AddAuthorization();
             services.AddCors(options =>
             {
                 options.AddPolicy("default", corsPolicyBuilder => { corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
@@ -104,6 +96,7 @@ namespace Demo4DotNetCore.AuthorizationServer
             }
             app.UseCors("default");
             app.UseStaticFiles();
+            //app.UseAuthentication();
             app.UseIdentityServer();
             app.UseMvcWithDefaultRoute();
         }

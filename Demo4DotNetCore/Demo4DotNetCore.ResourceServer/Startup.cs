@@ -32,14 +32,17 @@ namespace Demo4DotNetCore.ResourceServer
             });
             services.AddScoped<Service.IBookService, Service.BookService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                 .ConfigureApiBehaviorOptions(options =>
-                 {
-                     options.SuppressConsumesConstraintForFormFileParameters = true;
-                     options.SuppressInferBindingSourcesForParameters = true;
-                     options.SuppressModelStateInvalidFilter = true;
-                     options.SuppressMapClientErrors = true;
-                 });
-            //services.AddAuthorization();
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                })
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.SuppressConsumesConstraintForFormFileParameters = true;
+                    options.SuppressInferBindingSourcesForParameters = true;
+                    options.SuppressModelStateInvalidFilter = true;
+                    options.SuppressMapClientErrors = true;
+                });
             services.AddMvcCore()
                 .AddAuthorization()
                 .AddJsonFormatters();
@@ -69,9 +72,9 @@ namespace Demo4DotNetCore.ResourceServer
                 app.UseHttpsRedirection();
                 app.UseHsts();
             }
+            app.UseCors("default");
             app.UseStaticFiles();
-            app.UseAuthentication();
-            app.UseCors("default");           
+            app.UseAuthentication();                   
             app.UseMvc();
         }
     }

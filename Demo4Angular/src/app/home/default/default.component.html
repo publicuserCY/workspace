@@ -1,5 +1,5 @@
-<nz-layout class="main-layout">
-  <nz-sider class="left-side" nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
+<nz-layout class="main">
+  <nz-sider class="side" nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
     <div class="logo">
       {{isCollapsed?'Demo':'Demo4Angular'}}
     </div>
@@ -7,9 +7,10 @@
       <li nz-submenu [(nzOpen)]="openMap.authority" (nzOpenChange)="openHandler('authority')">
         <span title><i nz-icon type="user"></i><span class="nav-text">Authority</span></span>
         <ul>
-          <li nz-menu-item (click)="navToIdentityResources()">Identity Resources</li>
-          <li nz-menu-item (click)="navToClients()">Clients</li>
-          <li nz-menu-item (click)="navToUsers()">Users</li>
+
+          <li nz-menu-item>Identity Resources</li>
+          <li nz-menu-item [routerLink]="['/authority/clients']">Clients</li>
+          <li nz-menu-item [routerLink]="['/authority/users']">Users</li>
           <li nz-menu-item>Alex</li>
         </ul>
       </li>
@@ -23,12 +24,12 @@
       <li nz-menu-item><span><i nz-icon type="file"></i><span class="nav-text">File</span></span></li>
     </ul>
   </nz-sider>
-  <nz-layout class="right-layout">
+  <nz-layout [ngClass]="{'right-collapsed': isCollapsed, 'right-expend': !isCollapsed}">
     <nz-header class="header">
-      <i class="trigger" nz-icon [type]="isCollapsed?'menu-unfold':'menu-fold'" (click)="isCollapsed=!isCollapsed"></i>
+      <i class="trigger" nz-icon [type]="isCollapsed?'menu-unfold':'menu-fold'" (click)="isCollapsed = !isCollapsed"></i>
     </nz-header>
     <nz-content class="content">
-      <nz-breadcrumb style="margin:16px 0;">
+      <nz-breadcrumb class="breadcrumb">
         <nz-breadcrumb-item>User</nz-breadcrumb-item>
         <nz-breadcrumb-item>Bill</nz-breadcrumb-item>
       </nz-breadcrumb>
@@ -36,6 +37,6 @@
         <router-outlet></router-outlet>
       </div>
     </nz-content>
-    <nz-footer style="text-align: center;">Ant Design ©2017 Implement By Angular</nz-footer>
+    <nz-footer class="footer">Ant Design ©2017 Implement By Angular</nz-footer>
   </nz-layout>
 </nz-layout>

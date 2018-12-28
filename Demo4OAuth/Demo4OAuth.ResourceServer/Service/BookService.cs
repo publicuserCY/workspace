@@ -88,6 +88,7 @@ namespace Demo4OAuth.ResourceServer.Service
                 }
             }
         }
+
         public Task<Book> DeleteBook(BookRequestModel model)
         {
             using (var dbContextTransaction = context.Database.BeginTransaction())

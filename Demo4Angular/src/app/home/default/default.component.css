@@ -15,35 +15,51 @@
   margin: 16px;
   color: #ffff;
   background: rgba(255, 255, 255, .2);
+  line-height: 32px;
+  text-align: center;
 }
 
-.main-layout {
+/* .main {
   height: 100%;
-}
+} */
 
-.main-layout .left-side-fixed {
+.main .side {
   overflow: auto;
-  height: 100%;
+  height: 100vh;
   position: fixed;
   left: 0;
 }
 
-/* .main-layout .right-layout{
+.main .right-collapsed {
+  margin-left: 80px;
+}
+
+.main .right-expend {
   margin-left: 200px;
-} */
-
-.main-layout .right-layout .header{
-  margin:0 16px;
-  background: #fff; padding:0;
 }
 
-.main-layout .right-layout .content {
-  margin:0 16px;
+.main .header {
+  margin: 0 16px;
+  background: #fff;
+  padding: 0;
 }
 
-.main-layout .right-layout .router-content {
-  padding: 24px;
+.main .content {
+  overflow: initial;
+  margin: 0 16px;
+  /* flex: 10 0 auto; */
+}
+
+.main .content .breadcrumb {
+  margin: 16px 0;
+}
+
+.main .router-content {
+  padding: 4px;
   background: #fff;
   min-height: 500px;
-  /* height: 100%; */
+}
+
+.main .footer {
+  text-align: center;
 }
