@@ -1,0 +1,12 @@
+<p>
+  Baidu Map
+</p>
+<button nz-button nzType="default" (click)="localCity()">定位城市</button>
+<button nz-button nzType="default" (click)="defaultMarker()">标注点(默认图标)</button>
+<button nz-button nzType="default" (click)="customMarker()">标注点(自定义图标)</button>
+<button nz-button nzType="default" (click)="clearOverlays()">清除覆盖物</button>
+<button nz-button nzType="default" (click)="customDraw()">鼠标绘制工具</button>
+<button nz-button nzType="default" (click)="test()">test</button>
+<div id="allmap" style="overflow:hidden;zoom:1;position:relative;">
+  <div id="map" style="height:100%;-webkit-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;"></div>
+</div>
