@@ -1,0 +1,12 @@
+[nz-col] {
+  background: #00a0e9;
+}
+
+[nz-col]:nth-child(2n+1) {
+  background: rgba(0, 160, 233, .7);
+}
+
+.gutter-box {
+  background: rgb(190, 27, 109);
+  padding: 5px 0;
+}

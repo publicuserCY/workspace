@@ -25,6 +25,7 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
             ConfigurationDbContext = configurationDbContext;
         }
 
+        #region ApiResource
         public Task<PaginatedList<ApiResource>> SelectApiResource(ApiResourceRequestModel model)
         {
             var query = ConfigurationDbContext.ApiResources
@@ -33,10 +34,20 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
                     .Include(p => p.UserClaims)
                     .Include(p => p.Properties)
                     .AsQueryable();
-            if (!string.IsNullOrWhiteSpace(model.Criteria))
+            var predicate = PredicateBuilder.New<ApiResource>();
+            if (model.Id != 0)
             {
-                var predicate = PredicateBuilder.New<ApiResource>();
-                predicate = predicate.Or(p => p.Name.Contains(model.Criteria));
+                predicate = predicate.And(p => p.Id == model.Id);
+                query = query.AsExpandable().Where(predicate);
+            }
+            if (!string.IsNullOrWhiteSpace(model.Name))
+            {
+                predicate = predicate.And(p => p.Name.Contains(model.Name, StringComparison.OrdinalIgnoreCase));
+                query = query.AsExpandable().Where(predicate);
+            }
+            if (!string.IsNullOrWhiteSpace(model.Description))
+            {
+                predicate = predicate.And(p => p.Description.Contains(model.Description, StringComparison.OrdinalIgnoreCase));
                 query = query.AsExpandable().Where(predicate);
             }
             var result = query.SortBy(model.SortExpression).ToPaginatedList(model.PageIndex, model.PageSize);
@@ -47,8 +58,12 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
         {
             var entity = new ApiResource()
             {
+                Enabled = model.Enabled,
                 Name = model.Name,
-                DisplayName = model.DisplayName
+                DisplayName = model.DisplayName,
+                Description = model.Description,
+                Created = DateTime.Now,
+                NonEditable = model.NonEditable
             };
             var entry = ConfigurationDbContext.ApiResources.Add(entity);
             ConfigurationDbContext.SaveChanges();
@@ -59,18 +74,42 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
 
         public Task<ApiResource> UpdateApiResource(ApiResourceRequestModel model)
         {
-            DeleteApiResource(model);
-            var entity = InsertApiResource(model).Result;
+            var entity = ConfigurationDbContext.ApiResources.SingleOrDefault(p => p.Id == model.Id);
+            if (entity == null)
+            {
+                throw new Exception("Api Resource 不存在");
+            }
+            entity.Enabled = model.Enabled;
+            entity.Name = model.Name;
+            entity.DisplayName = model.DisplayName;
+            entity.Description = model.Description;
+            entity.Updated = DateTime.Now;
+            entity.NonEditable = model.NonEditable;
+            ConfigurationDbContext.Entry(entity).State = EntityState.Modified;
+            ConfigurationDbContext.SaveChanges();
             return Task.FromResult(entity);
         }
 
         public Task<ApiResource> DeleteApiResource(ApiResourceRequestModel model)
         {
             var entity = ConfigurationDbContext.ApiResources.SingleOrDefault(p => p.Id == model.Id);
+            if (entity == null)
+            {
+                throw new Exception("Api Resource 不存在");
+            }
             ConfigurationDbContext.Entry(entity).State = EntityState.Deleted;
             ConfigurationDbContext.SaveChanges();
             return Task.FromResult(entity);
         }
+
+        public Task<bool> UniqueApiResourceName(string name)
+        {
+            var result = ConfigurationDbContext.ApiResources.Any(p => p.Name.ToLower() == name.ToLower());
+            return Task.FromResult(result);
+        }
+        #endregion
+
+
 
         public Task<ApplicationUser> InsertAccount(AccountDto dto)
         {

@@ -35,6 +35,13 @@ namespace Demo4DotNetCore.AuthorizationServer
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
                     {
+                        //options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                        options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.None;
+                        options.SerializerSettings.DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat;
+                        options.SerializerSettings.DateParseHandling = Newtonsoft.Json.DateParseHandling.DateTime;
+                        options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Local;
+                        options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                        options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
                         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                     });
             services.Configure<IISOptions>(iis =>

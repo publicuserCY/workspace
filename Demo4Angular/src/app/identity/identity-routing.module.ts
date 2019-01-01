@@ -9,7 +9,7 @@ const routes: Routes = [
     children:
       [
         { path: '', component: ImplicitLoginComponent },
-        { path: 'resourceownerlogin', component: ResourceOwnerLoginComponent },
+        { path: 'ResourceOwnerLogin', component: ResourceOwnerLoginComponent },
       ]
   }
 ];

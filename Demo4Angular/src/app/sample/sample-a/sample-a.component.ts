@@ -19,6 +19,6 @@ export class SampleAComponent implements OnInit {
   }
 
   B() {
-    this.router.navigate(['../b'], { relativeTo: this.route });
+    this.router.navigate(['../B'], { relativeTo: this.route });
   }
 }

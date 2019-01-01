@@ -1,0 +1,83 @@
+<nz-breadcrumb class="breadcrumb">
+  <nz-breadcrumb-item>
+    API Resources
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+<form nz-form nzLayout="inline" [formGroup]="searchForm" class="search-form">
+  <nz-form-item>
+    <nz-form-label nzFor="name">Name</nz-form-label>
+    <nz-form-control>
+      <input nz-input type="text" name="name" id="name" formControlName="name">
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzFor="description">Description</nz-form-label>
+    <nz-form-control>
+      <input nz-input type="text" name="description" id="description" formControlName="description">
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control>
+      <button nz-button nzType="primary" (click)="search()">
+        <i nz-icon type="search" theme="outline"></i>查询
+      </button>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control>
+      <button nz-button (click)="reset()">
+        <i nz-icon type="reload" theme="outline"></i>重置
+      </button>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item class="add-new-content">
+    <nz-form-control>
+      <a class="add-new" [routerLink]="['../ApiResources',0]">
+        <i nz-icon type="plus-circle" theme="twotone" twoToneColor="#52c41a"></i>
+      </a>
+    </nz-form-control>
+  </nz-form-item>
+</form>
+<nz-table #basicTable [nzData]="apiResources" [nzLoading]="isSpinning">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Enabled</th>
+      <th>Name</th>
+      <th>DisplayName</th>
+      <th>Description</th>
+      <th nzWidth="110px">Created</th>
+      <th nzWidth="110px">Updated</th>
+      <th nzWidth="110px">LastAccessed</th>
+      <th>NonEditable</th>
+      <th nzWidth="110px">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of basicTable.data">
+      <td>{{item.id}}</td>
+      <td [nzShowCheckbox]="true" [nzDisabled]="true" [nzChecked]="item.enabled"></td>
+      <td>{{item.name}}</td>
+      <td>{{item.displayName}}</td>
+      <td>{{item.description}}</td>
+      <td>{{item.created}}</td>
+      <td>{{item.updated}}</td>
+      <td>{{item.lastAccessed}}</td>
+      <td [nzShowCheckbox]="true" [nzDisabled]="true" [nzChecked]="item.nonEditable"></td>
+      <td class="operation">
+        <a [routerLink]="['../ApiResources',item.id]">
+          <i nz-icon type="edit" theme="twotone"></i>
+        </a>
+        <a (click)="delete(item.id)">
+          <i nz-icon type="delete" theme="twotone" twoToneColor="#eb2f96"></i>
+        </a>
+        <!-- <button nz-button nzShape="circle" (click)="edit()">
+          <i nz-icon type="edit" theme="twotone"></i>
+        </button>
+        <button nz-button nzShape="circle" (click)="delete()">
+          <i nz-icon type="delete" theme="twotone" twoToneColor="#eb2f96"></i>
+        </button> -->
+      </td>
+    </tr>
+  </tbody>
+</nz-table>

@@ -13,6 +13,7 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
         Task<ApiResource> InsertApiResource(ApiResourceRequestModel model);
         Task<ApiResource> UpdateApiResource(ApiResourceRequestModel model);
         Task<ApiResource> DeleteApiResource(ApiResourceRequestModel model);
+        Task<bool> UniqueApiResourceName(string name);
 
         ApplicationUser AutoProvisionUser(string provider, string userId, List<Claim> claims);
         ApplicationUser FindByExternalProvider(string provider, string userId);

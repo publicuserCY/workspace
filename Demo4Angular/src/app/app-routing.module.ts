@@ -3,11 +3,11 @@ import { Routes, RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from './home/page-not-found/page-not-found.component';
 
 const routes: Routes = [
-  { path: 'authority', loadChildren: './authority/authority.module#AuthorityModule' },
-  { path: 'baidu', loadChildren: './baidu/baidu.module#BaiduModule' },
-  { path: 'identity', loadChildren: './identity/identity.module#IdentityModule' },
-  { path: 'sample', loadChildren: './sample/sample.module#SampleModule' },
-  { path: '', redirectTo: '/authority', pathMatch: 'full' },
+  { path: 'Authority', loadChildren: './authority/authority.module#AuthorityModule' },
+  { path: 'Baidu', loadChildren: './baidu/baidu.module#BaiduModule' },
+  { path: 'Identity', loadChildren: './identity/identity.module#IdentityModule' },
+  { path: 'Sample', loadChildren: './sample/sample.module#SampleModule' },
+  { path: '', redirectTo: '/Authority', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },
 ];
 

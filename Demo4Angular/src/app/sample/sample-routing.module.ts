@@ -9,9 +9,9 @@ const routes: Routes = [
     path: '',
     children:
       [
-        { path: 'a', component: SampleAComponent },
-        { path: 'b', component: SampleBComponent },
-        { path: '', component: SampleRootComponent }
+        { path: 'A', component: SampleAComponent, data: { breadcrumb: 'A' } },
+        { path: 'B', component: SampleBComponent, data: { breadcrumb: 'B' } },
+        { path: '', component: SampleRootComponent, data: { breadcrumb: 'root' } }
       ]
   }
 ];

@@ -48,17 +48,20 @@
   overflow: initial;
   margin: 0 16px;
   /* flex: 10 0 auto; */
+  padding: 4px;
+  background: #fff;
+  min-height: 500px;
 }
 
 .main .content .breadcrumb {
   margin: 16px 0;
 }
 
-.main .router-content {
+/* .main .router-content {
   padding: 4px;
   background: #fff;
   min-height: 500px;
-}
+} */
 
 .main .footer {
   text-align: center;

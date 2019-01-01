@@ -1,0 +1,67 @@
+<nz-breadcrumb class="breadcrumb">
+  <nz-breadcrumb-item>
+    <a [routerLink]="['../']">API Resources</a>
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    New
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+<form nz-form nzLayout="horizontal" [formGroup]="mainForm" (ngSubmit)="submit()">
+  <div nz-row nzGutter="16">
+    <div nz-col nzSpan="10">
+      <nz-form-item>
+        <nz-form-label nzSpan="6" [nzFor]="name" nzRequired>Name</nz-form-label>
+        <nz-form-control nzSpan="18" nzHasFeedback>
+          <input nz-input name="name" placeholder="Name" formControlName="name">
+          <nz-form-explain *ngIf="mainForm.get('name').dirty && mainForm.get('name').errors || mainForm.get('name').pending ">
+            <ng-container *ngIf="mainForm.get('name').hasError('required')">
+              请输入Api Resource Name
+            </ng-container>
+            <ng-container *ngIf="mainForm.get('name').hasError('uniqueApiResourceName')">
+              {{mainForm.get('name').value}} 已经存在
+            </ng-container>
+            <ng-container *ngIf="mainForm.get('name').pending">
+              验证中...
+            </ng-container>
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="10">
+      <nz-form-item>
+        <nz-form-label nzSpan="6" [nzFor]="displayName">Display Name</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <input nz-input name="displayName" placeholder="DisplayName" formControlName="displayName">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzGutter="16">
+    <div nz-col nzSpan="20">
+      <nz-form-item>
+        <nz-form-label nzSpan="3" [nzFor]="description">Description</nz-form-label>
+        <nz-form-control nzSpan="21">
+          <textarea nz-input name="description" rows="2" placeholder="Description" formControlName="description"></textarea>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row nzGutter="16">
+    <div nz-col nzSpan="6">
+      <nz-form-item>
+        <label nz-checkbox formControlName="enabled">Enabled</label>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-form-item>
+        <label nz-checkbox formControlName="nonEditable">NonEditable</label>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="20" style="text-align: right;">
+      <button nz-button nzType="primary" [disabled]="!mainForm.valid">Submit</button>
+      <button nz-button (click)="reset($event)">Reset</button>
+    </div>
+  </div>
+</form>

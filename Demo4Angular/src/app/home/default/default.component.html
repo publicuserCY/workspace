@@ -3,15 +3,15 @@
     <div class="logo">
       {{isCollapsed?'Demo':'Demo4Angular'}}
     </div>
-    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
+    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
       <li nz-submenu [(nzOpen)]="openMap.authority" (nzOpenChange)="openHandler('authority')">
         <span title><i nz-icon type="user"></i><span class="nav-text">Authority</span></span>
         <ul>
-
-          <li nz-menu-item>Identity Resources</li>
-          <li nz-menu-item [routerLink]="['/authority/clients']">Clients</li>
-          <li nz-menu-item [routerLink]="['/authority/users']">Users</li>
-          <li nz-menu-item>Alex</li>
+          <li nz-menu-item [routerLink]="['/Authority','ApiResources']">Api Resources</li>
+          <li nz-menu-item [routerLink]="['/Authority','IdentityResources']">Identity Resources</li>
+          <li nz-menu-item [routerLink]="['/Authority','Clients']">Clients</li>
+          <li nz-menu-item [routerLink]="['/Authority','Users']">Users</li>
+          <li nz-menu-item [routerLink]="['/Sample']">Sample</li>
         </ul>
       </li>
       <li nz-submenu [(nzOpen)]="openMap.user" (nzOpenChange)="openHandler('user')">
@@ -29,13 +29,7 @@
       <i class="trigger" nz-icon [type]="isCollapsed?'menu-unfold':'menu-fold'" (click)="isCollapsed = !isCollapsed"></i>
     </nz-header>
     <nz-content class="content">
-      <nz-breadcrumb class="breadcrumb">
-        <nz-breadcrumb-item>User</nz-breadcrumb-item>
-        <nz-breadcrumb-item>Bill</nz-breadcrumb-item>
-      </nz-breadcrumb>
-      <div class="router-content">
         <router-outlet></router-outlet>
-      </div>
     </nz-content>
     <nz-footer class="footer">Ant Design ©2017 Implement By Angular</nz-footer>
   </nz-layout>

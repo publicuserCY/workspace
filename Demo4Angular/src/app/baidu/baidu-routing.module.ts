@@ -7,8 +7,8 @@ const routes: Routes = [
     path: '',
     children: [
       // { path: '', component: BaiduMapComponent },
-      { path: 'map', component: BaiduMapComponent },
-      { path: '', redirectTo: 'map', pathMatch: 'prefix' }
+      { path: 'Map', component: BaiduMapComponent, data: { breadcrumb: '百度地图' } },
+      { path: '', redirectTo: 'Map', pathMatch: 'prefix' }
     ]
   }
 ];

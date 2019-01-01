@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgZorroAntdModule } from 'ng-zorro-antd';
 
 import { SampleRoutingModule } from './sample-routing.module';
 import { SampleRootComponent } from './sample-root/sample-root.component';
@@ -13,6 +14,7 @@ import { SampleBComponent } from './sample-b/sample-b.component';
     SampleBComponent],
   imports: [
     CommonModule,
+    NgZorroAntdModule,
     SampleRoutingModule
   ]
 })

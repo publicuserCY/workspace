@@ -15,10 +15,10 @@ export class SampleRootComponent implements OnInit {
   ngOnInit() { }
 
   A() {
-    this.router.navigate(['a'], { relativeTo: this.route });
+    this.router.navigate(['./A'], { relativeTo: this.route });
   }
 
   B() {
-    this.router.navigate(['b'], { relativeTo: this.route });
+    this.router.navigate(['B'], { relativeTo: this.route });
   }
 }
