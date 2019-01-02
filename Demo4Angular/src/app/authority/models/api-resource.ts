@@ -1,20 +1,32 @@
+import { NzInputNumberComponent } from 'ng-zorro-antd';
+export enum Operational {
+    Delete = -1, Origin = 0, Update = 1, Insert = 2
+}
+
+class OperationalBase {
+    flag = Operational.Origin;
+    constructor() {
+        this.flag = Operational.Insert;
+    }
+}
 export class Property {
     id: number;
     key: string;
     value: string;
 }
 
-export class Secret {
+export class Secret extends OperationalBase {
     id: number;
-    description: string;
+    description?: string;
     value: string;
     expiration?: Date;
     type: string;
     created: Date;
+
     constructor() {
-        this.description = '';
+        super();
         this.value = '';
-        this.type = 'cc';
+        this.type = '';
         this.created = new Date();
     }
 }
@@ -27,15 +39,11 @@ export class UserClaim {
 export class ApiSecret extends Secret {
     apiResourceId: number;
     apiResource: ApiResource;
-    constructor(parent: ApiResource) {
+    constructor(parent: ApiResource, flag?: Operational) {
         super();
-        this.id = 1;
+        if (flag) { this.flag = flag; }
         this.apiResourceId = parent.id;
         this.apiResource = parent;
-        const sorted = parent.secrets.sort((a, b) => b.id - a.id);
-        if (sorted && sorted.length > 0) {
-            this.id = sorted[0].id + 1;
-        }
     }
 }
 

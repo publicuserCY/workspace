@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthorityService } from '../services/authority.service';
-import { ApiResource, ApiSecret } from '../models/api-resource';
+import { ApiResource, ApiSecret, Operational } from '../models/api-resource';
 import { ApiResourceRequestModel } from '../models/request';
 import { finalize, delay, map } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
@@ -9,6 +9,7 @@ import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } fro
 import { ActivatedRoute, Router } from '@angular/router';
 import { uniqueApiResourceNameValidatorFn } from '../validator/api-resource-name.validator';
 import { Observable } from 'rxjs';
+// import * as fns from 'date-fns';
 
 @Component({
   selector: 'app-authority-api-resource-detail',
@@ -77,7 +78,12 @@ export class ApiResourceDetailComponent implements OnInit {
   }
 
   addApiScret() {
-    this.entity.secrets = [...this.entity.secrets, new ApiSecret(this.entity)];
+    const secret = new ApiSecret(this.entity, Operational.Insert);
+    const sorted = this.entity.secrets.sort((a, b) => b.id - a.id);
+    if (sorted && sorted.length > 0) {
+      secret.id = sorted[0].id + 1;
+    }
+    this.entity.secrets = [...this.entity.secrets, secret];
     this.updateSecretsEditCache();
   }
 
@@ -94,6 +100,20 @@ export class ApiResourceDetailComponent implements OnInit {
         };
       }
     });
+  }
+
+  startEditSecret(id: number) { this.secretsEditCache[id].edit = true; }
+  cancelEditSecret(id: number) { this.secretsEditCache[id].edit = false; }
+  saveSecret(id: number) {
+    const index = this.entity.secrets.findIndex(item => item.id === id);
+    Object.assign(this.entity.secrets[index], this.secretsEditCache[id]);
+    this.entity.secrets[index].flag = this.entity.secrets[index].flag === Operational.Origin ? Operational.Update : this.entity.secrets[index].flag;
+    this.secretsEditCache[id].edit = false;
+  }
+  deleteSecret(id: number) {
+    const index = this.entity.secrets.findIndex(item => item.id === id);
+    this.entity.secrets[index].flag = Operational.Delete;
+    this.entity.secrets = this.entity.secrets.filter(p => p.flag !== Operational.Delete);
   }
 
   submit() {

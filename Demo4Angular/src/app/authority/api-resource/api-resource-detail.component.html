@@ -60,7 +60,7 @@
   </div>
   <div nz-row>
     <div nz-col nzSpan="20">
-      <button nz-button class="editable-add-btn" (click)="addApiScret()" >Add ApiScret</button>
+      <button nz-button type="button" class="editable-add-btn" (click)="addApiScret()">Add ApiScret</button>
     </div>
   </div>
   <div nz-row>
@@ -74,6 +74,7 @@
             <th>Expiration</th>
             <th>Type</th>
             <th>Created</th>
+            <th>操作</th>
           </tr>
         </thead>
         <tbody>
@@ -111,13 +112,35 @@
                 <input type="text" nz-input [(ngModel)]="secretsEditCache[item.id].type">
               </ng-container>
             </td>
-            <td>{{item.created}}</td>
+            <td>{{item.created | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+            <td>
+              <div class="operations">
+                <ng-container *ngIf="!secretsEditCache[item.id].edit">
+                  <a (click)="startEditSecret(item.id)">
+                    <i nz-icon type="edit" theme="twotone"></i>
+                  </a>
+                  <nz-popconfirm [nzTitle]="'确定删除?'" (nzOnConfirm)="deleteSecret(item.id)">
+                      <a nz-popconfirm>
+                        <i nz-icon type="delete" theme="twotone" twoToneColor="#eb2f96"></i>
+                      </a>
+                    </nz-popconfirm>
+                </ng-container>
+                <ng-container *ngIf="secretsEditCache[item.id].edit">
+                  <a (click)="saveSecret(item.id)">
+                    <i nz-icon type="check-circle" theme="twotone"></i>
+                  </a>
+                  <a (click)="cancelEditSecret(item.id)">
+                    <i nz-icon type="close-circle" theme="twotone"></i>
+                  </a>
+                </ng-container>
+              </div>
+            </td>
           </tr>
         </tbody>
       </nz-table>
     </div>
   </div>
-  <div nz-row>
+  <div nz-row class="final-operations">
     <div nz-col nzSpan="10">
       <button nz-button (click)="goBack()">返回</button>
     </div>

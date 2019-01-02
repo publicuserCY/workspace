@@ -1,7 +1,15 @@
-[nz-button] {
+.operations a {
   margin-left: 8px;
 }
 
 .editable-add-btn {
   margin-bottom: 8px;
+}
+
+final-operations {
+  margin-top: 8px;
+}
+
+final-operations [nz-button] {
+  margin-left: 8px;
 }
