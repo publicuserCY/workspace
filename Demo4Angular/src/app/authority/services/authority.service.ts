@@ -35,9 +35,23 @@ export class AuthorityService {
             .pipe(catchError(this.handleError('insertApiResource')));
     }
 
-    uniqueApiResourceName(name: string): Observable<boolean> {
+    updateApiResource(model: ApiResourceRequestModel): Observable<OperationResult<ApiResource>> {
+        return this.http
+            .post<OperationResult<ApiResource>>(Uris.UpdateApiResource, model)
+            .pipe(catchError(this.handleError('updateApiResource')));
+    }
+
+    deleteApiResource(model: ApiResourceRequestModel): Observable<OperationResult<ApiResource>> {
+        return this.http
+            .post<OperationResult<ApiResource>>(Uris.DeleteApiResource, model)
+            .pipe(catchError(this.handleError('deleteApiResource')));
+    }
+
+    uniqueApiResourceName(id: number, name: string): Observable<boolean> {
         const options = {
-            params: new HttpParams().set('name', name)
+            params: new HttpParams()
+                .set('id', id.toString())
+                .set('name', name)
         };
         return this.http.get<boolean>(Uris.UniqueApiResourceName, options);
     }

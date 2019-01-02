@@ -9,7 +9,6 @@ import { IdentityResourceComponent } from './identity-resource/identity-resource
 import { ClientsComponent } from './clients/clients.component';
 import { UsersComponent } from './users/users.component';
 import { AuthorityService } from './services/authority.service';
-import { UniqueApiResourceNameValidator } from './validator/api-resource-name.validator';
 
 @NgModule({
   declarations: [
@@ -27,8 +26,7 @@ import { UniqueApiResourceNameValidator } from './validator/api-resource-name.va
     AuthorityRoutingModule
   ],
   providers: [
-    AuthorityService,
-    UniqueApiResourceNameValidator
+    AuthorityService
   ]
 })
 export class AuthorityModule { }

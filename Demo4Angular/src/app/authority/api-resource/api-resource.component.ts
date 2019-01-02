@@ -3,10 +3,12 @@ import { AuthorityService } from '../services/authority.service';
 import { ApiResource } from '../models/api-resource';
 import { ApiResourceRequestModel } from '../models/request';
 import { finalize, delay } from 'rxjs/operators';
-import { NzMessageService } from 'ng-zorro-antd';
+import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
+import { NzModalService } from 'ng-zorro-antd';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { OperationResult } from 'src/app/common/result';
 
 @Component({
   selector: 'app-authority-api-resource',
@@ -23,6 +25,7 @@ export class ApiResourceComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private nzMessageService: NzMessageService,
+    private nzModalService: NzModalService,
     private authorityService: AuthorityService
   ) { }
 
@@ -54,21 +57,34 @@ export class ApiResourceComponent implements OnInit {
   }
 
   reset() {
-    /* this.searchForm.patchValue(
-      {
-        'Name': '',
-        'Description': '',
-      }
-    ); */
     this.searchForm.reset();
     this.search();
   }
 
-  new() {
-
+  delete(id: number) {
+    const modelRef: NzModalRef = this.nzModalService.confirm({
+      nzTitle: '删除',
+      nzContent: '<b>删除后不可恢复！</b>',
+      nzOkText: '确认',
+      nzOkType: 'danger',
+      nzOnOk: () => new Promise((resolve, reject) => {
+        const model = new ApiResourceRequestModel();
+        model.id = id;
+        this.authorityService.deleteApiResource(model).subscribe(
+          result => { result.isSuccess ? resolve(result) : reject(result); });
+      })
+        .then((result: OperationResult<ApiResource>) => {
+          /* const index = this.apiResources.findIndex(value => value.id === result.data.id);
+          this.apiResources.splice(index, 1, result.data); */
+          this.apiResources = this.apiResources.filter(p => p.id !== result.data.id);
+          modelRef.destroy();
+        })
+        .catch((result: OperationResult<ApiResource>) => {
+          this.nzMessageService.error(result.message);
+          return false;
+        }),
+      nzCancelText: '取消',
+      nzOnCancel: () => { }
+    });
   }
-
-  edit() { }
-
-  delete() { }
 }

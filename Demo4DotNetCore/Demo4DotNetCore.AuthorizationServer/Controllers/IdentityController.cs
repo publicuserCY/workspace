@@ -46,7 +46,6 @@ namespace Demo4DotNetCore.AuthorizationServer.Controllers
         [HttpPost]
         public async Task<ActionResult> InsertApiResource(ApiResourceRequestModel model)
         {
-
             var result = new OperationResult<ApiResource>(true);
             try
             {
@@ -63,7 +62,6 @@ namespace Demo4DotNetCore.AuthorizationServer.Controllers
         [HttpPost]
         public async Task<ActionResult> UpdateApiResource(ApiResourceRequestModel model)
         {
-
             var result = new OperationResult<ApiResource>(true);
             try
             {
@@ -95,13 +93,13 @@ namespace Demo4DotNetCore.AuthorizationServer.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> UniqueApiResourceName(string name)
+        public async Task<ActionResult> UniqueApiResourceName(int id, string name)
         {
-            var result = await IdentityService.UniqueApiResourceName(name);
+            var result = await IdentityService.UniqueApiResourceName(id, name);
             return new JsonResult(result);
         }
-        #endregion       
-       
+        #endregion
+
         [HttpPost]
         public async Task<ActionResult> InsertAccount(AccountDto dto)
         {

@@ -7,7 +7,7 @@ export const Uris = {
     SelectApiResource: AuthServer + '/api/Identity/SelectApiResource',
     InsertApiResource: AuthServer + '/api/Identity/InsertApiResource',
     UpdateApiResource: AuthServer + '/api/Identity/UpdateApiResource',
-    DeleteApiResource: AuthServer + '/api/Identity/DeletetApiResource',
+    DeleteApiResource: AuthServer + '/api/Identity/DeleteApiResource',
     UniqueApiResourceName: AuthServer + '/api/Identity/UniqueApiResourceName',
 };
 export const DefaultConfig = {

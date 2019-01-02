@@ -10,7 +10,7 @@ const routes: Routes = [
     children:
       [
         { path: 'A', component: SampleAComponent, data: { breadcrumb: 'A' } },
-        { path: 'B', component: SampleBComponent, data: { breadcrumb: 'B' } },
+        { path: 'A/B', component: SampleBComponent, data: { breadcrumb: 'B' } },
         { path: '', component: SampleRootComponent, data: { breadcrumb: 'root' } }
       ]
   }

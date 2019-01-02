@@ -59,8 +59,70 @@
     </div>
   </div>
   <div nz-row>
-    <div nz-col nzSpan="20" style="text-align: right;">
-      <button nz-button nzType="primary" [disabled]="!mainForm.valid">Submit</button>
+    <div nz-col nzSpan="20">
+      <button nz-button class="editable-add-btn" (click)="addApiScret()" >Add ApiScret</button>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="20">
+      <nz-table #secretsTable nzBordered [nzData]="entity.secrets">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Description</th>
+            <th>Value</th>
+            <th>Expiration</th>
+            <th>Type</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of secretsTable.data">
+            <td>{{item.id}}</td>
+            <td>
+              <ng-container *ngIf="!secretsEditCache[item.id].edit">
+                {{item.description}}
+              </ng-container>
+              <ng-container *ngIf="secretsEditCache[item.id].edit">
+                <input type="text" nz-input [(ngModel)]="secretsEditCache[item.id].description">
+              </ng-container>
+            </td>
+            <td>
+              <ng-container *ngIf="!secretsEditCache[item.id].edit">
+                {{item.value}}
+              </ng-container>
+              <ng-container *ngIf="secretsEditCache[item.id].edit">
+                <input type="text" nz-input [(ngModel)]="secretsEditCache[item.id].value">
+              </ng-container>
+            </td>
+            <td>
+              <ng-container *ngIf="!secretsEditCache[item.id].edit">
+                {{item.expiration}}
+              </ng-container>
+              <ng-container *ngIf="secretsEditCache[item.id].edit">
+                <nz-date-picker [(ngModel)]="date" (ngModelChange)="secretsEditCache[item.id].expiration=$event"></nz-date-picker>
+              </ng-container>
+            </td>
+            <td>
+              <ng-container *ngIf="!secretsEditCache[item.id].edit">
+                {{item.type}}
+              </ng-container>
+              <ng-container *ngIf="secretsEditCache[item.id].edit">
+                <input type="text" nz-input [(ngModel)]="secretsEditCache[item.id].type">
+              </ng-container>
+            </td>
+            <td>{{item.created}}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="10">
+      <button nz-button (click)="goBack()">返回</button>
+    </div>
+    <div nz-col nzSpan="10" style="text-align: right;">
+      <button nz-button nzType="primary" [disabled]="!mainForm.valid" [nzLoading]="isSpinning">Submit</button>
       <button nz-button (click)="reset($event)">Reset</button>
     </div>
   </div>

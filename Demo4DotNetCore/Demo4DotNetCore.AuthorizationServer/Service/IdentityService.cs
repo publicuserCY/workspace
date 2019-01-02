@@ -77,7 +77,7 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
             var entity = ConfigurationDbContext.ApiResources.SingleOrDefault(p => p.Id == model.Id);
             if (entity == null)
             {
-                throw new Exception("Api Resource 不存在");
+                throw new Exception($"Id={model.Id}的Api Resource 不存在");
             }
             entity.Enabled = model.Enabled;
             entity.Name = model.Name;
@@ -102,9 +102,9 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
             return Task.FromResult(entity);
         }
 
-        public Task<bool> UniqueApiResourceName(string name)
+        public Task<bool> UniqueApiResourceName(int id, string name)
         {
-            var result = ConfigurationDbContext.ApiResources.Any(p => p.Name.ToLower() == name.ToLower());
+            var result = ConfigurationDbContext.ApiResources.Any(p => !p.Id.Equals(id) && p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             return Task.FromResult(result);
         }
         #endregion

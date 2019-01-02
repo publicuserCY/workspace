@@ -11,6 +11,12 @@ export class Secret {
     expiration?: Date;
     type: string;
     created: Date;
+    constructor() {
+        this.description = '';
+        this.value = '';
+        this.type = 'cc';
+        this.created = new Date();
+    }
 }
 
 export class UserClaim {
@@ -21,6 +27,16 @@ export class UserClaim {
 export class ApiSecret extends Secret {
     apiResourceId: number;
     apiResource: ApiResource;
+    constructor(parent: ApiResource) {
+        super();
+        this.id = 1;
+        this.apiResourceId = parent.id;
+        this.apiResource = parent;
+        const sorted = parent.secrets.sort((a, b) => b.id - a.id);
+        if (sorted && sorted.length > 0) {
+            this.id = sorted[0].id + 1;
+        }
+    }
 }
 
 export class ApiScope {
@@ -52,17 +68,26 @@ export class ApiResourceProperty extends Property {
 }
 
 export class ApiResource {
-    id: string;
+    id: number;
     enabled: boolean;
     name: string;
-    displayName?: string;
-    description?: string;
-    secrets?: Array<ApiSecret>;
-    scopes?: Array<ApiScope>;
-    userClaims?: Array<ApiResourceClaim>;
-    properties?: Array<ApiResourceProperty>;
-    created?: Date;
-    updated?: Date;
-    lastAccessed?: Date;
-    nonEditable?: boolean;
+    displayName: string;
+    description: string;
+    secrets: Array<ApiSecret>;
+    scopes: Array<ApiScope>;
+    userClaims: Array<ApiResourceClaim>;
+    properties: Array<ApiResourceProperty>;
+    created: Date;
+    updated: Date;
+    lastAccessed: Date;
+    nonEditable: boolean;
+
+    constructor() {
+        this.id = 0;
+        this.enabled = true;
+        this.secrets = [];
+        this.scopes = [];
+        this.userClaims = [];
+        this.properties = [];
+    }
 }

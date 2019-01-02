@@ -19,7 +19,6 @@ const routes: Routes = [
   { path: 'IdentityResources', component: IdentityResourceComponent },
   { path: 'Clients', component: ClientsComponent },
   { path: 'Users', component: UsersComponent },
-  { path: '', redirectTo: 'ApiResources', pathMatch: 'prefix' }
 ];
 
 @NgModule({
