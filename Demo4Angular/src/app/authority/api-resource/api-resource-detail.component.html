@@ -6,10 +6,10 @@
     New
   </nz-breadcrumb-item>
 </nz-breadcrumb>
-<form nz-form nzLayout="horizontal" [formGroup]="mainForm" (ngSubmit)="submit()">
+<form nz-form nzLayout="horizontal" [formGroup]="mainForm" (ngSubmit)="submit()" class="main-form">
   <nz-form-item>
-    <nz-form-label nzSpan="4" [nzFor]="name" nzRequired>Name</nz-form-label>
-    <nz-form-control nzSpan="18" nzHasFeedback>
+    <nz-form-label nzSpan="3" [nzFor]="name" nzRequired>Name</nz-form-label>
+    <nz-form-control nzSpan="21" nzHasFeedback>
       <input nz-input name="name" placeholder="Name" formControlName="name">
       <nz-form-explain *ngIf="mainForm.get('name').dirty && mainForm.get('name').errors || mainForm.get('name').pending ">
         <ng-container *ngIf="mainForm.get('name').hasError('required')">
@@ -25,42 +25,42 @@
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-label nzSpan="4" [nzFor]="displayName">Display Name</nz-form-label>
-    <nz-form-control nzSpan="18">
+    <nz-form-label nzSpan="3" [nzFor]="displayName">Display Name</nz-form-label>
+    <nz-form-control nzSpan="21">
       <input nz-input name="displayName" placeholder="DisplayName" formControlName="displayName">
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-label nzSpan="4" [nzFor]="description">Description</nz-form-label>
-    <nz-form-control nzSpan="18">
+    <nz-form-label nzSpan="3" [nzFor]="description">Description</nz-form-label>
+    <nz-form-control nzSpan="21">
       <textarea nz-input name="description" rows="2" placeholder="Description" formControlName="description"></textarea>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-control nzSpan="6" nzPush="4">
+    <nz-form-control nzSpan="6" nzPush="3">
       <label nz-checkbox formControlName="enabled">Enabled</label>
     </nz-form-control>
-    <nz-form-control nzSpan="6" nzPush="4">
+    <nz-form-control nzSpan="6" nzPush="3">
       <label nz-checkbox formControlName="nonEditable">NonEditable</label>
     </nz-form-control>
   </nz-form-item>
 </form>
-<div nz-row>
-  <div nz-col>
+<div nz-row class="operation">
+  <div nz-col nzSpan="24">
     <button nz-button type="button" class="editable-add-btn" (click)="addApiScret()">Add ApiScret</button>
   </div>
 </div>
 <div nz-row>
   <div nz-col nzSpan="24">
-    <app-api-secret *ngFor="let item of entity.secrets" [apiSecret]="item"></app-api-secret>
+    <app-api-secret *ngFor="let item of entity.secrets" [apiSecret]="item" (onmouseover)="edit=true" (onmouseout)="edit=false"></app-api-secret>
   </div>
 </div>
-<div nz-row class="final-operation">
-  <div nz-col nzSpan="11">
+<div nz-row class="operation">
+  <div nz-col nzSpan="12">
     <button nz-button (click)="goBack()">返回</button>
   </div>
-  <div nz-col nzSpan="11" style="text-align: right;">
-    <button nz-button nzType="primary" [disabled]="!mainForm.valid" [nzLoading]="isSpinning">Submit</button>
+  <div nz-col nzSpan="12" style="text-align: right;">
+    <button nz-button nzType="primary" [disabled]="!mainForm.valid" [nzLoading]="isSpinning" style="margin-right: 8px;">Submit</button>
     <button nz-button (click)="reset($event)">Reset</button>
   </div>
 </div>

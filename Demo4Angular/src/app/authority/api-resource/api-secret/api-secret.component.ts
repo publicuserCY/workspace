@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, HostListener } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ApiSecretRequestModel } from '../../models/api-resource-request.model';
@@ -15,6 +15,13 @@ export class ApiSecretComponent implements OnInit, OnDestroy {
     edit = false;
     subscription: Subscription;
     mainForm: FormGroup;
+
+/*     @HostListener('onmouseover', ['$event']) onMouseEnter(e: any) {
+        this.edit = true;
+    }
+    @HostListener('onmouseout', ['$event']) onMouseLeave(e: any) {
+        this.edit = false;
+    } */
     constructor(
         private fb: FormBuilder,
         private authorityService: AuthorityService,
