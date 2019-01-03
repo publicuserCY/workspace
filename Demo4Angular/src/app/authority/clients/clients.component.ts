@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthorityService } from '../services/authority.service';
-import { ApiResource } from '../models/api-resource';
-import { ApiResourceRequestModel } from '../models/request';
+import { ApiResourceRequestModel } from '../models/api-resource-request.model';
 
 @Component({
   selector: 'app-authority-clients',
@@ -9,7 +8,7 @@ import { ApiResourceRequestModel } from '../models/request';
   styleUrls: ['./clients.component.css']
 })
 export class ClientsComponent implements OnInit {
-  apiResources: Array<ApiResource>;
+  apiResources: Array<ApiResourceRequestModel>;
   constructor(private authorityService: AuthorityService) { }
 
   ngOnInit() {

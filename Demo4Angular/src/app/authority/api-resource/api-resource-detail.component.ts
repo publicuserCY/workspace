@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthorityService } from '../services/authority.service';
-import { ApiResource, ApiSecret, Operational } from '../models/api-resource';
-import { ApiResourceRequestModel } from '../models/request';
+import { ApiResourceRequestModel, ApiSecretRequestModel } from '../models/api-resource-request.model';
 import { finalize, delay, map } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -9,6 +8,7 @@ import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } fro
 import { ActivatedRoute, Router } from '@angular/router';
 import { uniqueApiResourceNameValidatorFn } from '../validator/api-resource-name.validator';
 import { Observable } from 'rxjs';
+import { Operational } from 'src/app/common/request.model';
 // import * as fns from 'date-fns';
 
 @Component({
@@ -19,7 +19,7 @@ import { Observable } from 'rxjs';
 export class ApiResourceDetailComponent implements OnInit {
   // id$: Observable<number>;
   isSpinning = false;
-  entity = new ApiResource();
+  entity = new ApiResourceRequestModel();
   // entity$: Observable<ApiResource>;
   mainForm: FormGroup;
   secretsEditCache = {};
@@ -78,12 +78,8 @@ export class ApiResourceDetailComponent implements OnInit {
   }
 
   addApiScret() {
-    const secret = new ApiSecret(this.entity, Operational.Insert);
-    const sorted = this.entity.secrets.sort((a, b) => b.id - a.id);
-    if (sorted && sorted.length > 0) {
-      secret.id = sorted[0].id + 1;
-    }
-    this.entity.secrets = [...this.entity.secrets, secret];
+    const secret = new ApiSecretRequestModel();
+    this.entity.addApiSecret(secret);
     this.updateSecretsEditCache();
   }
 

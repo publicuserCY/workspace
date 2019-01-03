@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthorityService } from '../services/authority.service';
-import { ApiResource } from '../models/api-resource';
-import { ApiResourceRequestModel } from '../models/request';
+import { ApiResourceRequestModel } from '../models/api-resource-request.model';
 import { finalize, delay } from 'rxjs/operators';
 import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
 import { NzModalService } from 'ng-zorro-antd';
@@ -17,7 +16,7 @@ import { OperationResult } from 'src/app/common/result';
 })
 export class ApiResourceComponent implements OnInit {
   isSpinning = false;
-  apiResources: ApiResource[] = [];
+  apiResources: ApiResourceRequestModel[] = [];
   searchForm: FormGroup;
 
   constructor(
@@ -48,7 +47,6 @@ export class ApiResourceComponent implements OnInit {
       result => {
         if (result.isSuccess) {
           this.apiResources = result.data;
-          // this.apiResources = [...this.apiResources, result.Data[0]];
         } else {
           this.nzMessageService.error(result.message);
         }
@@ -73,13 +71,13 @@ export class ApiResourceComponent implements OnInit {
         this.authorityService.deleteApiResource(model).subscribe(
           result => { result.isSuccess ? resolve(result) : reject(result); });
       })
-        .then((result: OperationResult<ApiResource>) => {
+        .then((result: OperationResult<ApiResourceRequestModel>) => {
           /* const index = this.apiResources.findIndex(value => value.id === result.data.id);
           this.apiResources.splice(index, 1, result.data); */
           this.apiResources = this.apiResources.filter(p => p.id !== result.data.id);
           modelRef.destroy();
         })
-        .catch((result: OperationResult<ApiResource>) => {
+        .catch((result: OperationResult<ApiResourceRequestModel>) => {
           this.nzMessageService.error(result.message);
           return false;
         }),

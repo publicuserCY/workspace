@@ -11,6 +11,5 @@ export const Uris = {
     UniqueApiResourceName: AuthServer + '/api/Identity/UniqueApiResourceName',
 };
 export const DefaultConfig = {
-    PageIndex: 1,
     PageSize: 10,
 };

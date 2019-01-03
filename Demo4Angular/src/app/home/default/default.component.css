@@ -39,16 +39,16 @@
 }
 
 .main .header {
-  margin: 0 16px;
+  margin: 0 8px;
   background: #fff;
   padding: 0;
 }
 
 .main .content {
   overflow: initial;
-  margin: 0 16px;
+  margin: 0 8px;
   /* flex: 10 0 auto; */
-  padding: 4px;
+
   background: #fff;
   min-height: 500px;
 }

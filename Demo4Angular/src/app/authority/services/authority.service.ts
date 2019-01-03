@@ -3,8 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { OperationResult } from 'src/app/common/result';
-import { ApiResourceRequestModel } from '../models/request';
-import { ApiResource } from '../models/api-resource';
+import { ApiResourceRequestModel } from '../models/api-resource-request.model';
 import { Uris } from 'src/app/common/const';
 
 
@@ -12,7 +11,7 @@ import { Uris } from 'src/app/common/const';
 export class AuthorityService {
     constructor(private http: HttpClient) { }
 
-    selectApiResource(model: ApiResourceRequestModel): Observable<OperationResult<ApiResource[]>> {
+    selectApiResource(model: ApiResourceRequestModel): Observable<OperationResult<ApiResourceRequestModel[]>> {
         const options = {
             params: new HttpParams()
                 .set('id', model.id.toString())
@@ -25,25 +24,25 @@ export class AuthorityService {
                 .set('description', model.description ? model.description.trim() : '')
         };
         return this.http
-            .get<OperationResult<ApiResource[]>>(Uris.SelectApiResource, options)
+            .get<OperationResult<ApiResourceRequestModel[]>>(Uris.SelectApiResource, options)
             .pipe(catchError(this.handleError('selectApiResource')));
     }
 
-    insertApiResource(model: ApiResourceRequestModel): Observable<OperationResult<ApiResource>> {
+    insertApiResource(model: ApiResourceRequestModel): Observable<OperationResult<ApiResourceRequestModel>> {
         return this.http
-            .post<OperationResult<ApiResource>>(Uris.InsertApiResource, model)
+            .post<OperationResult<ApiResourceRequestModel>>(Uris.InsertApiResource, model)
             .pipe(catchError(this.handleError('insertApiResource')));
     }
 
-    updateApiResource(model: ApiResourceRequestModel): Observable<OperationResult<ApiResource>> {
+    updateApiResource(model: ApiResourceRequestModel): Observable<OperationResult<ApiResourceRequestModel>> {
         return this.http
-            .post<OperationResult<ApiResource>>(Uris.UpdateApiResource, model)
+            .post<OperationResult<ApiResourceRequestModel>>(Uris.UpdateApiResource, model)
             .pipe(catchError(this.handleError('updateApiResource')));
     }
 
-    deleteApiResource(model: ApiResourceRequestModel): Observable<OperationResult<ApiResource>> {
+    deleteApiResource(model: ApiResourceRequestModel): Observable<OperationResult<ApiResourceRequestModel>> {
         return this.http
-            .post<OperationResult<ApiResource>>(Uris.DeleteApiResource, model)
+            .post<OperationResult<ApiResourceRequestModel>>(Uris.DeleteApiResource, model)
             .pipe(catchError(this.handleError('deleteApiResource')));
     }
 
