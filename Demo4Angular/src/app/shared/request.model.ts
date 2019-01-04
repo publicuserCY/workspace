@@ -1,14 +1,10 @@
-import { DefaultConfig } from './const';
-
-export enum Operational {
-    Delete = -1, Origin = 0, Update = 1, Insert = 2
-}
+import { DefaultConfig, EntityState } from './const';
 
 export abstract class RequestModel {
     criteria?: string;
-    flag = Operational.Origin;
+    state = EntityState.Unchanged;
     constructor() {
-        this.flag = Operational.Insert;
+        this.state = EntityState.Added;
     }
 }
 

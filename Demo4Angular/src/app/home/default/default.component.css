@@ -19,10 +19,6 @@
   text-align: center;
 }
 
-/* .main {
-  height: 100%;
-} */
-
 .main .side {
   overflow: auto;
   height: 100vh;
@@ -47,21 +43,12 @@
 .main .content {
   overflow: initial;
   margin: 0 8px;
+  padding: 0 8px;
   /* flex: 10 0 auto; */
 
   background: #fff;
   min-height: 500px;
 }
-
-.main .content .breadcrumb {
-  margin: 16px 0;
-}
-
-/* .main .router-content {
-  padding: 4px;
-  background: #fff;
-  min-height: 500px;
-} */
 
 .main .footer {
   text-align: center;

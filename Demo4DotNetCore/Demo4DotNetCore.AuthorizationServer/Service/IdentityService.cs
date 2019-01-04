@@ -1,7 +1,7 @@
-﻿using Demo4DotNetCore.AuthorizationServer.Dto;
-using Demo4DotNetCore.AuthorizationServer.Model;
+﻿using Demo4DotNetCore.AuthorizationServer.Model;
+using Demo4DotNetCore.AuthorizationServer.RequestModel;
+using Demo4DotNetCore.Tools;
 using IdentityServer4.EntityFramework.DbContexts;
-using IdentityServer4.EntityFramework.Entities;
 using LinqKit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +26,7 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
         }
 
         #region ApiResource
-        public Task<PaginatedList<ApiResource>> SelectApiResource(ApiResourceRequestModel model)
+        public Task<PaginatedList<IdentityServer4.EntityFramework.Entities.ApiResource>> SelectApiResource(ApiResourceRequestModel model)
         {
             var query = ConfigurationDbContext.ApiResources
                     .Include(p => p.Secrets)
@@ -34,7 +34,7 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
                     .Include(p => p.UserClaims)
                     .Include(p => p.Properties)
                     .AsQueryable();
-            var predicate = PredicateBuilder.New<ApiResource>();
+            var predicate = PredicateBuilder.New<IdentityServer4.EntityFramework.Entities.ApiResource>();
             if (model.Id != 0)
             {
                 predicate = predicate.And(p => p.Id == model.Id);
@@ -54,43 +54,99 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
             return Task.FromResult(result);
         }
 
-        public Task<ApiResource> InsertApiResource(ApiResourceRequestModel model)
+        public Task<IdentityServer4.EntityFramework.Entities.ApiResource> InsertApiResource(ApiResourceRequestModel model)
         {
-            var entity = new ApiResource()
+            var apiResource = new IdentityServer4.EntityFramework.Entities.ApiResource()
             {
-                Enabled = model.Enabled,
-                Name = model.Name,
-                DisplayName = model.DisplayName,
-                Description = model.Description,
+                Enabled = model.ApiResource.Enabled,
+                Name = model.ApiResource.Name,
+                DisplayName = model.ApiResource.DisplayName,
+                Description = model.ApiResource.Description,
                 Created = DateTime.Now,
-                NonEditable = model.NonEditable
+                NonEditable = model.ApiResource.NonEditable
             };
-            var entry = ConfigurationDbContext.ApiResources.Add(entity);
-            ConfigurationDbContext.SaveChanges();
 
+            //Secrets
+            model.ApiResource.Secrets.ForEach(p =>
+            {
+                if (p.State == EntityState.Added)
+                {
+                    var secret = new IdentityServer4.EntityFramework.Entities.ApiSecret()
+                    {
+                        ApiResourceId = apiResource.Id,
+                        Description = p.Description,
+                        Value = p.Value,
+                        Expiration = p.Expiration,
+                        Type = p.Type,
+                        Created = p.Created
+                    };
+                    ConfigurationDbContext.Entry(secret).State = EntityState.Added;
+                };
+            });
+            var entry = ConfigurationDbContext.Entry(apiResource);
+            entry.State = EntityState.Added; ;
+            ConfigurationDbContext.SaveChanges();
             entry.Reload();
             return Task.FromResult(entry.Entity);
         }
 
-        public Task<ApiResource> UpdateApiResource(ApiResourceRequestModel model)
+        public Task<IdentityServer4.EntityFramework.Entities.ApiResource> UpdateApiResource(ApiResourceRequestModel model)
         {
-            var entity = ConfigurationDbContext.ApiResources.SingleOrDefault(p => p.Id == model.Id);
-            if (entity == null)
+            var apiResource = ConfigurationDbContext.ApiResources.SingleOrDefault(p => p.Id == model.Id);
+            if (apiResource == null)
             {
                 throw new Exception($"Id={model.Id}的Api Resource 不存在");
             }
-            entity.Enabled = model.Enabled;
-            entity.Name = model.Name;
-            entity.DisplayName = model.DisplayName;
-            entity.Description = model.Description;
-            entity.Updated = DateTime.Now;
-            entity.NonEditable = model.NonEditable;
-            ConfigurationDbContext.Entry(entity).State = EntityState.Modified;
+            apiResource.Enabled = model.ApiResource.Enabled;
+            apiResource.Name = model.ApiResource.Name;
+            apiResource.DisplayName = model.ApiResource.DisplayName;
+            apiResource.Description = model.ApiResource.Description;
+            apiResource.Updated = DateTime.Now;
+            apiResource.NonEditable = model.ApiResource.NonEditable;
+            ConfigurationDbContext.Entry(apiResource).State = EntityState.Modified;
+
+            //Secrets
+            model.ApiResource.Secrets.ForEach(p =>
+            {
+                if (p.State == EntityState.Added)
+                {
+                    var secret = new IdentityServer4.EntityFramework.Entities.ApiSecret()
+                    {
+                        Description = p.Description,
+                        Value = p.Value,
+                        Expiration = p.Expiration,
+                        Type = p.Type,
+                        Created = p.Created,
+                        ApiResourceId = apiResource.Id
+                    };
+                    ConfigurationDbContext.Entry(secret).State = EntityState.Added;
+                }
+                else if (p.State == EntityState.Modified)
+                {
+                    var secret = new IdentityServer4.EntityFramework.Entities.ApiSecret()
+                    {
+                        Id = p.Id,
+                        Description = p.Description,
+                        Value = p.Value,
+                        Expiration = p.Expiration,
+                        Type = p.Type,
+                        Created = p.Created,
+                        ApiResourceId = apiResource.Id,
+                    };
+                    ConfigurationDbContext.Entry(secret).State = EntityState.Modified;
+                }
+                else if (p.State == EntityState.Deleted)
+                {
+                    var secret = new IdentityServer4.EntityFramework.Entities.ApiSecret() { Id = p.Id };
+                    ConfigurationDbContext.Entry(secret).State = EntityState.Deleted;
+                };
+            });
+
             ConfigurationDbContext.SaveChanges();
-            return Task.FromResult(entity);
+            return Task.FromResult(apiResource);
         }
 
-        public Task<ApiResource> DeleteApiResource(ApiResourceRequestModel model)
+        public Task<IdentityServer4.EntityFramework.Entities.ApiResource> DeleteApiResource(ApiResourceRequestModel model)
         {
             var entity = ConfigurationDbContext.ApiResources.SingleOrDefault(p => p.Id == model.Id);
             if (entity == null)
@@ -111,25 +167,25 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
 
 
 
-        public Task<ApplicationUser> InsertAccount(AccountDto dto)
-        {
-            var user = UserManager.FindByNameAsync(dto.UserName).Result;
-            if (user != null)
-            {
-                throw new Exception("用户已存在");
-            }
-            user = new ApplicationUser()
-            {
-                UserName = dto.UserName
-            };
-            var result = UserManager.CreateAsync(user, dto.Password).Result;
-            if (!result.Succeeded)
-            {
-                throw new Exception(result.Errors.First().Description);
-            }
-            user = UserManager.FindByNameAsync(dto.UserName).Result;
-            return Task.FromResult(user);
-        }
+        //public Task<ApplicationUser> InsertAccount(AccountDto dto)
+        //{
+        //    var user = UserManager.FindByNameAsync(dto.UserName).Result;
+        //    if (user != null)
+        //    {
+        //        throw new Exception("用户已存在");
+        //    }
+        //    user = new ApplicationUser()
+        //    {
+        //        UserName = dto.UserName
+        //    };
+        //    var result = UserManager.CreateAsync(user, dto.Password).Result;
+        //    if (!result.Succeeded)
+        //    {
+        //        throw new Exception(result.Errors.First().Description);
+        //    }
+        //    user = UserManager.FindByNameAsync(dto.UserName).Result;
+        //    return Task.FromResult(user);
+        //}
 
         public ApplicationUser FindByExternalProvider(string provider, string userId)
         {

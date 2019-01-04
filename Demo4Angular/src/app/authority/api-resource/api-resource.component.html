@@ -30,7 +30,7 @@
       </button>
     </nz-form-control>
   </nz-form-item>
-  <nz-form-item class="add-new-content">
+  <nz-form-item class="add-new-container">
     <nz-form-control>
       <a class="add-new" [routerLink]="['../ApiResources',0]">
         <i nz-icon type="plus-circle" theme="twotone" twoToneColor="#52c41a"></i>
@@ -71,12 +71,6 @@
         <a (click)="delete(item.id)">
           <i nz-icon type="delete" theme="twotone" twoToneColor="#eb2f96"></i>
         </a>
-        <!-- <button nz-button nzShape="circle" (click)="edit()">
-          <i nz-icon type="edit" theme="twotone"></i>
-        </button>
-        <button nz-button nzShape="circle" (click)="delete()">
-          <i nz-icon type="delete" theme="twotone" twoToneColor="#eb2f96"></i>
-        </button> -->
       </td>
     </tr>
   </tbody>

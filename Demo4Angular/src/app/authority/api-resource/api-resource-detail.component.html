@@ -47,12 +47,14 @@
 </form>
 <div nz-row class="operation">
   <div nz-col nzSpan="24">
-    <button nz-button type="button" class="editable-add-btn" (click)="addApiScret()">Add ApiScret</button>
+    <button nz-button type="button" class="editable-add-btn" (click)="addApiScret()" [disabled]="this.apiResource.state===EntityState.Added">
+      Add ApiScret
+    </button>
   </div>
 </div>
 <div nz-row>
   <div nz-col nzSpan="24">
-    <app-api-secret *ngFor="let item of entity.secrets" [apiSecret]="item" (onmouseover)="edit=true" (onmouseout)="edit=false"></app-api-secret>
+    <app-api-secret *ngFor="let item of apiResource.secrets" [apiSecret]="item"></app-api-secret>
   </div>
 </div>
 <div nz-row class="operation">

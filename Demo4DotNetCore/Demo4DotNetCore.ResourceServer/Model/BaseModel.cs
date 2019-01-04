@@ -27,6 +27,6 @@ namespace Demo4DotNetCore.ResourceServer.Model
         /// 实体状态
         /// </summary>
         [NotMapped]
-        public EntityState EntityState { get; set; }
+        public EntityState State { get; set; }
     }
 }

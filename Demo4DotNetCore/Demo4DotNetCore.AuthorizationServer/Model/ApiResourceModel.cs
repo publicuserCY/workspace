@@ -3,24 +3,24 @@ using System.Collections.Generic;
 
 namespace Demo4DotNetCore.AuthorizationServer.Model
 {
-    public class ApiResourceRequestModel : PaginatedRequestModel
+    public class ApiResource : BaseModel
     {
         public int Id { get; set; }
         public bool Enabled { get; set; }
         public string Name { get; set; }
         public string DisplayName { get; set; }
         public string Description { get; set; }
-        public List<ApiSecretRequestModel> Secrets { get; set; }
-        public List<ApiScopeRequestModel> Scopes { get; set; }
-        public List<ApiResourceClaimRequestModel> UserClaims { get; set; }
-        public List<ApiResourcePropertyRequestModel> Properties { get; set; }
-        public DateTime? Created { get; set; }
+        public List<ApiSecret> Secrets { get; set; }
+        public List<ApiScope> Scopes { get; set; }
+        public List<ApiResourceClaim> UserClaims { get; set; }
+        public List<ApiResourceProperty> Properties { get; set; }
+        public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
         public DateTime? LastAccessed { get; set; }
         public bool NonEditable { get; set; }
     }
 
-    public abstract class SecretRequestModel : BaseRequestModel
+    public class Secret : BaseModel
     {
         public int Id { get; set; }
         public string Description { get; set; }
@@ -30,23 +30,25 @@ namespace Demo4DotNetCore.AuthorizationServer.Model
         public DateTime Created { get; set; }
     }
 
-    public class ApiSecretRequestModel : SecretRequestModel
+    public class ApiSecret : Secret
     {
         public int ApiResourceId { get; set; }
+        public ApiResource ApiResource { get; set; }
     }
 
-    public abstract class UserClaimRequestModel : BaseRequestModel
+    public class UserClaim : BaseModel
     {
         public int Id { get; set; }
         public string Type { get; set; }
     }
 
-    public class ApiScopeClaimRequestModel : UserClaimRequestModel
+    public class ApiScopeClaim : UserClaim
     {
         public int ApiScopeId { get; set; }
+        public ApiScope ApiScope { get; set; }
     }
 
-    public class ApiScopeRequestModel : BaseRequestModel
+    public class ApiScope : BaseModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -55,24 +57,27 @@ namespace Demo4DotNetCore.AuthorizationServer.Model
         public bool Required { get; set; }
         public bool Emphasize { get; set; }
         public bool ShowInDiscoveryDocument { get; set; }
-        public List<ApiScopeClaimRequestModel> UserClaims { get; set; }
+        public List<ApiScopeClaim> UserClaims { get; set; }
         public int ApiResourceId { get; set; }
+        public ApiResource ApiResource { get; set; }
     }
 
-    public class ApiResourceClaimRequestModel : UserClaimRequestModel
+    public class ApiResourceClaim : UserClaim
     {
         public int ApiResourceId { get; set; }
+        public ApiResource ApiResource { get; set; }
     }
 
-    public abstract class PropertyRequestModel
+    public class Property : BaseModel
     {
         public int Id { get; set; }
         public string Key { get; set; }
         public string Value { get; set; }
     }
 
-    public class ApiResourcePropertyRequestModel : PropertyRequestModel
+    public class ApiResourceProperty : Property
     {
         public int ApiResourceId { get; set; }
+        public ApiResource ApiResource { get; set; }
     }
 }

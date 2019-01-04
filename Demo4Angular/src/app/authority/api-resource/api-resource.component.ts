@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthorityService } from '../services/authority.service';
-import { ApiResourceRequestModel } from '../models/api-resource-request.model';
-import { finalize, delay } from 'rxjs/operators';
-import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
-import { NzModalService } from 'ng-zorro-antd';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { OperationResult } from 'src/app/common/result';
+import { finalize, delay } from 'rxjs/operators';
+import { NzModalService } from 'ng-zorro-antd';
+import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
+
+import { ApiResourceRequestModel } from '../models/api-resource-request.model';
+import { ApiResource } from '../models/api-resource.model';
+import { AuthorityService } from '../services/authority.service';
+import { OperationResult } from 'src/app/shared/result';
 
 @Component({
   selector: 'app-authority-api-resource',
@@ -16,7 +18,7 @@ import { OperationResult } from 'src/app/common/result';
 })
 export class ApiResourceComponent implements OnInit {
   isSpinning = false;
-  apiResources: ApiResourceRequestModel[] = [];
+  apiResources: ApiResource[] = [];
   searchForm: FormGroup;
 
   constructor(

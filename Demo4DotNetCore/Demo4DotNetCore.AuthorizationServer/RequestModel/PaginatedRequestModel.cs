@@ -1,4 +1,4 @@
-﻿namespace Demo4DotNetCore.AuthorizationServer.Model
+﻿namespace Demo4DotNetCore.AuthorizationServer.RequestModel
 {
     public class PaginatedRequestModel : BaseRequestModel
     {
