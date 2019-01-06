@@ -9,7 +9,7 @@ import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
 import { ApiResourceRequestModel } from '../models/api-resource-request.model';
 import { ApiResource } from '../models/api-resource.model';
 import { AuthorityService } from '../services/authority.service';
-import { OperationResult } from 'src/app/shared/result';
+import { OperationResult, PaginatedResult } from 'src/app/shared/result';
 
 @Component({
   selector: 'app-authority-api-resource',
@@ -18,8 +18,14 @@ import { OperationResult } from 'src/app/shared/result';
 })
 export class ApiResourceComponent implements OnInit {
   isSpinning = false;
-  apiResources: ApiResource[] = [];
   searchForm: FormGroup;
+  paginatedresult = new PaginatedResult<ApiResource>();
+  orderBy = null;
+  direction = null;
+  enabledCandidate = [
+    { text: '启用', value: true },
+    { text: '禁用', value: false }
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -32,23 +38,27 @@ export class ApiResourceComponent implements OnInit {
 
   ngOnInit() {
     this.searchForm = this.fb.group({
-      name: [''],
-      description: ['']
+      enabled: [null],
+      name: [null],
+      displayName: [null],
+      description: [null]
     });
     this.search();
   }
 
   search() {
     this.isSpinning = true;
-    const model = new ApiResourceRequestModel();
+    const model = new ApiResourceRequestModel(this.paginatedresult.pageIndex, this.paginatedresult.pageSize, this.orderBy, this.direction);
     model.name = this.searchForm.get('name').value;
     model.description = this.searchForm.get('description').value;
-    this.authorityService.selectApiResource(model).pipe(
+    model.displayName = this.searchForm.get('displayName').value;
+    model.enabled = this.searchForm.get('enabled').value;
+    this.authorityService.retrieveApiResource(model).pipe(
       finalize(() => { this.isSpinning = false; })
     ).subscribe(
       result => {
         if (result.isSuccess) {
-          this.apiResources = result.data;
+          this.paginatedresult = result.data;
         } else {
           this.nzMessageService.error(result.message);
         }
@@ -57,8 +67,15 @@ export class ApiResourceComponent implements OnInit {
   }
 
   reset() {
-    this.searchForm.reset();
+    this.resetCondition();
     this.search();
+  }
+
+  resetCondition() {
+    this.searchForm.reset();
+    this.paginatedresult.pageIndex = 1;
+    this.orderBy = '';
+    this.direction = '';
   }
 
   delete(id: number) {
@@ -73,18 +90,35 @@ export class ApiResourceComponent implements OnInit {
         this.authorityService.deleteApiResource(model).subscribe(
           result => { result.isSuccess ? resolve(result) : reject(result); });
       })
-        .then((result: OperationResult<ApiResourceRequestModel>) => {
-          /* const index = this.apiResources.findIndex(value => value.id === result.data.id);
-          this.apiResources.splice(index, 1, result.data); */
-          this.apiResources = this.apiResources.filter(p => p.id !== result.data.id);
+        .then((result: OperationResult<ApiResource>) => {
+          this.paginatedresult.list = this.paginatedresult.list.filter(p => p.id !== result.data.id);
+          this.nzMessageService.info('ApiResource 删除完成');
           modelRef.destroy();
         })
-        .catch((result: OperationResult<ApiResourceRequestModel>) => {
+        .catch((result: OperationResult<ApiResource>) => {
           this.nzMessageService.error(result.message);
           return false;
         }),
       nzCancelText: '取消',
-      nzOnCancel: () => { }
+      nzOnCancel: () => { modelRef.destroy(); }
     });
+  }
+
+  sort(sort: { key: string, value: string }): void {
+    this.orderBy = sort.key;
+    this.direction = sort.value;
+    this.search();
+  }
+
+  enabledFilter(enabled: boolean) {
+    this.resetCondition();
+    this.searchForm.patchValue({ 'enabled': enabled });
+    this.search();
+  }
+
+  displayNameFilter(displayName: string) {
+    this.resetCondition();
+    this.searchForm.patchValue({ 'displayName': displayName });
+    this.search();
   }
 }

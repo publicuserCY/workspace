@@ -8,11 +8,15 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
 {
     public interface IIdentityService
     {
-        Task<PaginatedList<IdentityServer4.EntityFramework.Entities.ApiResource>> SelectApiResource(ApiResourceRequestModel model);
-        Task<IdentityServer4.EntityFramework.Entities.ApiResource> InsertApiResource(ApiResourceRequestModel model);
-        Task<IdentityServer4.EntityFramework.Entities.ApiResource> UpdateApiResource(ApiResourceRequestModel model);
+        Task<PaginatedResult<IdentityServer4.EntityFramework.Entities.ApiResource>> RetrieveApiResource(ApiResourceRequestModel model);
+        Task<IdentityServer4.EntityFramework.Entities.ApiResource> AddApiResource(ApiResourceRequestModel model);
+        Task<IdentityServer4.EntityFramework.Entities.ApiResource> ModifyApiResource(ApiResourceRequestModel model);
         Task<IdentityServer4.EntityFramework.Entities.ApiResource> DeleteApiResource(ApiResourceRequestModel model);
         Task<bool> UniqueApiResourceName(int id, string name);
+
+        Task<IdentityServer4.EntityFramework.Entities.ApiSecret> AddApiSecret(ApiSecretRequestModel model);
+        Task<IdentityServer4.EntityFramework.Entities.ApiSecret> ModifyApiSecret(ApiSecretRequestModel model);
+        Task<IdentityServer4.EntityFramework.Entities.ApiSecret> DeleteApiSecret(ApiSecretRequestModel model);
 
         ApplicationUser AutoProvisionUser(string provider, string userId, List<Claim> claims);
         ApplicationUser FindByExternalProvider(string provider, string userId);

@@ -8,7 +8,7 @@ namespace Demo4DotNetCore.AuthorizationServer.Model
     /// PaginatedList
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class PaginatedList<T> : List<T>
+    public class PaginatedResult<T>
     {
         /// <summary>
         /// PageIndex
@@ -31,25 +31,30 @@ namespace Demo4DotNetCore.AuthorizationServer.Model
         public int TotalPageCount { get; private set; }
 
         /// <summary>
+        /// List
+        /// </summary>
+        public IQueryable List { get; private set; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <param name="totalCount"></param>
         /// <param name="source"></param>
-        public PaginatedList(
+        public PaginatedResult(
             int pageIndex, int pageSize,
             int totalCount, IQueryable<T> source)
         {
-            AddRange(source);
-
+            List = source;
+            
             PageIndex = pageIndex;
             PageSize = pageSize;
             TotalCount = totalCount;
             TotalPageCount = (int)Math.Ceiling(totalCount / (double)pageSize);
         }
 
-        public PaginatedList(
+        public PaginatedResult(
             int pageIndex, int pageSize,
             int totalCount, int totalPageCount)
         {

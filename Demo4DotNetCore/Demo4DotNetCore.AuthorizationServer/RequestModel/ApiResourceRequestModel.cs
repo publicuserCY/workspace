@@ -4,8 +4,10 @@ namespace Demo4DotNetCore.AuthorizationServer.RequestModel
 {
     public class ApiResourceRequestModel : PaginatedRequestModel
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
+        public bool? Enabled { get; set; }
         public string Name { get; set; }
+        public string DisplayName { get; set; }
         public string Description { get; set; }
 
         public ApiResource ApiResource { get; set; }
@@ -16,10 +18,10 @@ namespace Demo4DotNetCore.AuthorizationServer.RequestModel
     //    public Secret Secret { get; set; }
     //}
 
-    //public class ApiSecretRequestModel : SecretRequestModel
-    //{
-    //    public ApiSecret ApiSecret { get; set; }
-    //}
+    public class ApiSecretRequestModel : BaseRequestModel
+    {
+        public ApiSecret ApiSecret { get; set; }
+    }
 
     //public abstract class UserClaimRequestModel : BaseRequestModel
     //{

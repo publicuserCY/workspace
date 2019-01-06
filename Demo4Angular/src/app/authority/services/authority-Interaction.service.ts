@@ -22,7 +22,7 @@ export class AuthorityInteractionService {
         this.apiSecretAddedSource.next(item);
     }
 
-    apiSecretUpdated(item: ApiSecret) {
+    apiSecretModified(item: ApiSecret) {
         this.apiSecretModifiedSource.next(item);
     }
 

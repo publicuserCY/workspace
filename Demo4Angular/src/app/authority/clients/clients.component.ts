@@ -14,19 +14,6 @@ export class ClientsComponent implements OnInit {
   ngOnInit() {
   }
   search() {
-    const model = new ApiResourceRequestModel();
-    this.authorityService.selectApiResource(model).subscribe(
-      result => {
-        console.log(result);
-        if (result.isSuccess) {
-          const data = result.data;
-          data.forEach(p => {
-            console.log(p.scopes);
-          });
-        } else {
 
-        }
-      }
-    );
   }
 }

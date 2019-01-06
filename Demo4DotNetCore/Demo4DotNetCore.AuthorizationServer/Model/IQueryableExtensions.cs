@@ -18,12 +18,12 @@ namespace Demo4DotNetCore.AuthorizationServer.Model
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public static PaginatedList<T> ToPaginatedList<T>(this IQueryable<T> query, int pageIndex, int pageSize)
+        public static PaginatedResult<T> ToPaginatedList<T>(this IQueryable<T> query, int pageIndex, int pageSize)
         {
             var totalCount = query.Count();
             var collection = query.Skip((pageIndex - 1) * pageSize).Take(pageSize);
 
-            return new PaginatedList<T>(pageIndex, pageSize, totalCount, collection);
+            return new PaginatedResult<T>(pageIndex, pageSize, totalCount, collection);
         }
 
         public static IQueryable<T> SortBy<T>(this IQueryable<T> source, string sortExpression)
@@ -60,7 +60,7 @@ namespace Demo4DotNetCore.AuthorizationServer.Model
 
             string methodName = (sortDirection == "ASC") ? "OrderBy" : "OrderByDescending";
 
-            Expression methodCallExpression = Expression.Call(typeof(Queryable), methodName,
+            Expression methodCallExpression = Expression.Call(typeof(System.Linq.Queryable), methodName,
                                                 new Type[] { source.ElementType, property.Type },
                                                 source.Expression, Expression.Quote(lambda));
 

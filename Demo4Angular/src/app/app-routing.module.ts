@@ -7,7 +7,7 @@ const routes: Routes = [
   { path: 'Baidu', loadChildren: './baidu/baidu.module#BaiduModule' },
   { path: 'Identity', loadChildren: './identity/identity.module#IdentityModule' },
   { path: 'Sample', loadChildren: './sample/sample.module#SampleModule' },
-  { path: '', redirectTo: '/Authority', pathMatch: 'full' },
+  { path: '', redirectTo: '/Authority/ApiResources', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },
 ];
 

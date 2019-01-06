@@ -4,11 +4,14 @@ export const Uris = {
     DiscoveryEndpoint: AuthServer + '/.well-known/openid-configuratio',
     AuthorizeEndpoint: AuthServer + '/connect/authorize',
     TokenEndpoint: AuthServer + '/connect/token',
-    SelectApiResource: AuthServer + '/api/Identity/SelectApiResource',
-    InsertApiResource: AuthServer + '/api/Identity/InsertApiResource',
-    UpdateApiResource: AuthServer + '/api/Identity/UpdateApiResource',
+    RetrieveApiResource: AuthServer + '/api/Identity/RetrieveApiResource',
+    AddApiResource: AuthServer + '/api/Identity/AddApiResource',
+    ModifyApiResource: AuthServer + '/api/Identity/ModifyApiResource',
     DeleteApiResource: AuthServer + '/api/Identity/DeleteApiResource',
     UniqueApiResourceName: AuthServer + '/api/Identity/UniqueApiResourceName',
+    AddApiSecret: AuthServer + '/api/Identity/AddApiSecret',
+    ModifyApiSecret: AuthServer + '/api/Identity/ModifyApiSecret',
+    DeleteApiSecret: AuthServer + '/api/Identity/DeleteApiSecret',
 };
 export const DefaultConfig = {
     PageSize: 10,

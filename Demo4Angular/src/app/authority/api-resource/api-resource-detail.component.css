@@ -1,9 +1,29 @@
 .main-form {
-  /*   margin: 8px; */
+  margin-bottom: 8px;
   padding: 24px;
   background: #fbfbfb;
   border: 1px solid #d9d9d9;
   border-radius: 6px;
+}
+
+.empty-api-secret {
+  display: flex;
+  justify-content: center;
+  height: 154px;
+  background: #fbfbfb;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  transition: all .3s;
+}
+
+.empty-api-secret:hover {  
+  border: 1px solid #1890ff;
+}
+
+.empty-api-secret button {
+  width: 40%;
+  height: 50px;
+  margin: auto;
 }
 
 /* .operation a {

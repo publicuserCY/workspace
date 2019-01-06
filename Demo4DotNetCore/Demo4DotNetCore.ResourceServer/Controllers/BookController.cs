@@ -3,6 +3,7 @@ using Demo4DotNetCore.ResourceServer.Service;
 using Demo4DotNetCore.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,12 +16,12 @@ namespace Demo4DotNetCore.ResourceServer.Controllers
     public class BookController : ControllerBase
     {
         private IBookService service;
-        private NLog.Logger logger;
+        private ILogger<BookController> Logger { get; }
 
-        public BookController(IBookService service)
+        public BookController(ILogger<BookController> logger, IBookService service)
         {
             this.service = service;
-            logger = NLog.LogManager.GetLogger(GetType().FullName);
+            Logger = logger;
         }
 
 
@@ -45,7 +46,7 @@ namespace Demo4DotNetCore.ResourceServer.Controllers
             }
             catch (Exception ex)
             {
-                logger.Error(ex.Message);
+                Logger.LogError(ex.Message);
                 result = new OperationResult<PaginatedList<Book>>(ex.Message);
             }
             return new JsonResult(result);

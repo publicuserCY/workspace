@@ -4,6 +4,7 @@ using Demo4DotNetCore.AuthorizationServer.Service;
 using Demo4DotNetCore.Tools;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
@@ -14,64 +15,64 @@ namespace Demo4DotNetCore.AuthorizationServer.Controllers
     //[Microsoft.AspNetCore.Authorization.Authorize]
     public class IdentityController : ControllerBase
     {
-        private NLog.Logger Logger { get; }
+        private ILogger<IdentityController> Logger { get; }
         private IConfiguration Configuration { get; }
         private IIdentityService IdentityService { get; }
 
-        public IdentityController(IConfiguration configuration, IIdentityService identityService)
+        public IdentityController(IConfiguration configuration, ILogger<IdentityController> logger, IIdentityService identityService)
         {
             Configuration = configuration;
             IdentityService = identityService;
-            Logger = NLog.LogManager.GetLogger(GetType().FullName);
+            Logger = logger;
         }
 
         #region ApiResource
         [HttpGet]
-        public async Task<ActionResult> SelectApiResource([FromQuery] ApiResourceRequestModel model)
+        public async Task<ActionResult> RetrieveApiResource([FromQuery] ApiResourceRequestModel model)
         {
-            var result = new OperationResult<PaginatedList<IdentityServer4.EntityFramework.Entities.ApiResource>>(true);
+            var result = new OperationResult<PaginatedResult<IdentityServer4.EntityFramework.Entities.ApiResource>>(true);
             try
             {
-                var list = await IdentityService.SelectApiResource(model);
+                var list = await IdentityService.RetrieveApiResource(model);
                 result.Data = list;
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message);
-                result = new OperationResult<PaginatedList<IdentityServer4.EntityFramework.Entities.ApiResource>>(ex.Message);
+                Logger.LogError(ex.Message);
+                result = new OperationResult<PaginatedResult<IdentityServer4.EntityFramework.Entities.ApiResource>>(ex.Message);
             }
             return new JsonResult(result);
         }
 
         [HttpPost]
-        public async Task<ActionResult> InsertApiResource(ApiResourceRequestModel model)
+        public async Task<ActionResult> AddApiResource(ApiResourceRequestModel model)
         {
             var result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiResource>(true);
             try
             {
-                var entity = await IdentityService.InsertApiResource(model);
+                var entity = await IdentityService.AddApiResource(model);
                 result.Data = entity;
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message);
+                Logger.LogError(ex.Message);
                 result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiResource>(ex.Message);
             }
             return new JsonResult(result);
         }
 
         [HttpPost]
-        public async Task<ActionResult> UpdateApiResource(ApiResourceRequestModel model)
+        public async Task<ActionResult> ModifyApiResource(ApiResourceRequestModel model)
         {
             var result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiResource>(true);
             try
             {
-                var entity = await IdentityService.UpdateApiResource(model);
+                var entity = await IdentityService.ModifyApiResource(model);
                 result.Data = entity;
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message);
+                Logger.LogError(ex.Message);
                 result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiResource>(ex.Message);
             }
             return new JsonResult(result);
@@ -89,7 +90,7 @@ namespace Demo4DotNetCore.AuthorizationServer.Controllers
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.Message);
+                Logger.LogError(ex.Message);
                 result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiResource>(ex.Message);
             }
             return new JsonResult(result);
@@ -99,6 +100,59 @@ namespace Demo4DotNetCore.AuthorizationServer.Controllers
         public async Task<ActionResult> UniqueApiResourceName(int id, string name)
         {
             var result = await IdentityService.UniqueApiResourceName(id, name);
+            return new JsonResult(result);
+        }
+        #endregion
+
+        #region ApiSecret
+        public async Task<ActionResult> AddApiSecret(ApiSecretRequestModel model)
+        {
+            var result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiSecret>(true);
+            try
+            {
+                var entity = await IdentityService.AddApiSecret(model);
+                result.Data = entity;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiSecret>(ex.Message);
+            }
+            return new JsonResult(result);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ModifyApiSecret(ApiSecretRequestModel model)
+        {
+            var result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiSecret>(true);
+            try
+            {
+                var entity = await IdentityService.ModifyApiSecret(model);
+                result.Data = entity;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiSecret>(ex.Message);
+            }
+            return new JsonResult(result);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> DeleteApiSecret(ApiSecretRequestModel model)
+        {
+
+            var result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiSecret>(true);
+            try
+            {
+                var entity = await IdentityService.DeleteApiSecret(model);
+                result.Data = entity;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiSecret>(ex.Message);
+            }
             return new JsonResult(result);
         }
         #endregion

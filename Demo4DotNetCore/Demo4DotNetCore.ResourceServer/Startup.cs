@@ -11,17 +11,22 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NLog.Extensions.Logging;
+using NLog.Web;
 
 namespace Demo4DotNetCore.ResourceServer
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public IConfiguration Configuration { get; }
+        public IHostingEnvironment HostingEnvironment { get; }
+
+        public Startup(IConfiguration configuration, IHostingEnvironment environment)
         {
             Configuration = configuration;
+            HostingEnvironment = environment;
+            environment.ConfigureNLog("nlog.config");
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -60,7 +65,7 @@ namespace Demo4DotNetCore.ResourceServer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -72,9 +77,11 @@ namespace Demo4DotNetCore.ResourceServer
                 app.UseHttpsRedirection();
                 app.UseHsts();
             }
+            loggerFactory.AddNLog();
+            app.AddNLogWeb();
             app.UseCors("default");
             app.UseStaticFiles();
-            app.UseAuthentication();                   
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

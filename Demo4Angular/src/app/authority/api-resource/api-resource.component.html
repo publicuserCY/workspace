@@ -38,15 +38,25 @@
     </nz-form-control>
   </nz-form-item>
 </form>
-<nz-table #table [nzData]="apiResources" [nzLoading]="isSpinning">
-  <thead>
+<nz-table #table [nzData]="paginatedresult.list" [nzLoading]="isSpinning" [nzFrontPagination]="false" [nzTotal]="paginatedresult.totalCount" [(nzPageIndex)]="paginatedresult.pageIndex" [(nzPageSize)]="paginatedresult.pageSize" (nzPageIndexChange)="search()">
+  <thead (nzSortChange)="sort($event)" nzSingleSort>
     <tr>
+      <th nzWidth="80px">序号</th>
       <th>Id</th>
-      <th>Enabled</th>
+      <th nzShowFilter [nzFilterMultiple]="false" [nzFilters]="enabledCandidate" (nzFilterChange)="enabledFilter($event)">Enabled</th>
       <th>Name</th>
-      <th>DisplayName</th>
+      <th nzWidth="150px" nzCustomFilter>
+        DisplayName
+        <nz-dropdown nzTrigger="click" [nzClickHide]="false" #dropdown>
+          <i nz-dropdown nz-icon type="down" class="ant-table-filter-icon" [class.ant-table-filter-open]="dropdown.nzVisible"></i>
+          <div class="custom-filter-dropdown">
+            <input nz-input type="text" placeholder="DisplayName" style="width:150px;margin-right: 8px;" #displayName>
+            <button nz-button nzType="primary" (click)="displayNameFilter(displayName.value)">Search</button>
+          </div>
+        </nz-dropdown>
+      </th>
       <th>Description</th>
-      <th nzWidth="110px">Created</th>
+      <th nzWidth="110px" nzShowSort nzSortKey="created">Created</th>
       <th nzWidth="110px">Updated</th>
       <th nzWidth="110px">LastAccessed</th>
       <th>NonEditable</th>
@@ -54,7 +64,8 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let item of table.data">
+    <tr *ngFor="let item of table.data; let i=index">
+      <td>{{(paginatedresult.pageIndex-1)*paginatedresult.pageSize+i+1}}</td>
       <td>{{item.id}}</td>
       <td [nzShowCheckbox]="true" [nzDisabled]="true" [nzChecked]="item.enabled"></td>
       <td>{{item.name}}</td>

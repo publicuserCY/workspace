@@ -44,8 +44,8 @@ export class ApiResource extends BaseModel {
         this.secrets[index].state = EntityState.Deleted;
     }
     updateApiSecret(item: ApiSecret) {
-        item.state = EntityState.Modified;
         const index = this.secrets.findIndex(p => p.id === item.id);
+        item.state = EntityState.Modified;
         Object.assign(this.secrets[index], item);
     }
 }
@@ -104,6 +104,11 @@ export class ApiScope extends BaseModel {
     apiResourceId: number;
     constructor() {
         super();
+        this.id = 0;
+        this.name = '';
+        this.required = false;
+        this.emphasize = false;
+        this.showInDiscoveryDocument = false;
     }
 }
 

@@ -15,6 +15,12 @@
 }
 
 .operation a {
-  margin-right: 8px;
+  margin-right: 16px;
   font-size:20px;
+}
+.custom-filter-dropdown {
+  padding: 8px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .2);
 }
