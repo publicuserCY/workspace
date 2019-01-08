@@ -1,16 +1,14 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, Input } from '@angular/core';
+import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, delay, map } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 
 import { ApiSecret } from '../../models/api-resource.model';
-import { AuthorityService } from '../../services/authority.service';
 import { AuthorityInteractionService } from '../../services/authority-Interaction.service';
 import { ApiSecretRequestModel } from '../../models/api-resource-request.model';
 import { EntityState } from 'src/app/shared/const';
+import { ApiSecretService } from '../../services/api-secret.service';
 
 @Component({
     selector: 'app-api-secret',
@@ -28,7 +26,7 @@ export class ApiSecretComponent implements OnInit {
         private router: Router,
         private fb: FormBuilder,
         private nzMessageService: NzMessageService,
-        private authorityService: AuthorityService,
+        private apiSecretService: ApiSecretService,
         private authorityInteractionService: AuthorityInteractionService
     ) { }
 
@@ -56,7 +54,7 @@ export class ApiSecretComponent implements OnInit {
         const requestModel = new ApiSecretRequestModel();
         requestModel.apiSecret = this.apiSecret;
         if (this.apiSecret.state === EntityState.Added) {
-            this.authorityService.addApiSecret(requestModel).pipe(
+            this.apiSecretService.add(requestModel).pipe(
                 finalize(() => this.isSpinning = false)
             ).subscribe(
                 result => {
@@ -72,7 +70,7 @@ export class ApiSecretComponent implements OnInit {
                 }
             );
         } else {
-            this.authorityService.modifyApiSecret(requestModel).pipe(
+            this.apiSecretService.modify(requestModel).pipe(
                 finalize(() => this.isSpinning = false)
             ).subscribe(
                 result => {
@@ -93,7 +91,7 @@ export class ApiSecretComponent implements OnInit {
     delete() {
         const requestModel = new ApiSecretRequestModel();
         requestModel.apiSecret = this.apiSecret;
-        this.authorityService.deleteApiSecret(requestModel).pipe(
+        this.apiSecretService.delete(requestModel).pipe(
             finalize(() => this.isSpinning = false)
         ).subscribe(
             result => {

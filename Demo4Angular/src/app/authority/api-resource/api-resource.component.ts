@@ -8,7 +8,7 @@ import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
 
 import { ApiResourceRequestModel } from '../models/api-resource-request.model';
 import { ApiResource } from '../models/api-resource.model';
-import { AuthorityService } from '../services/authority.service';
+import { ApiResourceService } from '../services/api-resource.service';
 import { OperationResult, PaginatedResult } from 'src/app/shared/result';
 
 @Component({
@@ -33,7 +33,7 @@ export class ApiResourceComponent implements OnInit {
     private fb: FormBuilder,
     private nzMessageService: NzMessageService,
     private nzModalService: NzModalService,
-    private authorityService: AuthorityService
+    private apiResourceService: ApiResourceService
   ) { }
 
   ngOnInit() {
@@ -53,7 +53,7 @@ export class ApiResourceComponent implements OnInit {
     model.description = this.searchForm.get('description').value;
     model.displayName = this.searchForm.get('displayName').value;
     model.enabled = this.searchForm.get('enabled').value;
-    this.authorityService.retrieveApiResource(model).pipe(
+    this.apiResourceService.retrieve(model).pipe(
       finalize(() => { this.isSpinning = false; })
     ).subscribe(
       result => {
@@ -87,7 +87,7 @@ export class ApiResourceComponent implements OnInit {
       nzOnOk: () => new Promise((resolve, reject) => {
         const model = new ApiResourceRequestModel();
         model.id = id;
-        this.authorityService.deleteApiResource(model).subscribe(
+        this.apiResourceService.delete(model).subscribe(
           result => { result.isSuccess ? resolve(result) : reject(result); });
       })
         .then((result: OperationResult<ApiResource>) => {

@@ -7,11 +7,12 @@ import { NzMessageService } from 'ng-zorro-antd';
 
 import { ApiResourceRequestModel, ApiSecretRequestModel } from '../models/api-resource-request.model';
 import { ApiResource, ApiSecret } from '../models/api-resource.model';
-import { AuthorityService } from '../services/authority.service';
+import { ApiResourceService } from '../services/api-resource.service';
 import { AuthorityInteractionService } from '../services/authority-Interaction.service';
 import { uniqueApiResourceNameValidatorFn } from '../validator/api-resource-name.validator';
 import { EntityState } from 'src/app/shared/const';
 import { OperationResult, PaginatedResult } from 'src/app/shared/result';
+
 // import * as fns from 'date-fns';
 
 @Component({
@@ -32,7 +33,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     private fb: FormBuilder,
     private nzMessageService: NzMessageService,
-    private authorityService: AuthorityService,
+    private apiResourceService: ApiResourceService,
     private authorityInteractionService: AuthorityInteractionService
   ) { }
 
@@ -44,7 +45,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
           if (id > 0) {
             const requestModel = new ApiResourceRequestModel();
             requestModel.id = id;
-            return this.authorityService.retrieveApiResource(requestModel).pipe(
+            return this.apiResourceService.retrieve(requestModel).pipe(
               finalize(() => { this.isSpinning = false; })
             );
           } else {
@@ -66,7 +67,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
                 description: this.apiResource.description,
                 nonEditable: this.apiResource.nonEditable
               };
-              this.mainForm.get('name').setAsyncValidators(uniqueApiResourceNameValidatorFn(this.authorityService, this.apiResource.id));
+              this.mainForm.get('name').setAsyncValidators(uniqueApiResourceNameValidatorFn(this.apiResourceService, this.apiResource.id));
               this.mainForm.reset(initialMap);
             }
           } else {
@@ -80,7 +81,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       name: [this.apiResource.name,
       {
         validators: [Validators.required],
-        asyncValidators: [uniqueApiResourceNameValidatorFn(this.authorityService, this.apiResource.id)],
+        asyncValidators: [uniqueApiResourceNameValidatorFn(this.apiResourceService, this.apiResource.id)],
         updateOn: 'blur'
       }],
       displayName: [this.apiResource.displayName],
@@ -119,7 +120,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
     const requestModel = new ApiResourceRequestModel();
     requestModel.apiResource = this.apiResource;
     if (this.apiResource.state === EntityState.Added) {
-      this.authorityService.addApiResource(requestModel).pipe(
+      this.apiResourceService.add(requestModel).pipe(
         finalize(() => this.isSpinning = false)
       ).subscribe(
         result => {
@@ -134,7 +135,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
         }
       );
     } else {
-      this.authorityService.modifyApiResource(requestModel).pipe(
+      this.apiResourceService.modify(requestModel).pipe(
         finalize(() => this.isSpinning = false)
       ).subscribe(
         result => {

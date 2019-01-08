@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthorityService } from '../services/authority.service';
 import { ApiResourceRequestModel } from '../models/api-resource-request.model';
 
 @Component({
@@ -9,7 +8,7 @@ import { ApiResourceRequestModel } from '../models/api-resource-request.model';
 })
 export class ClientsComponent implements OnInit {
   apiResources: Array<ApiResourceRequestModel>;
-  constructor(private authorityService: AuthorityService) { }
+  constructor() { }
 
   ngOnInit() {
   }

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthorityService } from '../services/authority.service';
 import { ApiResourceRequestModel } from '../models/api-resource-request.model';
 import { finalize } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
@@ -15,8 +14,7 @@ export class IdentityResourceComponent implements OnInit {
   identityResources: Array<IdentityResource>;
 
   constructor(
-    private nzMessageService: NzMessageService,
-    private authorityService: AuthorityService
+    private nzMessageService: NzMessageService
   ) { }
 
   ngOnInit() {

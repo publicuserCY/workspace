@@ -9,6 +9,14 @@ export const Uris = {
     ModifyApiResource: AuthServer + '/api/Identity/ModifyApiResource',
     DeleteApiResource: AuthServer + '/api/Identity/DeleteApiResource',
     UniqueApiResourceName: AuthServer + '/api/Identity/UniqueApiResourceName',
+
+    AddApiScope: AuthServer + '/api/Identity/AddApiScope',
+    ModifyApiScope: AuthServer + '/api/Identity/ModifyApiScope',
+    DeleteApiScope: AuthServer + '/api/Identity/DeleteApiScope',
+    AddApiScopeClaim: AuthServer + '/api/Identity/AddApiScopeClaim',
+    ModifyApiScopeClaim: AuthServer + '/api/Identity/ModifyApiScopeClaim',
+    DeleteApiScopeClaim: AuthServer + '/api/Identity/DeleteApiScopeClaim',
+
     AddApiSecret: AuthServer + '/api/Identity/AddApiSecret',
     ModifyApiSecret: AuthServer + '/api/Identity/ModifyApiSecret',
     DeleteApiSecret: AuthServer + '/api/Identity/DeleteApiSecret',
