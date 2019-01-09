@@ -23,20 +23,21 @@ namespace Demo4DotNetCore.AuthorizationServer.RequestModel
         public ApiSecret ApiSecret { get; set; }
     }
 
-    //public abstract class UserClaimRequestModel : BaseRequestModel
-    //{
-    //    public UserClaim UserClaim { get; set; }
-    //}
+    public abstract class UserClaimRequestModel : BaseRequestModel
+    {
+        public UserClaim UserClaim { get; set; }
+    }
 
-    //public class ApiScopeClaimRequestModel : UserClaimRequestModel
-    //{
-    //    public ApiScopeClaim ApiScopeClaim { get; set; }
-    //}
+    public class ApiScopeClaimRequestModel : UserClaimRequestModel
+    {
+        public ApiScopeClaim ApiScopeClaim { get; set; }
+    }
 
-    //public class ApiScopeRequestModel : BaseRequestModel
-    //{
-    //    public ApiScope ApiScope { get; set; }
-    //}
+    public class ApiScopeRequestModel : BaseRequestModel
+    {
+        public int? Id { get; set; }
+        public ApiScope ApiScope { get; set; }
+    }
 
     //public class ApiResourceClaimRequestModel : UserClaimRequestModel
     //{

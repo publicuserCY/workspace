@@ -11,7 +11,7 @@ export class PaginatedRequestModel extends RequestModel {
     pageIndex = 1;
     pageSize = DefaultConfig.PageSize;
     orderBy = '';
-    direction = '';
+    direction = 'asc';
 
     constructor(pageIndex?: number, pageSize?: number, orderBy?: string, direction?: string) {
         super();

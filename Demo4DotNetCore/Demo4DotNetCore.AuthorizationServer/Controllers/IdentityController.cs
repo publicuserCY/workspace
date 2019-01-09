@@ -18,8 +18,12 @@ namespace Demo4DotNetCore.AuthorizationServer.Controllers
         private ILogger<IdentityController> Logger { get; }
         private IConfiguration Configuration { get; }
         private IIdentityService IdentityService { get; }
+        private ApiScopeService ApiScopeService { get; }
 
-        public IdentityController(IConfiguration configuration, ILogger<IdentityController> logger, IIdentityService identityService)
+        public IdentityController(
+            IConfiguration configuration, ILogger<IdentityController> logger,
+            IIdentityService identityService,
+            ApiScopeService apiScopeService)
         {
             Configuration = configuration;
             IdentityService = identityService;
@@ -152,6 +156,61 @@ namespace Demo4DotNetCore.AuthorizationServer.Controllers
             {
                 Logger.LogError(ex.Message);
                 result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiSecret>(ex.Message);
+            }
+            return new JsonResult(result);
+        }
+        #endregion
+
+        #region ApiScope
+        public async Task<ActionResult> AddApiScope(ApiScopeRequestModel model)
+        {
+            //var result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiScope>(true);
+            //try
+            //{
+            //    var entity = await IdentityService.AddApiScope(model);
+            //    result.Data = entity;
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.LogError(ex.Message);
+            //    result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiScope>(ex.Message);
+            //}
+            //return new JsonResult(result);
+            var result = await ApiScopeService.Add(model);
+            return new JsonResult(result);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ModifyApiScope(ApiScopeRequestModel model)
+        {
+            var result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiScope>(true);
+            try
+            {
+                var entity = await IdentityService.ModifyApiScope(model);
+                result.Data = entity;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiScope>(ex.Message);
+            }
+            return new JsonResult(result);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> DeleteApiScope(ApiScopeRequestModel model)
+        {
+
+            var result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiScope>(true);
+            try
+            {
+                var entity = await IdentityService.DeleteApiScope(model);
+                result.Data = entity;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                result = new OperationResult<IdentityServer4.EntityFramework.Entities.ApiScope>(ex.Message);
             }
             return new JsonResult(result);
         }

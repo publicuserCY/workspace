@@ -1,0 +1,138 @@
+<form [formGroup]="mainForm" class="main-form" [style.display]="edit?'none':'block'">
+  <nz-spin nzSize="small" [nzSpinning]="isSpinning"></nz-spin>
+  <div nz-row>
+    <div nz-col nzSpan="8">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6" nzFor="id" >Id</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <nz-form-text>{{mainForm.get('id').value}}</nz-form-text>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="8">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6" nzFor="name" nzRequired>Name</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <nz-form-text> {{mainForm.get('name').value}}</nz-form-text>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="8">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6" nzFor="displayName">DisplayName</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <nz-form-text> {{mainForm.get('displayName').value}}</nz-form-text>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6" nzFor="description">Description</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <nz-form-text> {{mainForm.get('description').value}}</nz-form-text>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-control nzSpan="18" nzPush="6">
+          <label nz-checkbox formControlName="required" nzDisabled >Required</label>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex> 
+        <nz-form-control nzSpan="18" nzPush="6">
+          <label nz-checkbox formControlName="emphasize" nzDisabled >Emphasize</label>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex> 
+        <nz-form-control nzSpan="18" nzPush="6">
+          <label nz-checkbox formControlName="showInDiscoveryDocument" nzDisabled >ShowInDiscoveryDocument</label>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div class="operation">
+    <a (click)="edit=true">
+      <i nz-icon type="edit" theme="twotone"></i>
+    </a>
+    <nz-popconfirm [nzTitle]="'确定删除?'" (nzOnConfirm)="delete()">
+      <a nz-popconfirm>
+        <i nz-icon type="delete" theme="twotone" twoToneColor="#eb2f96"></i>
+      </a>
+    </nz-popconfirm>
+  </div>
+</form>
+
+<form [formGroup]="mainForm" (ngSubmit)="submit()" class="main-form" [style.display]="edit?'block':'none'">
+  <div nz-row>
+    <div nz-col nzSpan="8">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6">Id</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <nz-form-text>{{mainForm.get('id').value}}</nz-form-text>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="8">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6" nzFor="name" nzRequired>Name</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <input nz-input id="name" placeholder="Name" formControlName="name">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="8">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6" nzFor="displayName" nzRequired>DisplayName</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <input nz-input id="displayName" placeholder="DisplayName" formControlName="displayName">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6" nzFor="description">Description</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <input nz-input id="description" placeholder="Description" formControlName="description">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-control nzSpan="18" nzPush="6">
+          <label nz-checkbox formControlName="required">Required</label>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-control nzSpan="18" nzPush="6">
+          <label nz-checkbox formControlName="emphasize">Emphasize</label>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-control nzSpan="18" nzPush="6">
+          <label nz-checkbox formControlName="showInDiscoveryDocument">ShowInDiscoveryDocument</label>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div class="operation">
+    <a (click)="submit()">
+      <i nz-icon type="check-circle" theme="twotone"></i>
+    </a>
+    <a (click)="cancel()">
+      <i nz-icon type="close-circle" theme="twotone"></i>
+    </a>
+  </div>
+</form>

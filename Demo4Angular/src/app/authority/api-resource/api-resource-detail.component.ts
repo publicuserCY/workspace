@@ -6,7 +6,7 @@ import { finalize, delay, map, switchMap } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 
 import { ApiResourceRequestModel, ApiSecretRequestModel } from '../models/api-resource-request.model';
-import { ApiResource, ApiSecret } from '../models/api-resource.model';
+import { ApiResource, ApiSecret, ApiScope } from '../models/api-resource.model';
 import { ApiResourceService } from '../services/api-resource.service';
 import { AuthorityInteractionService } from '../services/authority-Interaction.service';
 import { uniqueApiResourceNameValidatorFn } from '../validator/api-resource-name.validator';
@@ -106,6 +106,11 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
   addApiScret() {
     const secret = new ApiSecret();
     this.apiResource.addApiSecret(secret);
+  }
+
+  addApiScope() {
+    const apiScope = new ApiScope();
+    this.apiResource.addApiScope(apiScope);
   }
 
   submit() {

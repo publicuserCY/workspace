@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { ApiSecret } from '../models/api-resource.model';
+import { ApiSecret, ApiScope } from '../models/api-resource.model';
 
 @Injectable()
 export class AuthorityInteractionService {
@@ -14,9 +14,17 @@ export class AuthorityInteractionService {
     apiSecretModified$ = this.apiSecretModifiedSource.asObservable();
     apiSecretDeleted$ = this.apiSecretDeletedSource.asObservable();
 
-    apiSecretShifted(items: Array<ApiSecret>) {
+    private apiScopeAddedSource = new Subject<ApiScope>();
+    private apiScopeModifiedSource = new Subject<ApiScope>();
+    private apiScopeDeletedSource = new Subject<ApiScope>();
+    apiScopeAdded$ = this.apiScopeAddedSource.asObservable();
+    apiScopeModified$ = this.apiScopeModifiedSource.asObservable();
+    apiScopeDeleted$ = this.apiScopeDeletedSource.asObservable();
+
+
+    /* apiSecretShifted(items: Array<ApiSecret>) {
         this.apiSecretsSource.next(items);
-    }
+    } */
 
     apiSecretAdded(item: ApiSecret) {
         this.apiSecretAddedSource.next(item);
@@ -28,5 +36,17 @@ export class AuthorityInteractionService {
 
     apiSecretDeleted(item: ApiSecret) {
         this.apiSecretDeletedSource.next(item);
+    }
+
+    apiScopeAdded(item: ApiScope) {
+        this.apiScopeAddedSource.next(item);
+    }
+
+    apiScopeModified(item: ApiScope) {
+        this.apiScopeModifiedSource.next(item);
+    }
+
+    apiScopeDeleted(item: ApiScope) {
+        this.apiScopeDeletedSource.next(item);
     }
 }

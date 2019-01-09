@@ -6,10 +6,10 @@ import { ApiResourceRequestModel } from '../models/api-resource-request.model';
 import { ApiResource } from '../models/api-resource.model';
 import { Uris } from 'src/app/shared/const';
 import { OperationResult, PaginatedResult } from 'src/app/shared/result';
-import { BaseService } from 'src/app/shared/base.service';
+import { PaginatedService } from 'src/app/shared/paginated.service';
 
 @Injectable()
-export class ApiResourceService extends BaseService<ApiResource> {
+export class ApiResourceService extends PaginatedService<ApiResourceRequestModel, ApiResource> {
     constructor(protected http: HttpClient) { super(http); }
 
     retrieve(requestModel: ApiResourceRequestModel): Observable<OperationResult<PaginatedResult<ApiResource>>> {
@@ -29,19 +29,7 @@ export class ApiResourceService extends BaseService<ApiResource> {
         if (requestModel.displayName && requestModel.displayName.trim().length > 0) {
             this.params = this.params.set('displayName', requestModel.displayName.trim());
         }
-        return super.retrieve(requestModel, Uris.RetrieveApiResource);
-    }
-
-    add(requestModel: ApiResourceRequestModel): Observable<OperationResult<ApiResource>> {
-        return super.add(requestModel, Uris.AddApiResource);
-    }
-
-    modify(requestModel: ApiResourceRequestModel): Observable<OperationResult<ApiResource>> {
-        return super.modify(requestModel, Uris.ModifyApiResource);
-    }
-
-    delete(requestModel: ApiResourceRequestModel): Observable<OperationResult<ApiResource>> {
-        return super.delete(requestModel, Uris.DeleteApiResource);
+        return super.retrieve(requestModel);
     }
 
     uniqueApiResourceName(id: number, name: string): Observable<boolean> {

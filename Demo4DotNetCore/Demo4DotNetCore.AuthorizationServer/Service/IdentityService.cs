@@ -149,12 +149,12 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
         {
             var apiSecret = new IdentityServer4.EntityFramework.Entities.ApiSecret()
             {
-                ApiResourceId = model.ApiSecret.ApiResourceId,
                 Description = model.ApiSecret.Description,
                 Value = model.ApiSecret.Value,
                 Expiration = model.ApiSecret.Expiration ?? null,
                 Type = model.ApiSecret.Type,
-                Created = DateTime.Now
+                Created = DateTime.Now,
+                ApiResourceId = model.ApiSecret.ApiResourceId
             };
             var entry = ConfigurationDbContext.Entry(apiSecret);
             entry.State = EntityState.Added;
@@ -188,6 +188,56 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
             entry.State = EntityState.Deleted;
             ConfigurationDbContext.SaveChanges();
             return Task.FromResult(apiSecret);
+        }
+        #endregion
+
+        #region ApiScope
+        public Task<IdentityServer4.EntityFramework.Entities.ApiScope> AddApiScope(ApiScopeRequestModel model)
+        {
+            var apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope()
+            {
+                Name = model.ApiScope.Name,
+                DisplayName = model.ApiScope.DisplayName,
+                Description = model.ApiScope.Description,
+                Required = model.ApiScope.Required,
+                Emphasize = model.ApiScope.Emphasize,
+                ShowInDiscoveryDocument = model.ApiScope.ShowInDiscoveryDocument,
+                ApiResourceId = model.ApiScope.ApiResourceId
+            };
+            var entry = ConfigurationDbContext.Entry(apiScope);
+            entry.State = EntityState.Added;
+            ConfigurationDbContext.SaveChanges();
+            entry.Reload();
+            return Task.FromResult(entry.Entity);
+        }
+
+        public Task<IdentityServer4.EntityFramework.Entities.ApiScope> ModifyApiScope(ApiScopeRequestModel model)
+        {
+            var apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope()
+            {
+                Id = model.ApiScope.Id,
+                Name = model.ApiScope.Name,
+                DisplayName = model.ApiScope.DisplayName,
+                Description = model.ApiScope.Description,
+                Required = model.ApiScope.Required,
+                Emphasize = model.ApiScope.Emphasize,
+                ShowInDiscoveryDocument = model.ApiScope.ShowInDiscoveryDocument,
+                ApiResourceId = model.ApiScope.ApiResourceId
+            };
+            var entry = ConfigurationDbContext.Entry(apiScope);
+            entry.State = EntityState.Modified;
+            ConfigurationDbContext.SaveChanges();
+            entry.Reload();
+            return Task.FromResult(entry.Entity);
+        }
+
+        public Task<IdentityServer4.EntityFramework.Entities.ApiScope> DeleteApiScope(ApiScopeRequestModel model)
+        {
+            var apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope() { Id = model.ApiScope.Id };
+            var entry = ConfigurationDbContext.Entry(apiScope);
+            entry.State = EntityState.Deleted;
+            ConfigurationDbContext.SaveChanges();
+            return Task.FromResult(apiScope);
         }
         #endregion
 

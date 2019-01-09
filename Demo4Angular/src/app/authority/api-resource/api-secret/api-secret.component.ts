@@ -1,14 +1,14 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 
 import { ApiSecret } from '../../models/api-resource.model';
-import { AuthorityInteractionService } from '../../services/authority-Interaction.service';
 import { ApiSecretRequestModel } from '../../models/api-resource-request.model';
+import { BaseService } from 'src/app/shared/base.service';
+import { AuthorityInteractionService } from '../../services/authority-Interaction.service';
 import { EntityState } from 'src/app/shared/const';
-import { ApiSecretService } from '../../services/api-secret.service';
+
 
 @Component({
     selector: 'app-api-secret',
@@ -22,11 +22,9 @@ export class ApiSecretComponent implements OnInit {
     mainForm: FormGroup;
 
     constructor(
-        private route: ActivatedRoute,
-        private router: Router,
         private fb: FormBuilder,
         private nzMessageService: NzMessageService,
-        private apiSecretService: ApiSecretService,
+        private apiSecretService: BaseService<ApiSecretRequestModel, ApiSecret>,
         private authorityInteractionService: AuthorityInteractionService
     ) { }
 
@@ -96,7 +94,7 @@ export class ApiSecretComponent implements OnInit {
         ).subscribe(
             result => {
                 if (result.isSuccess) {
-
+                    this.authorityInteractionService.apiSecretDeleted(this.apiSecret);
                     this.nzMessageService.info('ApiSecret 删除完成');
                 } else {
                     this.nzMessageService.error(result.message);

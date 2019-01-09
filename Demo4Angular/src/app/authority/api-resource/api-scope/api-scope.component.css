@@ -1,0 +1,29 @@
+.main-form {
+  position: relative;
+  margin-bottom: 8px;
+  padding: 24px 24px 0 24px;
+  background: #fbfbfb;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  transition: all .3s;
+}
+
+.main-form:hover {
+  border: 1px solid #1890ff;
+}
+
+.main-form:hover .operation {
+  display: block;
+}
+
+.operation {
+  position: absolute;
+  top: 1px;
+  right: 4px;
+  display: none;
+}
+
+.operation a {
+  margin-right: 8px;
+  font-size: 16px;
+}

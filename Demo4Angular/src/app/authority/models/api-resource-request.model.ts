@@ -22,7 +22,7 @@ export class ApiScopeRequestModel extends RequestModel {
     }
 }
 
-export class ApiSecretRequestModel extends RequestModel {
+export class ApiSecretRequestModel extends PaginatedRequestModel {
     apiSecret: ApiSecret;
 
     constructor() {

@@ -6,7 +6,7 @@
   border-radius: 6px;
 }
 
-.empty-api-secret {
+.empty-subitem {
   display: flex;
   justify-content: center;
   height: 154px;
@@ -16,11 +16,11 @@
   transition: all .3s;
 }
 
-.empty-api-secret:hover {  
+.empty-subitem:hover {
   border: 1px solid #1890ff;
 }
 
-.empty-api-secret button {
+.empty-subitem button {
   width: 40%;
   height: 50px;
   margin: auto;

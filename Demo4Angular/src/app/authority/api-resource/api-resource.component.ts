@@ -20,8 +20,8 @@ export class ApiResourceComponent implements OnInit {
   isSpinning = false;
   searchForm: FormGroup;
   paginatedresult = new PaginatedResult<ApiResource>();
-  orderBy = null;
-  direction = null;
+  orderBy = 'created';
+  direction = 'asc';
   enabledCandidate = [
     { text: '启用', value: true },
     { text: '禁用', value: false }
@@ -46,7 +46,7 @@ export class ApiResourceComponent implements OnInit {
     this.search();
   }
 
-  search() {
+  private search() {
     this.isSpinning = true;
     const model = new ApiResourceRequestModel(this.paginatedresult.pageIndex, this.paginatedresult.pageSize, this.orderBy, this.direction);
     model.name = this.searchForm.get('name').value;
@@ -66,6 +66,13 @@ export class ApiResourceComponent implements OnInit {
     );
   }
 
+  retrieve() {
+    this.paginatedresult.pageIndex = 1;
+    this.orderBy = 'created';
+    this.direction = 'asc';
+    this.search();
+  }
+
   reset() {
     this.resetCondition();
     this.search();
@@ -74,8 +81,8 @@ export class ApiResourceComponent implements OnInit {
   resetCondition() {
     this.searchForm.reset();
     this.paginatedresult.pageIndex = 1;
-    this.orderBy = '';
-    this.direction = '';
+    this.orderBy = 'created';
+    this.direction = 'asc';
   }
 
   delete(id: number) {
@@ -86,7 +93,7 @@ export class ApiResourceComponent implements OnInit {
       nzOkType: 'danger',
       nzOnOk: () => new Promise((resolve, reject) => {
         const model = new ApiResourceRequestModel();
-        model.id = id;
+        model.apiResource = this.paginatedresult.list.find(p => p.id === id);
         this.apiResourceService.delete(model).subscribe(
           result => { result.isSuccess ? resolve(result) : reject(result); });
       })

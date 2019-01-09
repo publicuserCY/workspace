@@ -18,6 +18,10 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
         Task<IdentityServer4.EntityFramework.Entities.ApiSecret> ModifyApiSecret(ApiSecretRequestModel model);
         Task<IdentityServer4.EntityFramework.Entities.ApiSecret> DeleteApiSecret(ApiSecretRequestModel model);
 
+        Task<IdentityServer4.EntityFramework.Entities.ApiScope> AddApiScope(ApiScopeRequestModel model);
+        Task<IdentityServer4.EntityFramework.Entities.ApiScope> ModifyApiScope(ApiScopeRequestModel model);
+        Task<IdentityServer4.EntityFramework.Entities.ApiScope> DeleteApiScope(ApiScopeRequestModel model);
+
         ApplicationUser AutoProvisionUser(string provider, string userId, List<Claim> claims);
         ApplicationUser FindByExternalProvider(string provider, string userId);
         ApplicationUser FindBySubjectId(string subjectId);

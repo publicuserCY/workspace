@@ -33,6 +33,14 @@ export class ApiResource extends BaseModel {
         return 1;
     }
 
+    private getNewApiScopeId(): number {
+        const sorted = this.scopes.sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
+        if (sorted.length > 0) {
+            return sorted[0].id + 1;
+        }
+        return 1;
+    }
+
     addApiSecret(item: ApiSecret) {
         item.id = this.getNewApiSecretId();
         item.apiResourceId = this.id;
@@ -47,6 +55,13 @@ export class ApiResource extends BaseModel {
         const index = this.secrets.findIndex(p => p.id === item.id);
         item.state = EntityState.Modified;
         Object.assign(this.secrets[index], item);
+    }
+
+    addApiScope(item: ApiScope) {
+        item.id = this.getNewApiScopeId();
+        item.apiResourceId = this.id;
+        item.state = EntityState.Added;
+        this.scopes = [...this.scopes, item];
     }
 }
 

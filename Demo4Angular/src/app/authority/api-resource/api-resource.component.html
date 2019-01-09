@@ -18,7 +18,7 @@
   </nz-form-item>
   <nz-form-item>
     <nz-form-control>
-      <button nz-button nzType="primary" (click)="search()">
+      <button nz-button nzType="primary" (click)="retrieve()">
         <i nz-icon type="search" theme="outline"></i>查询
       </button>
     </nz-form-control>
@@ -44,7 +44,7 @@
       <th nzWidth="80px">序号</th>
       <th>Id</th>
       <th nzShowFilter [nzFilterMultiple]="false" [nzFilters]="enabledCandidate" (nzFilterChange)="enabledFilter($event)">Enabled</th>
-      <th>Name</th>
+      <th nzShowSort nzSortKey="name">Name</th>
       <th nzWidth="150px" nzCustomFilter>
         DisplayName
         <nz-dropdown nzTrigger="click" [nzClickHide]="false" #dropdown>

@@ -29,6 +29,7 @@ namespace Demo4DotNetCore.AuthorizationServer
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             services.AddDbContext<AspNetIdentityContext>(options => options.UseSqlite(connectionString));
             services.AddScoped<Service.IIdentityService, Service.IdentityService>();
+            services.AddScoped<Service.ApiScopeService>();
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AspNetIdentityContext>()
                 .AddDefaultTokenProviders();
