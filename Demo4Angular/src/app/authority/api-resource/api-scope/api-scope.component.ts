@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 
@@ -17,7 +17,7 @@ import { EntityState } from 'src/app/shared/const';
 export class ApiScopeComponent implements OnInit {
     @Input() apiScope: ApiScope;
     isSpinning = false;
-    edit = false;
+    isEdit = false;
     mainForm: FormGroup;
 
     constructor(
@@ -38,7 +38,9 @@ export class ApiScopeComponent implements OnInit {
             showInDiscoveryDocument: [this.apiScope.showInDiscoveryDocument, Validators.required]
         });
         if (this.apiScope.state === EntityState.Added) {
-            this.edit = true;
+            this.isEdit = true;
+        } else {
+            this.apiScope.state = EntityState.Modified;
         }
     }
 
@@ -52,15 +54,36 @@ export class ApiScopeComponent implements OnInit {
         this.apiScope.showInDiscoveryDocument = this.mainForm.get('showInDiscoveryDocument').value;
         const requestModel = new ApiScopeRequestModel();
         requestModel.apiScope = this.apiScope;
-        if (this.apiScope.state === EntityState.Added) {
+        this.apiScopeService.submit(requestModel).pipe(
+            finalize(() => this.isSpinning = false)
+        ).subscribe(
+            result => {
+                if (result.isSuccess) {
+                    if (this.apiScope.state === EntityState.Added) {
+                        this.nzMessageService.info('ApiScope 新增完成');
+                    } else if (this.apiScope.state === EntityState.Modified) {
+                        this.nzMessageService.info('ApiScope 更新完成');
+                    }
+                    Object.assign(this.apiScope, result.data);
+                    this.reset();
+                    this.apiScope.state = EntityState.Modified;
+                    this.authorityInteractionService.apiScopeChanged(this.apiScope);
+                    this.isEdit = false;
+                } else {
+                    this.nzMessageService.error(result.message);
+                }
+            }
+        );
+        /* if (this.apiScope.state === EntityState.Added) {
             this.apiScopeService.add(requestModel).pipe(
                 finalize(() => this.isSpinning = false)
             ).subscribe(
                 result => {
                     if (result.isSuccess) {
                         Object.assign(this.apiScope, result.data);
+                        this.reset();
                         this.apiScope.state = EntityState.Modified;
-                        this.authorityInteractionService.apiScopeModified(this.apiScope);
+                        this.authorityInteractionService.apiScopeChanged(this.apiScope);
                         this.edit = false;
                         this.nzMessageService.info('ApiScope 新增完成');
                     } else {
@@ -75,8 +98,9 @@ export class ApiScopeComponent implements OnInit {
                 result => {
                     if (result.isSuccess) {
                         Object.assign(this.apiScope, result.data);
+                        this.reset();
                         this.apiScope.state = EntityState.Modified;
-                        this.authorityInteractionService.apiScopeModified(this.apiScope);
+                        this.authorityInteractionService.apiScopeChanged(this.apiScope);
                         this.edit = false;
                         this.nzMessageService.info('ApiScope 更新完成');
                     } else {
@@ -84,18 +108,24 @@ export class ApiScopeComponent implements OnInit {
                     }
                 }
             );
-        }
+        } */
+    }
+
+    edit() {
+        this.apiScope.state = EntityState.Modified;
+        this.isEdit = true;
     }
 
     delete() {
+        this.apiScope.state = EntityState.Deleted;
         const requestModel = new ApiScopeRequestModel();
         requestModel.apiScope = this.apiScope;
-        this.apiScopeService.delete(requestModel).pipe(
+        this.apiScopeService.submit(requestModel).pipe(
             finalize(() => this.isSpinning = false)
         ).subscribe(
             result => {
                 if (result.isSuccess) {
-
+                    this.authorityInteractionService.apiScopeChanged(this.apiScope);
                     this.nzMessageService.info('ApiScope 删除完成');
                 } else {
                     this.nzMessageService.error(result.message);
@@ -106,23 +136,24 @@ export class ApiScopeComponent implements OnInit {
 
     cancel() {
         if (this.apiScope.state === EntityState.Added) {
-            this.authorityInteractionService.apiScopeDeleted(this.apiScope);
+            this.apiScope.state = EntityState.Deleted;
+            this.authorityInteractionService.apiScopeChanged(this.apiScope);
         } else {
-            const initialMap = {
-                id: this.apiScope.id,
-                name: this.apiScope.name,
-                displayName: this.apiScope.displayName,
-                description: this.apiScope.description,
-                required: this.apiScope.required,
-                emphasize: this.apiScope.emphasize,
-                showInDiscoveryDocument: this.apiScope.showInDiscoveryDocument
-            };
-            this.mainForm.reset(initialMap);
-            for (const key of Object.keys(this.mainForm.controls)) {
-                this.mainForm.controls[key].markAsPristine();
-                this.mainForm.controls[key].updateValueAndValidity();
-            }
-            this.edit = false;
+            this.reset();
+            this.isEdit = false;
         }
+    }
+
+    reset() {
+        const initialMap = {
+            id: this.apiScope.id,
+            name: this.apiScope.name,
+            displayName: this.apiScope.displayName,
+            description: this.apiScope.description,
+            required: this.apiScope.required,
+            emphasize: this.apiScope.emphasize,
+            showInDiscoveryDocument: this.apiScope.showInDiscoveryDocument
+        };
+        this.mainForm.reset(initialMap);
     }
 }

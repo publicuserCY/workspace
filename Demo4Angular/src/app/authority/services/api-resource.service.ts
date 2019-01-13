@@ -14,9 +14,6 @@ export class ApiResourceService extends PaginatedService<ApiResourceRequestModel
 
     retrieve(requestModel: ApiResourceRequestModel): Observable<OperationResult<PaginatedResult<ApiResource>>> {
         this.params = new HttpParams();
-        if (requestModel.id) {
-            this.params = this.params.set('id', `${requestModel.id}`);
-        }
         if (requestModel.enabled !== null && requestModel.enabled !== undefined) {
             this.params = this.params.set('enabled', `${requestModel.enabled}`);
         }

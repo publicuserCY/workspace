@@ -21,11 +21,10 @@ export class ApiResource extends BaseModel {
         this.id = 0;
         this.enabled = true;
         this.name = '';
-        this.created = new Date();
         this.nonEditable = false;
     }
 
-    private getNewApiSecretId(): number {
+    /* private getNewApiSecretId(): number {
         const sorted = this.secrets.sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
         if (sorted.length > 0) {
             return sorted[0].id + 1;
@@ -39,30 +38,40 @@ export class ApiResource extends BaseModel {
             return sorted[0].id + 1;
         }
         return 1;
-    }
+    } */
 
+    /*** ApiSecret ***/
     addApiSecret(item: ApiSecret) {
-        item.id = this.getNewApiSecretId();
+        item.id = 0;
         item.apiResourceId = this.id;
         item.state = EntityState.Added;
         this.secrets = [...this.secrets, item];
     }
-    removeApiSecret(item: ApiSecret) {
-        const index = this.secrets.findIndex(p => p.id === item.id);
-        this.secrets[index].state = EntityState.Deleted;
-    }
-    updateApiSecret(item: ApiSecret) {
+    modifyApiSecret(item: ApiSecret) {
         const index = this.secrets.findIndex(p => p.id === item.id);
         item.state = EntityState.Modified;
         Object.assign(this.secrets[index], item);
     }
+    deleteApiSecret(item: ApiSecret) {
+        this.secrets = this.secrets.filter(p => p.id !== item.id);
+    }
 
+    /*** ApiScope ***/
     addApiScope(item: ApiScope) {
-        item.id = this.getNewApiScopeId();
+        item.id = 0;
         item.apiResourceId = this.id;
         item.state = EntityState.Added;
         this.scopes = [...this.scopes, item];
     }
+    modifyApiScope(item: ApiScope) {
+        const index = this.scopes.findIndex(p => p.id === item.id);
+        item.state = EntityState.Modified;
+        Object.assign(this.scopes[index], item);
+    }
+    deleteApiScope(item: ApiScope) {
+        this.scopes = this.scopes.filter(p => p.id !== item.id);
+    }
+
 }
 
 abstract class Secret extends BaseModel {
@@ -78,7 +87,6 @@ abstract class Secret extends BaseModel {
         this.id = 0;
         this.value = '';
         this.type = '';
-        this.created = new Date();
     }
 }
 

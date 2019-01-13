@@ -4,7 +4,6 @@ namespace Demo4DotNetCore.AuthorizationServer.RequestModel
 {
     public class ApiResourceRequestModel : PaginatedRequestModel
     {
-        public int? Id { get; set; }
         public bool? Enabled { get; set; }
         public string Name { get; set; }
         public string DisplayName { get; set; }
@@ -35,7 +34,6 @@ namespace Demo4DotNetCore.AuthorizationServer.RequestModel
 
     public class ApiScopeRequestModel : BaseRequestModel
     {
-        public int? Id { get; set; }
         public ApiScope ApiScope { get; set; }
     }
 

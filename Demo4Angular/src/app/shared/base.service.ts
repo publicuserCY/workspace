@@ -3,11 +3,11 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { RequestModel, PaginatedRequestModel } from 'src/app/shared/request.model';
-import { OperationResult, PaginatedResult } from 'src/app/shared/result';
+import { RequestModel } from 'src/app/shared/request.model';
+import { OperationResult } from 'src/app/shared/result';
 import { BaseModel } from './base.model';
 import { ApiResourceRequestModel, ApiSecretRequestModel, ApiScopeRequestModel } from '../authority/models/api-resource-request.model';
-import { Uris } from './const';
+import { Uris, EntityState } from './const';
 
 @Injectable()
 export class BaseService<M extends RequestModel, T extends BaseModel> {
@@ -18,51 +18,61 @@ export class BaseService<M extends RequestModel, T extends BaseModel> {
     }
 
     single(requestModel: M): Observable<OperationResult<T>> {
-        if (requestModel.criteria && requestModel.criteria.trim().length > 0) {
-            this.params = this.params.set('criteria', requestModel.criteria.trim());
+        if (requestModel instanceof ApiResourceRequestModel) {
+            this.url = Uris.SingleApiResource;
         }
+        this.params = this.params.set('criteria', requestModel.criteria.trim());
         const options = { params: this.params };
         return this.http
             .get<OperationResult<T>>(this.url, options)
-            .pipe(catchError(this.handleError('single')));
+            .pipe(catchError(this.handleError(this.url)));
     }
 
-    add(requestModel: M): Observable<OperationResult<T>> {
+    submit(requestModel: M): Observable<OperationResult<T>> {
+        let state: EntityState;
         if (requestModel instanceof ApiResourceRequestModel) {
-            this.url = Uris.AddApiResource;
+            state = requestModel.apiResource.state;
+            switch (state) {
+                case EntityState.Added:
+                    this.url = Uris.AddApiResource;
+                    break;
+                case EntityState.Modified:
+                    this.url = Uris.ModifyApiResource;
+                    break;
+                case EntityState.Deleted:
+                    this.url = Uris.DeleteApiResource;
+                    break;
+            }
         } else if (requestModel instanceof ApiSecretRequestModel) {
-            this.url = Uris.AddApiSecret;
+            state = requestModel.apiSecret.state;
+            switch (state) {
+                case EntityState.Added:
+                    this.url = Uris.AddApiSecret;
+                    break;
+                case EntityState.Modified:
+                    this.url = Uris.ModifyApiSecret;
+                    break;
+                case EntityState.Deleted:
+                    this.url = Uris.DeleteApiSecret;
+                    break;
+            }
         } else if (requestModel instanceof ApiScopeRequestModel) {
-            this.url = Uris.AddApiScope;
+            state = requestModel.apiScope.state;
+            switch (state) {
+                case EntityState.Added:
+                    this.url = Uris.AddApiScope;
+                    break;
+                case EntityState.Modified:
+                    this.url = Uris.ModifyApiScope;
+                    break;
+                case EntityState.Deleted:
+                    this.url = Uris.DeleteApiScope;
+                    break;
+            }
         }
         return this.http
             .post<OperationResult<T>>(this.url, requestModel)
-            .pipe(catchError(this.handleError('add')));
-    }
-    modify(requestModel: M): Observable<OperationResult<T>> {
-        if (requestModel instanceof ApiResourceRequestModel) {
-            this.url = Uris.ModifyApiResource;
-        } else if (requestModel instanceof ApiSecretRequestModel) {
-            this.url = Uris.ModifyApiSecret;
-        } else if (requestModel instanceof ApiScopeRequestModel) {
-            this.url = Uris.ModifyApiScope;
-        }
-        return this.http
-            .post<OperationResult<T>>(this.url, requestModel)
-            .pipe(catchError(this.handleError('modify')));
-    }
-
-    delete(requestModel: M): Observable<OperationResult<T>> {
-        if (requestModel instanceof ApiResourceRequestModel) {
-            this.url = Uris.DeleteApiResource;
-        } else if (requestModel instanceof ApiSecretRequestModel) {
-            this.url = Uris.DeleteApiSecret;
-        } else if (requestModel instanceof ApiScopeRequestModel) {
-            this.url = Uris.DeleteApiScope;
-        }
-        return this.http
-            .post<OperationResult<T>>(this.url, requestModel)
-            .pipe(catchError(this.handleError('delete')));
+            .pipe(catchError(this.handleError(this.url)));
     }
 
     /**

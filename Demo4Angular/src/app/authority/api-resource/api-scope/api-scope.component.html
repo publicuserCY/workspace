@@ -1,9 +1,9 @@
-<form [formGroup]="mainForm" class="main-form" [style.display]="edit?'none':'block'">
+<form [formGroup]="mainForm" class="main-form" [style.display]="isEdit?'none':'block'">
   <nz-spin nzSize="small" [nzSpinning]="isSpinning"></nz-spin>
   <div nz-row>
     <div nz-col nzSpan="8">
       <nz-form-item nzFlex>
-        <nz-form-label nzSpan="6" nzFor="id" >Id</nz-form-label>
+        <nz-form-label nzSpan="6" nzFor="id">Id</nz-form-label>
         <nz-form-control nzSpan="18">
           <nz-form-text>{{mainForm.get('id').value}}</nz-form-text>
         </nz-form-control>
@@ -38,27 +38,27 @@
     <div nz-col nzSpan="6">
       <nz-form-item nzFlex>
         <nz-form-control nzSpan="18" nzPush="6">
-          <label nz-checkbox formControlName="required" nzDisabled >Required</label>
+          <label nz-checkbox id="required" formControlName="required" nzDisabled>Required</label>
         </nz-form-control>
       </nz-form-item>
     </div>
     <div nz-col nzSpan="6">
-      <nz-form-item nzFlex> 
+      <nz-form-item nzFlex>
         <nz-form-control nzSpan="18" nzPush="6">
-          <label nz-checkbox formControlName="emphasize" nzDisabled >Emphasize</label>
+          <label nz-checkbox id="Emphasize" formControlName="emphasize" nzDisabled>Emphasize</label>
         </nz-form-control>
       </nz-form-item>
     </div>
     <div nz-col nzSpan="6">
-      <nz-form-item nzFlex> 
+      <nz-form-item nzFlex>
         <nz-form-control nzSpan="18" nzPush="6">
-          <label nz-checkbox formControlName="showInDiscoveryDocument" nzDisabled >ShowInDiscoveryDocument</label>
+          <label nz-checkbox id="showInDiscoveryDocument" formControlName="showInDiscoveryDocument" nzDisabled>ShowInDiscoveryDocument</label>
         </nz-form-control>
       </nz-form-item>
     </div>
   </div>
   <div class="operation">
-    <a (click)="edit=true">
+    <a (click)="edit()">
       <i nz-icon type="edit" theme="twotone"></i>
     </a>
     <nz-popconfirm [nzTitle]="'确定删除?'" (nzOnConfirm)="delete()">
@@ -69,11 +69,11 @@
   </div>
 </form>
 
-<form [formGroup]="mainForm" (ngSubmit)="submit()" class="main-form" [style.display]="edit?'block':'none'">
+<form [formGroup]="mainForm" (ngSubmit)="submit()" class="main-form" [style.display]="isEdit?'block':'none'">
   <div nz-row>
     <div nz-col nzSpan="8">
       <nz-form-item nzFlex>
-        <nz-form-label nzSpan="6">Id</nz-form-label>
+        <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
         <nz-form-control nzSpan="18">
           <nz-form-text>{{mainForm.get('id').value}}</nz-form-text>
         </nz-form-control>
@@ -84,14 +84,19 @@
         <nz-form-label nzSpan="6" nzFor="name" nzRequired>Name</nz-form-label>
         <nz-form-control nzSpan="18">
           <input nz-input id="name" placeholder="Name" formControlName="name">
+          <nz-form-explain *ngIf="mainForm.get('name').dirty && mainForm.get('name').errors">
+            <ng-container *ngIf="mainForm.get('name').hasError('required')">
+              请输入Name
+            </ng-container>
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
     </div>
     <div nz-col nzSpan="8">
       <nz-form-item nzFlex>
-        <nz-form-label nzSpan="6" nzFor="displayName" nzRequired>DisplayName</nz-form-label>
+        <nz-form-label nzSpan="6" nzFor="displayName">DisplayName</nz-form-label>
         <nz-form-control nzSpan="18">
-          <input nz-input id="displayName" placeholder="DisplayName" formControlName="displayName">
+          <input nz-input id="displayName" placeholder="DisplayName" formControlName="displayName">         
         </nz-form-control>
       </nz-form-item>
     </div>
@@ -108,27 +113,27 @@
     <div nz-col nzSpan="6">
       <nz-form-item nzFlex>
         <nz-form-control nzSpan="18" nzPush="6">
-          <label nz-checkbox formControlName="required">Required</label>
+          <label nz-checkbox id="required" formControlName="required" nzRequired>Required</label>
         </nz-form-control>
       </nz-form-item>
     </div>
     <div nz-col nzSpan="6">
       <nz-form-item nzFlex>
         <nz-form-control nzSpan="18" nzPush="6">
-          <label nz-checkbox formControlName="emphasize">Emphasize</label>
+          <label nz-checkbox id="emphasize" formControlName="emphasize" nzRequired>Emphasize</label>
         </nz-form-control>
       </nz-form-item>
     </div>
     <div nz-col nzSpan="6">
       <nz-form-item nzFlex>
         <nz-form-control nzSpan="18" nzPush="6">
-          <label nz-checkbox formControlName="showInDiscoveryDocument">ShowInDiscoveryDocument</label>
+          <label nz-checkbox id="showInDiscoveryDocument" formControlName="showInDiscoveryDocument" nzRequired>ShowInDiscoveryDocument</label>
         </nz-form-control>
       </nz-form-item>
     </div>
   </div>
   <div class="operation">
-    <a (click)="submit()">
+    <a (click)="submit()" [ngClass]="{'disabled': !mainForm.valid}">
       <i nz-icon type="check-circle" theme="twotone"></i>
     </a>
     <a (click)="cancel()">

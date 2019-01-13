@@ -28,8 +28,10 @@ namespace Demo4DotNetCore.AuthorizationServer
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             services.AddDbContext<AspNetIdentityContext>(options => options.UseSqlite(connectionString));
-            services.AddScoped<Service.IIdentityService, Service.IdentityService>();
-            services.AddScoped<Service.ApiScopeService>();
+            //services.AddScoped<Service.IIdentityService, Service.IdentityService>();
+            services.AddScoped<Service.IApiResourceService, Service.ApiResourceService>();
+            services.AddScoped<Service.IApiScopeService, Service.ApiScopeService>();
+            services.AddScoped<Service.IApiSecretService, Service.ApiSecretService>();
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AspNetIdentityContext>()
                 .AddDefaultTokenProviders();

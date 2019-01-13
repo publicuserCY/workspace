@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, Observable, of } from 'rxjs';
-import { finalize, delay, map, switchMap } from 'rxjs/operators';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
+import { Subscription, of } from 'rxjs';
+import { finalize, switchMap } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 
-import { ApiResourceRequestModel, ApiSecretRequestModel } from '../models/api-resource-request.model';
+import { ApiResourceRequestModel } from '../models/api-resource-request.model';
 import { ApiResource, ApiSecret, ApiScope } from '../models/api-resource.model';
 import { ApiResourceService } from '../services/api-resource.service';
 import { AuthorityInteractionService } from '../services/authority-Interaction.service';
@@ -24,9 +24,8 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
   isSpinning = false;
   apiResource = new ApiResource();
   mainForm: FormGroup;
-  apiSecretAdded: Subscription;
-  apiSecretModified: Subscription;
-  apiSecretDeleted: Subscription;
+  apiSecretSubscription: Subscription;
+  apiScopeSubscription: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,31 +40,33 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
     this.route.paramMap
       .pipe(
         switchMap((params) => {
-          const id = +params.get('id');
-          if (id > 0) {
+          const id = params.get('id');
+          if (id) {
+            this.apiResource.state = EntityState.Modified;
             const requestModel = new ApiResourceRequestModel();
-            requestModel.id = id;
-            return this.apiResourceService.retrieve(requestModel).pipe(
+            requestModel.criteria = id;
+            return this.apiResourceService.single(requestModel).pipe(
               finalize(() => { this.isSpinning = false; })
             );
           } else {
-            const v: OperationResult<PaginatedResult<ApiResource>> = { isSuccess: true, data: new PaginatedResult() };
+            this.apiResource.state = EntityState.Added;
+            const v: OperationResult<ApiResource> = { isSuccess: true, data: null };
             return of(v);
           }
         })
       ).subscribe(
         result => {
           if (result.isSuccess) {
-            if (result.data.list.length > 0) {
-              Object.assign(this.apiResource, result.data.list[0]);
-              this.apiResource.state = EntityState.Modified;
+            if (result.data) {
+              Object.assign(this.apiResource, result.data);
               const initialMap = {
                 id: this.apiResource.id,
                 enabled: this.apiResource.enabled,
                 name: this.apiResource.name,
                 displayName: this.apiResource.displayName,
                 description: this.apiResource.description,
-                nonEditable: this.apiResource.nonEditable
+                nonEditable: this.apiResource.nonEditable,
+                created: this.apiResource.created
               };
               this.mainForm.get('name').setAsyncValidators(uniqueApiResourceNameValidatorFn(this.apiResourceService, this.apiResource.id));
               this.mainForm.reset(initialMap);
@@ -87,19 +88,33 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       displayName: [this.apiResource.displayName],
       description: [this.apiResource.description],
       nonEditable: [this.apiResource.nonEditable],
+      created: [this.apiResource.created]
     });
-    this.apiSecretAdded = this.authorityInteractionService.apiSecretAdded$.subscribe(
+    this.apiSecretSubscription = this.authorityInteractionService.apiSecret$.subscribe(
       item => {
-        this.apiResource.secrets = [...this.apiResource.secrets, item];
+        switch (item.state) {
+          case EntityState.Added:
+            break;
+          case EntityState.Modified:
+            this.apiResource.modifyApiSecret(item);
+            break;
+          case EntityState.Deleted:
+            this.apiResource.deleteApiSecret(item);
+            break;
+        }
       });
-    this.apiSecretModified = this.authorityInteractionService.apiSecretModified$.subscribe(
+    this.apiScopeSubscription = this.authorityInteractionService.apiScope$.subscribe(
       item => {
-        const index = this.apiResource.secrets.findIndex(p => p.id === item.id);
-        Object.assign(this.apiResource.secrets[index], item);
-      });
-    this.apiSecretDeleted = this.authorityInteractionService.apiSecretDeleted$.subscribe(
-      item => {
-        this.apiResource.secrets = this.apiResource.secrets.filter(p => p.id !== item.id);
+        switch (item.state) {
+          case EntityState.Added:
+            break;
+          case EntityState.Modified:
+            this.apiResource.modifyApiScope(item);
+            break;
+          case EntityState.Deleted:
+            this.apiResource.deleteApiScope(item);
+            break;
+        }
       });
   }
 
@@ -124,14 +139,28 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
 
     const requestModel = new ApiResourceRequestModel();
     requestModel.apiResource = this.apiResource;
-    if (this.apiResource.state === EntityState.Added) {
+    this.apiResourceService.submit(requestModel).pipe(
+      finalize(() => this.isSpinning = false)
+    ).subscribe(
+      result => {
+        if (result.isSuccess) {
+          if (this.apiResource.state === EntityState.Added) {
+            this.nzMessageService.info('ApiResource 新增完成');
+            this.router.navigate(['../', result.data.id], { relativeTo: this.route });
+          } else if (this.apiResource.state === EntityState.Modified) {
+            this.nzMessageService.info('ApiResource 更新完成');
+          }
+        } else {
+          this.nzMessageService.error(result.message);
+        }
+      }
+    );
+    /* if (this.apiResource.state === EntityState.Added) {
       this.apiResourceService.add(requestModel).pipe(
         finalize(() => this.isSpinning = false)
       ).subscribe(
         result => {
           if (result.isSuccess) {
-            /* Object.assign(this.apiResource, result.data);
-            this.apiResource.state = EntityState.Modified; */
             this.nzMessageService.info('ApiResource 新增完成');
             this.router.navigate(['../', result.data.id], { relativeTo: this.route });
           } else {
@@ -151,19 +180,19 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
           }
         }
       );
-    }
+    } */
   }
 
   reset(): void {
-    // e.preventDefault();
     let initialMap = {};
     if (this.apiResource.state === EntityState.Added) {
       initialMap = {
         enabled: true,
-        name: '',
-        displayName: '',
-        description: '',
-        nonEditable: false
+        name: null,
+        displayName: null,
+        description: null,
+        nonEditable: false,
+        created: null
       };
     } else {
       initialMap = {
@@ -172,7 +201,8 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
         name: this.apiResource.name,
         displayName: this.apiResource.displayName,
         description: this.apiResource.description,
-        nonEditable: this.apiResource.nonEditable
+        nonEditable: this.apiResource.nonEditable,
+        created: this.apiResource.created
       };
     }
     this.mainForm.reset(initialMap);
@@ -183,12 +213,14 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['../', { id: this.apiResource.id }], { relativeTo: this.route });
+    const navigationExtras: NavigationExtras = {
+      relativeTo: this.route,
+      queryParamsHandling: 'preserve'
+    };
+    this.router.navigate(['../', { id: this.apiResource.id  }], navigationExtras);
   }
 
   ngOnDestroy(): void {
-    this.apiSecretAdded.unsubscribe();
-    this.apiSecretModified.unsubscribe();
-    this.apiSecretDeleted.unsubscribe();
+    this.apiSecretSubscription.unsubscribe();
   }
 }

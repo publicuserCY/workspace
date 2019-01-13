@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, delay } from 'rxjs/operators';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
+import { empty, of } from 'rxjs';
+import { finalize, switchMap, map } from 'rxjs/operators';
 import { NzModalService } from 'ng-zorro-antd';
 import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
 
@@ -10,6 +10,7 @@ import { ApiResourceRequestModel } from '../models/api-resource-request.model';
 import { ApiResource } from '../models/api-resource.model';
 import { ApiResourceService } from '../services/api-resource.service';
 import { OperationResult, PaginatedResult } from 'src/app/shared/result';
+import { EntityState } from 'src/app/shared/const';
 
 @Component({
   selector: 'app-authority-api-resource',
@@ -37,13 +38,30 @@ export class ApiResourceComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    /* this.route.paramMap.pipe(
+      switchMap(params => {
+        this.paginatedresult.pageSize = +params.get('pageSize');
+        this.paginatedresult.pageIndex = +params.get('pageIndex');
+        this.search();
+        return of(empty);
+      })
+    ); */
     this.searchForm = this.fb.group({
       enabled: [null],
       name: [null],
       displayName: [null],
       description: [null]
     });
-    this.search();
+    this.route.queryParamMap
+      .pipe(
+        map(params => {
+          if (params) {
+            this.paginatedresult.pageIndex = params.get('pageIndex') ? +params.get('pageIndex') : 1;
+          }
+        }))
+      .subscribe(
+        () => { this.search(); }
+      );
   }
 
   private search() {
@@ -92,9 +110,11 @@ export class ApiResourceComponent implements OnInit {
       nzOkText: '确认',
       nzOkType: 'danger',
       nzOnOk: () => new Promise((resolve, reject) => {
+        const apiResource = this.paginatedresult.list.find(p => p.id === id);
+        apiResource.state = EntityState.Deleted;
         const model = new ApiResourceRequestModel();
-        model.apiResource = this.paginatedresult.list.find(p => p.id === id);
-        this.apiResourceService.delete(model).subscribe(
+        model.apiResource = apiResource;
+        this.apiResourceService.submit(model).subscribe(
           result => { result.isSuccess ? resolve(result) : reject(result); });
       })
         .then((result: OperationResult<ApiResource>) => {
@@ -109,6 +129,16 @@ export class ApiResourceComponent implements OnInit {
       nzCancelText: '取消',
       nzOnCancel: () => { modelRef.destroy(); }
     });
+  }
+
+  navigate(id: number) {
+    const navigationExtras: NavigationExtras = {
+      relativeTo: this.route,
+      queryParams: {
+        'pageIndex': this.paginatedresult.pageIndex
+      }
+    };
+    this.router.navigate(['../ApiResources', id], navigationExtras);
   }
 
   sort(sort: { key: string, value: string }): void {

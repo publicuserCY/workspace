@@ -34,6 +34,6 @@ export class PaginatedService<M extends PaginatedRequestModel, T extends BaseMod
         const options = { params: this.params };
         return this.http
             .get<OperationResult<PaginatedResult<T>>>(this.url, options)
-            .pipe(catchError(this.handleError('retrieve')));
+            .pipe(catchError(this.handleError(this.url)));
     }
 }

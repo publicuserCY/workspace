@@ -2,7 +2,6 @@ import { RequestModel, PaginatedRequestModel, } from 'src/app/shared/request.mod
 import { ApiResource, ApiScope, ApiSecret } from './api-resource.model';
 
 export class ApiResourceRequestModel extends PaginatedRequestModel {
-    id?: number;
     enabled?: boolean;
     name?: string;
     displayName?: string;

@@ -2,51 +2,19 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { ApiSecret, ApiScope } from '../models/api-resource.model';
+import { EntityState } from 'src/app/shared/const';
 
 @Injectable()
 export class AuthorityInteractionService {
-    private apiSecretsSource = new Subject<Array<ApiSecret>>();
-    private apiSecretAddedSource = new Subject<ApiSecret>();
-    private apiSecretModifiedSource = new Subject<ApiSecret>();
-    private apiSecretDeletedSource = new Subject<ApiSecret>();
-    apiSecrets$ = this.apiSecretsSource.asObservable();
-    apiSecretAdded$ = this.apiSecretAddedSource.asObservable();
-    apiSecretModified$ = this.apiSecretModifiedSource.asObservable();
-    apiSecretDeleted$ = this.apiSecretDeletedSource.asObservable();
+    private apiSecretSource = new Subject<ApiSecret>();
+    private apiScopeSource = new Subject<ApiScope>();
+    apiSecret$ = this.apiSecretSource.asObservable();
+    apiScope$ = this.apiScopeSource.asObservable();
 
-    private apiScopeAddedSource = new Subject<ApiScope>();
-    private apiScopeModifiedSource = new Subject<ApiScope>();
-    private apiScopeDeletedSource = new Subject<ApiScope>();
-    apiScopeAdded$ = this.apiScopeAddedSource.asObservable();
-    apiScopeModified$ = this.apiScopeModifiedSource.asObservable();
-    apiScopeDeleted$ = this.apiScopeDeletedSource.asObservable();
-
-
-    /* apiSecretShifted(items: Array<ApiSecret>) {
-        this.apiSecretsSource.next(items);
-    } */
-
-    apiSecretAdded(item: ApiSecret) {
-        this.apiSecretAddedSource.next(item);
+    apiSecretChanged(item: ApiSecret) {
+        this.apiSecretSource.next(item);
     }
-
-    apiSecretModified(item: ApiSecret) {
-        this.apiSecretModifiedSource.next(item);
-    }
-
-    apiSecretDeleted(item: ApiSecret) {
-        this.apiSecretDeletedSource.next(item);
-    }
-
-    apiScopeAdded(item: ApiScope) {
-        this.apiScopeAddedSource.next(item);
-    }
-
-    apiScopeModified(item: ApiScope) {
-        this.apiScopeModifiedSource.next(item);
-    }
-
-    apiScopeDeleted(item: ApiScope) {
-        this.apiScopeDeletedSource.next(item);
+    apiScopeChanged(item: ApiScope) {
+        this.apiScopeSource.next(item);
     }
 }

@@ -32,7 +32,7 @@
   </nz-form-item>
   <nz-form-item class="add-new-container">
     <nz-form-control>
-      <a class="add-new" [routerLink]="['../ApiResources',0]">
+      <a class="add-new" [routerLink]="['../ApiResources','']">
         <i nz-icon type="plus-circle" theme="twotone" twoToneColor="#52c41a"></i>
       </a>
     </nz-form-control>
@@ -76,7 +76,10 @@
       <td>{{item.lastAccessed}}</td>
       <td [nzShowCheckbox]="true" [nzDisabled]="true" [nzChecked]="item.nonEditable"></td>
       <td class="operation">
-        <a [routerLink]="['../ApiResources',item.id]">
+        <!-- <a [routerLink]="['../ApiResources',item.id]">
+          <i nz-icon type="edit" theme="twotone"></i>
+        </a> -->
+        <a (click)=navigate(item.id)>
           <i nz-icon type="edit" theme="twotone"></i>
         </a>
         <a (click)="delete(item.id)">

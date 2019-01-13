@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 
@@ -18,7 +18,7 @@ import { EntityState } from 'src/app/shared/const';
 export class ApiSecretComponent implements OnInit {
     @Input() apiSecret: ApiSecret;
     isSpinning = false;
-    edit = false;
+    isEdit = false;
     mainForm: FormGroup;
 
     constructor(
@@ -35,10 +35,12 @@ export class ApiSecretComponent implements OnInit {
             value: [this.apiSecret.value, Validators.required],
             expiration: [this.apiSecret.expiration],
             type: [this.apiSecret.type, Validators.required],
-            created: [this.apiSecret.created, Validators.required]
+            created: [this.apiSecret.created]
         });
         if (this.apiSecret.state === EntityState.Added) {
-            this.edit = true;
+            this.isEdit = true;
+        } else {
+            this.apiSecret.state = EntityState.Modified;
         }
     }
 
@@ -51,7 +53,27 @@ export class ApiSecretComponent implements OnInit {
         this.apiSecret.created = this.mainForm.get('created').value;
         const requestModel = new ApiSecretRequestModel();
         requestModel.apiSecret = this.apiSecret;
-        if (this.apiSecret.state === EntityState.Added) {
+        this.apiSecretService.submit(requestModel).pipe(
+            finalize(() => this.isSpinning = false)
+        ).subscribe(
+            result => {
+                if (result.isSuccess) {
+                    if (this.apiSecret.state === EntityState.Added) {
+                        this.nzMessageService.info('ApiSecret 新增完成');
+                    } else if (this.apiSecret.state === EntityState.Modified) {
+                        this.nzMessageService.info('ApiSecret 更新完成');
+                    }
+                    Object.assign(this.apiSecret, result.data);
+                    this.reset();
+                    this.apiSecret.state = EntityState.Modified;
+                    this.authorityInteractionService.apiSecretChanged(this.apiSecret);
+                    this.isEdit = false;
+                } else {
+                    this.nzMessageService.error(result.message);
+                }
+            }
+        );
+        /* if (this.apiSecret.state === EntityState.Added) {
             this.apiSecretService.add(requestModel).pipe(
                 finalize(() => this.isSpinning = false)
             ).subscribe(
@@ -59,7 +81,7 @@ export class ApiSecretComponent implements OnInit {
                     if (result.isSuccess) {
                         Object.assign(this.apiSecret, result.data);
                         this.apiSecret.state = EntityState.Modified;
-                        this.authorityInteractionService.apiSecretModified(this.apiSecret);
+                        this.authorityInteractionService.apiSecretChanged(this.apiSecret);
                         this.edit = false;
                         this.nzMessageService.info('ApiSecret 新增完成');
                     } else {
@@ -75,7 +97,7 @@ export class ApiSecretComponent implements OnInit {
                     if (result.isSuccess) {
                         Object.assign(this.apiSecret, result.data);
                         this.apiSecret.state = EntityState.Modified;
-                        this.authorityInteractionService.apiSecretModified(this.apiSecret);
+                        this.authorityInteractionService.apiSecretChanged(this.apiSecret);
                         this.edit = false;
                         this.nzMessageService.info('ApiSecret 更新完成');
                     } else {
@@ -83,18 +105,24 @@ export class ApiSecretComponent implements OnInit {
                     }
                 }
             );
-        }
+        } */
+    }
+
+    edit() {
+        this.apiSecret.state = EntityState.Modified;
+        this.isEdit = true;
     }
 
     delete() {
+        this.apiSecret.state = EntityState.Deleted;
         const requestModel = new ApiSecretRequestModel();
         requestModel.apiSecret = this.apiSecret;
-        this.apiSecretService.delete(requestModel).pipe(
+        this.apiSecretService.submit(requestModel).pipe(
             finalize(() => this.isSpinning = false)
         ).subscribe(
             result => {
                 if (result.isSuccess) {
-                    this.authorityInteractionService.apiSecretDeleted(this.apiSecret);
+                    this.authorityInteractionService.apiSecretChanged(this.apiSecret);
                     this.nzMessageService.info('ApiSecret 删除完成');
                 } else {
                     this.nzMessageService.error(result.message);
@@ -105,22 +133,23 @@ export class ApiSecretComponent implements OnInit {
 
     cancel() {
         if (this.apiSecret.state === EntityState.Added) {
-            this.authorityInteractionService.apiSecretDeleted(this.apiSecret);
+            this.apiSecret.state = EntityState.Deleted;
+            this.authorityInteractionService.apiSecretChanged(this.apiSecret);
         } else {
-            const initialMap = {
-                id: this.apiSecret.id,
-                description: this.apiSecret.description,
-                value: this.apiSecret.value,
-                expiration: this.apiSecret.expiration,
-                type: this.apiSecret.type,
-                created: this.apiSecret.created
-            };
-            this.mainForm.reset(initialMap);
-            for (const key of Object.keys(this.mainForm.controls)) {
-                this.mainForm.controls[key].markAsPristine();
-                this.mainForm.controls[key].updateValueAndValidity();
-            }
-            this.edit = false;
+            this.reset();
+            this.isEdit = false;
         }
+    }
+
+    reset() {
+        const initialMap = {
+            id: this.apiSecret.id,
+            description: this.apiSecret.description,
+            value: this.apiSecret.value,
+            expiration: this.apiSecret.expiration,
+            type: this.apiSecret.type,
+            created: this.apiSecret.created
+        };
+        this.mainForm.reset(initialMap);
     }
 }

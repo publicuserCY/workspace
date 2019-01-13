@@ -12,29 +12,22 @@ using Z.EntityFramework.Plus;
 
 namespace Demo4DotNetCore.AuthorizationServer.Service
 {
-    public class ApiScopeService : IBaseService<ApiScopeRequestModel, IdentityServer4.EntityFramework.Entities.ApiScope>
+    public class ApiScopeService : IApiScopeService
     {
-        private ConfigurationDbContext ConfigurationDbContext { get; }
+        private ConfigurationDbContext DbContext { get; }
 
         public ApiScopeService(ConfigurationDbContext configurationDbContext)
         {
-            ConfigurationDbContext = configurationDbContext;
+            DbContext = configurationDbContext;
         }
 
         public Task<IdentityServer4.EntityFramework.Entities.ApiScope> Single(ApiScopeRequestModel model)
         {
-            var query = ConfigurationDbContext.ApiResources
+            var query = DbContext.ApiResources
                      .Include(p => p.Scopes)
                      .ThenInclude(scope => scope.UserClaims)
-                     .SelectMany(apiResource => apiResource.Scopes)
-                     .AsQueryable();
-            var predicate = PredicateBuilder.New<IdentityServer4.EntityFramework.Entities.ApiScope>();
-            if (model.Id.HasValue)
-            {
-                predicate = predicate.And(p => p.Id == model.Id.Value);
-                query = query.AsExpandable().Where(predicate);
-            }
-            var result = query.SingleOrDefault();
+                     .SelectMany(apiResource => apiResource.Scopes);
+            var result = query.SingleOrDefault(p => p.Id == int.Parse(model.Criteria));
             return Task.FromResult(result);
         }
 
@@ -50,9 +43,9 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
                 ShowInDiscoveryDocument = model.ApiScope.ShowInDiscoveryDocument,
                 ApiResourceId = model.ApiScope.ApiResourceId
             };
-            var entry = ConfigurationDbContext.Entry(apiScope);
+            var entry = DbContext.Entry(apiScope);
             entry.State = EntityState.Added;
-            ConfigurationDbContext.SaveChanges();
+            DbContext.SaveChanges();
             entry.Reload();
             return Task.FromResult(entry.Entity);
         }
@@ -70,9 +63,9 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
                 ShowInDiscoveryDocument = model.ApiScope.ShowInDiscoveryDocument,
                 ApiResourceId = model.ApiScope.ApiResourceId
             };
-            var entry = ConfigurationDbContext.Entry(apiScope);
+            var entry = DbContext.Entry(apiScope);
             entry.State = EntityState.Modified;
-            ConfigurationDbContext.SaveChanges();
+            DbContext.SaveChanges();
             entry.Reload();
             return Task.FromResult(entry.Entity);
         }
@@ -80,9 +73,9 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
         public Task<IdentityServer4.EntityFramework.Entities.ApiScope> Delete(ApiScopeRequestModel model)
         {
             var apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope() { Id = model.ApiScope.Id };
-            var entry = ConfigurationDbContext.Entry(apiScope);
+            var entry = DbContext.Entry(apiScope);
             entry.State = EntityState.Deleted;
-            ConfigurationDbContext.SaveChanges();
+            DbContext.SaveChanges();
             return Task.FromResult(apiScope);
         }
     }

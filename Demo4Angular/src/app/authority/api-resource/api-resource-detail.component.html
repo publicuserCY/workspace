@@ -37,14 +37,18 @@
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-control nzSpan="6" nzPush="3">
-      <label nz-checkbox formControlName="enabled">Enabled</label>
+    <nz-form-control nzSpan="3">
+      <label nz-checkbox formControlName="enabled" nzRequired>Enabled</label>
     </nz-form-control>
-    <nz-form-control nzSpan="6" nzPush="3">
-      <label nz-checkbox formControlName="nonEditable">NonEditable</label>
+    <nz-form-control nzSpan="3">
+      <label nz-checkbox formControlName="nonEditable" nzRequired>NonEditable</label>
     </nz-form-control>
-    <nz-form-label nzSpan="2">Id</nz-form-label>
-    <nz-form-control nzSpan="2">
+    <nz-form-label nzSpan="3" nzRequired>Created</nz-form-label>
+    <nz-form-control nzSpan="3">
+      <nz-form-text>{{mainForm.get('created')?.value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+    </nz-form-control>
+    <nz-form-label nzSpan="3">Id</nz-form-label>
+    <nz-form-control nzSpan="3">
       <nz-form-text>{{mainForm.get('id').value}}</nz-form-text>
     </nz-form-control>
   </nz-form-item>
