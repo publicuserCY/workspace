@@ -5,9 +5,11 @@ import { NzMessageService } from 'ng-zorro-antd';
 
 import { ApiScope } from '../../models/api-resource.model';
 import { ApiScopeRequestModel } from '../../models/api-resource-request.model';
-import { BaseService } from 'src/app/shared/base.service';
+import { ApiScopeService } from '../../services/api-scope.service';
 import { AuthorityInteractionService } from '../../services/authority-Interaction.service';
 import { EntityState } from 'src/app/shared/const';
+import { uniqueApiScopeNameValidatorFn } from '../../validator/api-scope-name.validator';
+
 
 @Component({
     selector: 'app-api-scope',
@@ -23,14 +25,19 @@ export class ApiScopeComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private nzMessageService: NzMessageService,
-        private apiScopeService: BaseService<ApiScopeRequestModel, ApiScope>,
+        private apiScopeService: ApiScopeService,
         private authorityInteractionService: AuthorityInteractionService
     ) { }
 
     ngOnInit() {
         this.mainForm = this.fb.group({
             id: [this.apiScope.id],
-            name: [this.apiScope.name, Validators.required],
+            name: [this.apiScope.name,
+            {
+                validators: [Validators.required],
+                asyncValidators: [uniqueApiScopeNameValidatorFn(this.apiScopeService, this.apiScope.id)],
+                updateOn: 'blur'
+            }],
             displayName: [this.apiScope.displayName],
             description: [this.apiScope.description],
             required: [this.apiScope.required],
@@ -59,56 +66,22 @@ export class ApiScopeComponent implements OnInit {
         ).subscribe(
             result => {
                 if (result.isSuccess) {
+                    Object.assign(this.apiScope, result.data);
+                    this.mainForm.get('name').setAsyncValidators(uniqueApiScopeNameValidatorFn(this.apiScopeService, this.apiScope.id));
+                    this.reset();
+                    this.authorityInteractionService.apiScopeChanged(this.apiScope);
                     if (this.apiScope.state === EntityState.Added) {
                         this.nzMessageService.info('ApiScope 新增完成');
                     } else if (this.apiScope.state === EntityState.Modified) {
                         this.nzMessageService.info('ApiScope 更新完成');
                     }
-                    Object.assign(this.apiScope, result.data);
-                    this.reset();
                     this.apiScope.state = EntityState.Modified;
-                    this.authorityInteractionService.apiScopeChanged(this.apiScope);
                     this.isEdit = false;
                 } else {
                     this.nzMessageService.error(result.message);
                 }
             }
         );
-        /* if (this.apiScope.state === EntityState.Added) {
-            this.apiScopeService.add(requestModel).pipe(
-                finalize(() => this.isSpinning = false)
-            ).subscribe(
-                result => {
-                    if (result.isSuccess) {
-                        Object.assign(this.apiScope, result.data);
-                        this.reset();
-                        this.apiScope.state = EntityState.Modified;
-                        this.authorityInteractionService.apiScopeChanged(this.apiScope);
-                        this.edit = false;
-                        this.nzMessageService.info('ApiScope 新增完成');
-                    } else {
-                        this.nzMessageService.error(result.message);
-                    }
-                }
-            );
-        } else {
-            this.apiScopeService.modify(requestModel).pipe(
-                finalize(() => this.isSpinning = false)
-            ).subscribe(
-                result => {
-                    if (result.isSuccess) {
-                        Object.assign(this.apiScope, result.data);
-                        this.reset();
-                        this.apiScope.state = EntityState.Modified;
-                        this.authorityInteractionService.apiScopeChanged(this.apiScope);
-                        this.edit = false;
-                        this.nzMessageService.info('ApiScope 更新完成');
-                    } else {
-                        this.nzMessageService.error(result.message);
-                    }
-                }
-            );
-        } */
     }
 
     edit() {

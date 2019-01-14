@@ -7,15 +7,8 @@ import { ApiResourceComponent } from './api-resource/api-resource.component';
 import { ApiResourceDetailComponent } from './api-resource/api-resource-detail.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    children:
-      [
-        { path: 'ApiResources', component: ApiResourceComponent },
-        { path: 'ApiResources/:id', component: ApiResourceDetailComponent },
-        { path: '', redirectTo: 'ApiResources', pathMatch: 'prefix' }
-      ]
-  },
+  { path: 'ApiResources', component: ApiResourceComponent },
+  { path: 'ApiResources/:id', component: ApiResourceDetailComponent },
   { path: 'IdentityResources', component: IdentityResourceComponent },
   { path: 'Clients', component: ClientsComponent },
   { path: 'Users', component: UsersComponent },

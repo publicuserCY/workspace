@@ -3,7 +3,7 @@
   <div nz-row>
     <div nz-col nzSpan="8">
       <nz-form-item nzFlex>
-        <nz-form-label nzSpan="6" nzFor="id">Id</nz-form-label>
+        <nz-form-label nzSpan="6" nzFor="id" nzRequired>Id</nz-form-label>
         <nz-form-control nzSpan="18">
           <nz-form-text>{{mainForm.get('id').value}}</nz-form-text>
         </nz-form-control>
@@ -84,9 +84,15 @@
         <nz-form-label nzSpan="6" nzFor="name" nzRequired>Name</nz-form-label>
         <nz-form-control nzSpan="18">
           <input nz-input id="name" placeholder="Name" formControlName="name">
-          <nz-form-explain *ngIf="mainForm.get('name').dirty && mainForm.get('name').errors">
+          <nz-form-explain *ngIf="mainForm.get('name').dirty && mainForm.get('name').errors || mainForm.get('name').pending">
             <ng-container *ngIf="mainForm.get('name').hasError('required')">
               请输入Name
+            </ng-container>
+            <ng-container *ngIf="mainForm.get('name').hasError('uniqueApiScopeName')">
+              {{mainForm.get('name').value}} 已经存在
+            </ng-container>
+            <ng-container *ngIf="mainForm.get('name').pending">
+              验证中...
             </ng-container>
           </nz-form-explain>
         </nz-form-control>
@@ -141,3 +147,4 @@
     </a>
   </div>
 </form>
+{{mainForm.get('name').errors | json}}

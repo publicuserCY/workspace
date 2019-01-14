@@ -138,7 +138,7 @@ export class ApiResourceComponent implements OnInit {
         'pageIndex': this.paginatedresult.pageIndex
       }
     };
-    this.router.navigate(['../ApiResources', id], navigationExtras);
+    this.router.navigate([id], navigationExtras);
   }
 
   sort(sort: { key: string, value: string }): void {

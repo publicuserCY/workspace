@@ -6,16 +6,10 @@ import { SampleBComponent } from './sample-b/sample-b.component';
 import { SampleRootComponent } from './sample-root/sample-root.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    children:
-      [
-        { path: 'A', component: SampleAComponent, data: { breadcrumb: 'A' } },
-        { path: 'A/:id', component: SampleADetailComponent, data: { breadcrumb: 'A Detail' } },
-        { path: 'B', component: SampleBComponent, data: { breadcrumb: 'B' } },
-        { path: '', component: SampleRootComponent, data: { breadcrumb: 'root' } }
-      ]
-  }
+  { path: 'root', component: SampleRootComponent, data: { breadcrumb: 'root' } },
+  { path: 'root/A', component: SampleAComponent, data: { breadcrumb: 'A' } },
+  { path: 'root/A/:id', component: SampleADetailComponent, data: { breadcrumb: 'A Detail' } },
+  { path: 'root/B', component: SampleBComponent, data: { breadcrumb: 'B' } }
 ];
 
 @NgModule({

@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { ApiSecret, ApiScope } from '../models/api-resource.model';
-import { EntityState } from 'src/app/shared/const';
 
 @Injectable()
 export class AuthorityInteractionService {

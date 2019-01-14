@@ -58,54 +58,21 @@ export class ApiSecretComponent implements OnInit {
         ).subscribe(
             result => {
                 if (result.isSuccess) {
+                    Object.assign(this.apiSecret, result.data);
+                    this.reset();
+                    this.authorityInteractionService.apiSecretChanged(this.apiSecret);
                     if (this.apiSecret.state === EntityState.Added) {
                         this.nzMessageService.info('ApiSecret 新增完成');
                     } else if (this.apiSecret.state === EntityState.Modified) {
                         this.nzMessageService.info('ApiSecret 更新完成');
                     }
-                    Object.assign(this.apiSecret, result.data);
-                    this.reset();
                     this.apiSecret.state = EntityState.Modified;
-                    this.authorityInteractionService.apiSecretChanged(this.apiSecret);
                     this.isEdit = false;
                 } else {
                     this.nzMessageService.error(result.message);
                 }
             }
         );
-        /* if (this.apiSecret.state === EntityState.Added) {
-            this.apiSecretService.add(requestModel).pipe(
-                finalize(() => this.isSpinning = false)
-            ).subscribe(
-                result => {
-                    if (result.isSuccess) {
-                        Object.assign(this.apiSecret, result.data);
-                        this.apiSecret.state = EntityState.Modified;
-                        this.authorityInteractionService.apiSecretChanged(this.apiSecret);
-                        this.edit = false;
-                        this.nzMessageService.info('ApiSecret 新增完成');
-                    } else {
-                        this.nzMessageService.error(result.message);
-                    }
-                }
-            );
-        } else {
-            this.apiSecretService.modify(requestModel).pipe(
-                finalize(() => this.isSpinning = false)
-            ).subscribe(
-                result => {
-                    if (result.isSuccess) {
-                        Object.assign(this.apiSecret, result.data);
-                        this.apiSecret.state = EntityState.Modified;
-                        this.authorityInteractionService.apiSecretChanged(this.apiSecret);
-                        this.edit = false;
-                        this.nzMessageService.info('ApiSecret 更新完成');
-                    } else {
-                        this.nzMessageService.error(result.message);
-                    }
-                }
-            );
-        } */
     }
 
     edit() {

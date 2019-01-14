@@ -78,5 +78,11 @@ namespace Demo4DotNetCore.AuthorizationServer.Service
             DbContext.SaveChanges();
             return Task.FromResult(apiScope);
         }
+
+        public Task<bool> UniqueApiScopeName(int id, string name)
+        {
+            var result = DbContext.ApiResources.SelectMany(apiResource=>apiResource.Scopes).Any(p => !p.Id.Equals(id) && p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            return Task.FromResult(result);
+        }
     }
 }

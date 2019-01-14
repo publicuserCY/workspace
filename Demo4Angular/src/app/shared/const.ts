@@ -1,7 +1,8 @@
 /* const AuthServer = 'http://localhost:5000';
 const ResourceServer = 'http://localhost:5001'; */
-const AuthServer = 'https://192.168.11.12:5500';
-const ResourceServer = 'https://192.168.11.12:5001';
+/* const AuthServer = 'https://192.168.11.12:5500';
+const ResourceServer = 'https://192.168.11.12:5001'; */
+const AuthServer = 'http://120.79.33.159:5000';
 export const Uris = {
     DiscoveryEndpoint: AuthServer + '/.well-known/openid-configuratio',
     AuthorizeEndpoint: AuthServer + '/connect/authorize',
@@ -21,6 +22,7 @@ export const Uris = {
     AddApiScopeClaim: AuthServer + '/api/ApiScopeClaim/Add',
     ModifyApiScopeClaim: AuthServer + '/api/ApiScopeClaim/Modify',
     DeleteApiScopeClaim: AuthServer + '/api/ApiScopeClaim/Delete',
+    UniqueApiScopeName: AuthServer + '/api/ApiScope/UniqueApiScopeName',
 
     AddApiSecret: AuthServer + '/api/ApiSecret/Add',
     ModifyApiSecret: AuthServer + '/api/ApiSecret/Modify',

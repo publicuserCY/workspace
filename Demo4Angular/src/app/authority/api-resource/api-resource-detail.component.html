@@ -11,7 +11,7 @@
     <nz-form-label nzSpan="3" [nzFor]="name" nzRequired>Name</nz-form-label>
     <nz-form-control nzSpan="21" nzHasFeedback>
       <input nz-input name="name" placeholder="Name" formControlName="name">
-      <nz-form-explain *ngIf="mainForm.get('name').dirty && mainForm.get('name').errors || mainForm.get('name').pending ">
+      <nz-form-explain *ngIf="mainForm.get('name').dirty && mainForm.get('name').errors || mainForm.get('name').pending">
         <ng-container *ngIf="mainForm.get('name').hasError('required')">
           请输入Api Resource Name
         </ng-container>

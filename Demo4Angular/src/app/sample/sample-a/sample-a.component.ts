@@ -12,7 +12,7 @@ export class SampleAComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router) { }
 
-  ngOnInit() {  }
+  ngOnInit() { }
 
   goback() {
     this.router.navigate(['../'], { relativeTo: this.route });

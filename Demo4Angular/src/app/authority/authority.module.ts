@@ -14,7 +14,7 @@ import { BaseService } from '../shared/base.service';
 import { PaginatedService } from '../shared/paginated.service';
 import { AuthorityInteractionService } from './services/authority-Interaction.service';
 import { ApiResourceService } from './services/api-resource.service';
-
+import { ApiScopeService } from './services/api-scope.service';
 
 @NgModule({
   declarations: [
@@ -37,6 +37,7 @@ import { ApiResourceService } from './services/api-resource.service';
     BaseService,
     PaginatedService,
     ApiResourceService,
+    ApiScopeService,
     AuthorityInteractionService
   ]
 })
