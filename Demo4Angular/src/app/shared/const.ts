@@ -1,5 +1,7 @@
-const AuthServer = 'http://localhost:5000';
-const ResourceServer = 'http://localhost:5001';
+/* const AuthServer = 'http://localhost:5000';
+const ResourceServer = 'http://localhost:5001'; */
+const AuthServer = 'https://192.168.11.12:5500';
+const ResourceServer = 'https://192.168.11.12:5001';
 export const Uris = {
     DiscoveryEndpoint: AuthServer + '/.well-known/openid-configuratio',
     AuthorizeEndpoint: AuthServer + '/connect/authorize',

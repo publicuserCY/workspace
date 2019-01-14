@@ -27,6 +27,7 @@ namespace Demo4DotNetCore.AuthorizationServer
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseSetting("https_port", "5500")
                 .UseStartup<Startup>().ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();

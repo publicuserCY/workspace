@@ -81,8 +81,7 @@ namespace Demo4DotNetCore.AuthorizationServer
             }
             else
             {
-                throw new Exception("need to configure key material");
-
+               
             }
             //services.AddAuthorization();
             services.AddCors(options =>
@@ -100,10 +99,10 @@ namespace Demo4DotNetCore.AuthorizationServer
             }
             else
             {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHttpsRedirection();
+                //app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+            app.UseHttpsRedirection();
             app.UseCors("default");
             app.UseStaticFiles();
             //app.UseAuthentication();
