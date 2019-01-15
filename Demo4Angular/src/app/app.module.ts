@@ -11,6 +11,7 @@ import { OAuthModule } from 'angular-oauth2-oidc';
 import { HomeModule } from './home/home.module';
 import { AppRoutingModule } from './app-routing.module';
 import { DefaultComponent } from './home/default/default.component';
+import { httpInterceptorProviders } from './shared/auth.interceptor.index';
 
 registerLocaleData(zh);
 
@@ -26,7 +27,10 @@ registerLocaleData(zh);
     HomeModule,
     AppRoutingModule,
   ],
-  providers: [{ provide: NZ_I18N, useValue: zh_CN }],
+  providers: [
+    { provide: NZ_I18N, useValue: zh_CN },
+    httpInterceptorProviders
+  ],
   bootstrap: [DefaultComponent]
 })
 export class AppModule { }

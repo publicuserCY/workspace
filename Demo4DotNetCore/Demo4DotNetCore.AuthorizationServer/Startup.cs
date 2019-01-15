@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Reflection;
 
 namespace Demo4DotNetCore.AuthorizationServer
@@ -20,6 +19,7 @@ namespace Demo4DotNetCore.AuthorizationServer
         {
             Configuration = configuration;
             Environment = environment;
+            System.IO.Directory.SetCurrentDirectory(Environment.ContentRootPath);
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -28,14 +28,19 @@ namespace Demo4DotNetCore.AuthorizationServer
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             services.AddDbContext<AspNetIdentityContext>(options => options.UseSqlite(connectionString));
-            //services.AddScoped<Service.IIdentityService, Service.IdentityService>();
             services.AddScoped<Service.IApiResourceService, Service.ApiResourceService>();
             services.AddScoped<Service.IApiScopeService, Service.ApiScopeService>();
             services.AddScoped<Service.IApiSecretService, Service.ApiSecretService>();
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AspNetIdentityContext>()
                 .AddDefaultTokenProviders();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            services.AddMvc(options =>
+            {
+                options.RequireHttpsPermanent = false;
+                //var policy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                //options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter(policy));
+            })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
                     {
                         //options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
@@ -47,49 +52,48 @@ namespace Demo4DotNetCore.AuthorizationServer
                         options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
                         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                     });
-            services.Configure<IISOptions>(iis =>
+            services.Configure<IISOptions>(options =>
                 {
-                    iis.AuthenticationDisplayName = "Windows";
-                    iis.AutomaticAuthentication = false;
+                    options.AuthenticationDisplayName = "Windows";
+                    options.AutomaticAuthentication = false;
                 });
-            var builder = services.AddIdentityServer(options =>
-                {
-                    options.Events.RaiseErrorEvents = true;
-                    options.Events.RaiseInformationEvents = true;
-                    options.Events.RaiseFailureEvents = true;
-                    options.Events.RaiseSuccessEvents = true;
-                    options.UserInteraction.LoginUrl = "/account/login";
-                })
-                .AddAspNetIdentity<ApplicationUser>()
-                .AddConfigurationStore(options =>
-                {
-                    options.ConfigureDbContext = b => b.UseSqlite(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
-                })
-                .AddOperationalStore(options =>
-                {
-                    options.ConfigureDbContext = b => b.UseSqlite(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+            services.AddIdentityServer(options =>
+                 {
+                     options.Events.RaiseErrorEvents = true;
+                     options.Events.RaiseInformationEvents = true;
+                     options.Events.RaiseFailureEvents = true;
+                     options.Events.RaiseSuccessEvents = true;
+                     options.UserInteraction.LoginUrl = "/account/login";
+                     options.UserInteraction.ErrorUrl = "/home/error";
+                 })
+                 .AddDeveloperSigningCredential()
+                 .AddAspNetIdentity<ApplicationUser>()
+                 .AddConfigurationStore(options =>
+                 {
+                     options.ConfigureDbContext = b => b.UseSqlite(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                 })
+                 .AddOperationalStore(options =>
+                 {
+                     options.ConfigureDbContext = b => b.UseSqlite(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
 
-                    // this enables automatic token cleanup. this is optional.
-                    // options.EnableTokenCleanup = true;
-                    // frequency in seconds to cleanup stale grants. 15 is useful during debugging
-                    // options.TokenCleanupInterval = 15; 
+                     // this enables automatic token cleanup. this is optional.
+                     // options.EnableTokenCleanup = true;
+                     // frequency in seconds to cleanup stale grants. 15 is useful during debugging
+                     // options.TokenCleanupInterval = 15; 
+                 });
+            services.AddAuthorization();
+            services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.Authority = "http://192.168.11.62:5000";
+                    options.RequireHttpsMetadata = false;
+                    options.ApiName = "resapi";
                 });
-
-            if (Environment.IsDevelopment())
-            {
-                builder.AddDeveloperSigningCredential();
-            }
-            else
-            {
-
-            }
-            //services.AddAuthorization();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            System.IO.Directory.SetCurrentDirectory(env.ContentRootPath);
+
 
             if (env.IsDevelopment())
             {
@@ -97,15 +101,22 @@ namespace Demo4DotNetCore.AuthorizationServer
             }
             else
             {
+                app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
                 //app.UseExceptionHandler("/Error");
                 //app.UseHsts();
+                //app.UseHttpsRedirection();
             }
-            //app.UseHttpsRedirection();
+
+
             app.UseCors(corsPolicyBuilder => { corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
             app.UseStaticFiles();
-            //app.UseAuthentication();
             app.UseIdentityServer();
-            app.UseMvcWithDefaultRoute();
+            app.UseAuthentication();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("default", "{controller=account}/{action=login}/{id?}");
+            });
         }
     }
 }

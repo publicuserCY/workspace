@@ -4,14 +4,8 @@ import { ImplicitLoginComponent } from './implicit-login/implicit-login.componen
 import { ResourceOwnerLoginComponent } from './resource-owner-login/resource-owner-login.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    children:
-      [
-        { path: '', component: ImplicitLoginComponent },
-        { path: 'ResourceOwnerLogin', component: ResourceOwnerLoginComponent },
-      ]
-  }
+  { path: 'Implicit', component: ImplicitLoginComponent },
+  { path: 'ResourceOwner', component: ResourceOwnerLoginComponent }
 ];
 
 @NgModule({

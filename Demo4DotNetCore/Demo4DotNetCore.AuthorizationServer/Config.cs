@@ -41,7 +41,7 @@ namespace Demo4DotNetCore.AuthorizationServer
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     AllowAccessTokensViaBrowser = true,
                     RequireConsent = false,
-                    AccessTokenLifetime = 180,
+                    AccessTokenLifetime = 3600,
                     RedirectUris =
                     {
                         "http://localhost:4200/home"

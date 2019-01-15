@@ -16,6 +16,7 @@ export class ImplicitLoginComponent implements OnInit {
   ngOnInit() {
     this.oAuthService.configure(implicitAuthConfig);
     this.oAuthService.tokenValidationHandler = new JwksValidationHandler();
+    this.oAuthService.setStorage(localStorage);
     this.oAuthService.loadDiscoveryDocumentAndTryLogin();
   }
   public login() {

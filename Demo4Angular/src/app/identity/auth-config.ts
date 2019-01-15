@@ -1,12 +1,13 @@
 import { AuthConfig } from 'angular-oauth2-oidc';
+import { AuthServer } from '../shared/const';
 
 export const roAuthConfig: AuthConfig = {
 
     // Url of the Identity Provider
-    issuer: 'http://localhost:5000',
-
+    issuer: AuthServer,
+    requireHttps: false,
     // URL of the SPA to redirect the user to after login
-    redirectUri: window.location.origin + '/home',
+    redirectUri: window.location.origin + '/Authority/ApiResources',
     // The SPA's id. The SPA is registerd with this id at the auth-server
     clientId: 'resource-owner-client',
 
@@ -19,10 +20,10 @@ export const roAuthConfig: AuthConfig = {
 export const implicitAuthConfig: AuthConfig = {
 
     // Url of the Identity Provider
-    issuer: 'http://localhost:5000',
-
+    issuer: AuthServer,
+    requireHttps: false,
     // URL of the SPA to redirect the user to after login
-    redirectUri: window.location.origin + '/home',
+    redirectUri: window.location.origin + '/Authority/ApiResources',
     // dummyClientSecret: 'secret',
     // The SPA's id. The SPA is registerd with this id at the auth-server
     clientId: 'implicit-client',
