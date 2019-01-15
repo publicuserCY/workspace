@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 
 namespace Demo4DotNetCore.AuthorizationServer.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.AllowAnonymous]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

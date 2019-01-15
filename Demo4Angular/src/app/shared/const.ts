@@ -1,6 +1,6 @@
-export const AuthServer = 'http://192.168.11.62:5000';
+// export const AuthServer = 'http://192.168.11.62:5000';
 // export const AuthServer = 'http://192.168.11.12:5000';
-// export const AuthServer = 'https://192.168.11.12:5500';
+export const AuthServer = 'http://localhost:5000';
 // export const AuthServer = 'http://120.79.33.159:5000';
 // export const ResourceServer = 'https://192.168.11.12:5001';
 export const Uris = {

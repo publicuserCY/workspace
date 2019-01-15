@@ -37,8 +37,8 @@ namespace Demo4DotNetCore.AuthorizationServer
             services.AddMvc(options =>
             {
                 options.RequireHttpsPermanent = false;
-                //var policy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-                //options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter(policy));
+                var policy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter(policy));
             })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(options =>
@@ -52,17 +52,17 @@ namespace Demo4DotNetCore.AuthorizationServer
                         options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
                         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                     });
-            services.Configure<IISOptions>(options =>
-                {
-                    options.AuthenticationDisplayName = "Windows";
-                    options.AutomaticAuthentication = false;
-                });
+            //services.Configure<IISOptions>(options =>
+            //    {
+            //        options.AuthenticationDisplayName = "Windows";
+            //        options.AutomaticAuthentication = false;
+            //    });
             services.AddIdentityServer(options =>
                  {
-                     options.Events.RaiseErrorEvents = true;
-                     options.Events.RaiseInformationEvents = true;
-                     options.Events.RaiseFailureEvents = true;
-                     options.Events.RaiseSuccessEvents = true;
+                     //options.Events.RaiseErrorEvents = true;
+                     //options.Events.RaiseInformationEvents = true;
+                     //options.Events.RaiseFailureEvents = true;
+                     //options.Events.RaiseSuccessEvents = true;
                      options.UserInteraction.LoginUrl = "/account/login";
                      options.UserInteraction.ErrorUrl = "/home/error";
                  })
@@ -81,13 +81,14 @@ namespace Demo4DotNetCore.AuthorizationServer
                      // frequency in seconds to cleanup stale grants. 15 is useful during debugging
                      // options.TokenCleanupInterval = 15; 
                  });
-            services.AddAuthorization();
-            services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+                // .AddResourceOwnerValidator<Service.ResourceOwnerPasswordValidator>();
+            //services.AddAuthorization();
+            services.AddAuthentication(IdentityServer4.AccessTokenValidation.IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
                 {
-                    options.Authority = "http://192.168.11.62:5000";
+                    options.Authority = "http://localhost:5000";
                     options.RequireHttpsMetadata = false;
-                    options.ApiName = "resapi";
+                    //options.ApiName = "resapi";
                 });
         }
 
@@ -112,7 +113,6 @@ namespace Demo4DotNetCore.AuthorizationServer
             app.UseCors(corsPolicyBuilder => { corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
             app.UseStaticFiles();
             app.UseIdentityServer();
-            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "{controller=account}/{action=login}/{id?}");
