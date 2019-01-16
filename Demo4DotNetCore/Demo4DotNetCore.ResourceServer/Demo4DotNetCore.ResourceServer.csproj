@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Model\BookRequestModelBinder.cs" />
-    <Compile Remove="Model\PaginatedListExtensions.cs" />
-    <Compile Remove="Model\PaginatedRequestModelBinder.cs" />
+    <Compile Remove="Models\BookRequestModelBinder.cs" />
+    <Compile Remove="Models\PaginatedListExtensions.cs" />
+    <Compile Remove="Models\PaginatedRequestModelBinder.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +33,17 @@
     <Content Update="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="data\Resource.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Data\" />
+    <Folder Include="Areas\Identity\Views\" />
   </ItemGroup>
 
 </Project>

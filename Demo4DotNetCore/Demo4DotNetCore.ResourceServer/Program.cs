@@ -17,7 +17,7 @@ namespace Demo4DotNetCore.ResourceServer
                 .UseStartup<Startup>().ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
-                    logging.SetMinimumLevel(LogLevel.Trace);
+                    logging.SetMinimumLevel(LogLevel.Debug);
                 })
                 .UseNLog();
     }

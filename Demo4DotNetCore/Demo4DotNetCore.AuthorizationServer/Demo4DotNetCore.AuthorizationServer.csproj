@@ -9,8 +9,6 @@
     <Compile Remove="Controllers\IdentityController.cs" />
     <Compile Remove="Model\CustumIdentityContext.cs" />
     <Compile Remove="Model\PaginatedListExtensions.cs" />
-    <Compile Remove="Service\IApiScopeService - 复制.cs" />
-    <Compile Remove="Service\IBaseService.cs" />
   </ItemGroup>
 
   <ItemGroup>

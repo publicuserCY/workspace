@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using NLog.Extensions.Logging;
-using NLog.Web;
 
 namespace Demo4DotNetCore.ResourceServer
 {
@@ -21,11 +13,11 @@ namespace Demo4DotNetCore.ResourceServer
         public IConfiguration Configuration { get; }
         public IHostingEnvironment HostingEnvironment { get; }
 
-        public Startup(IConfiguration configuration, IHostingEnvironment environment)
+        public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
             Configuration = configuration;
-            HostingEnvironment = environment;
-            environment.ConfigureNLog("nlog.config");
+            HostingEnvironment = hostingEnvironment;
+            System.IO.Directory.SetCurrentDirectory(HostingEnvironment.ContentRootPath);
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -36,27 +28,40 @@ namespace Demo4DotNetCore.ResourceServer
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
             services.AddScoped<Service.IBookService, Service.BookService>();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(options =>
-                {
-                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                })
-                .ConfigureApiBehaviorOptions(options =>
-                {
-                    options.SuppressConsumesConstraintForFormFileParameters = true;
-                    options.SuppressInferBindingSourcesForParameters = true;
-                    options.SuppressModelStateInvalidFilter = true;
-                    options.SuppressMapClientErrors = true;
-                });
-            services.AddMvcCore()
-                .AddAuthorization()
-                .AddJsonFormatters();
-            services.AddAuthentication("Bearer")
+            services.AddScoped<Service.IApiResourceService, Service.ApiResourceService>();
+            services.AddScoped<Service.IApiScopeService, Service.ApiScopeService>();
+            services.AddScoped<Service.IApiSecretService, Service.ApiSecretService>();
+            services.AddMvc(options =>
+            {
+                options.RequireHttpsPermanent = false;
+                var policy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter(policy));
+            })
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            .AddJsonOptions(options =>
+            {
+                //options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.None;
+                options.SerializerSettings.DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat;
+                options.SerializerSettings.DateParseHandling = Newtonsoft.Json.DateParseHandling.DateTime;
+                options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Local;
+                options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            })
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.SuppressConsumesConstraintForFormFileParameters = true;
+                options.SuppressInferBindingSourcesForParameters = true;
+                options.SuppressModelStateInvalidFilter = true;
+                options.SuppressMapClientErrors = true;
+            });
+            services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
                 {
-                    options.Authority = "http://localhost:5000";
                     options.RequireHttpsMetadata = false;
-                    options.ApiName = "api1";
+                    options.Authority = Configuration.GetValue<string>("Authority:Issue");
+                    options.ApiName = Configuration.GetValue<string>("Authority:ApiName");
                 });
             services.AddCors(options =>
             {
@@ -74,15 +79,17 @@ namespace Demo4DotNetCore.ResourceServer
             else
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHttpsRedirection();
-                app.UseHsts();
+                //app.UseHttpsRedirection();
+                //app.UseHsts();
             }
-            loggerFactory.AddNLog();
-            app.AddNLogWeb();
             app.UseCors("default");
             app.UseStaticFiles();
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(name: "areas", template: "api/{area:exists}/{controller}/{action}");
+                routes.MapRoute("default", "api/{controller}/{action}");
+            });
         }
     }
 }

@@ -29,7 +29,7 @@ registerLocaleData(zh);
   ],
   providers: [
     { provide: NZ_I18N, useValue: zh_CN },
-    httpInterceptorProviders
+    // httpInterceptorProviders
   ],
   bootstrap: [DefaultComponent]
 })

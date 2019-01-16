@@ -8,11 +8,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Demo4DotNetCore.ResourceServer.Controllers
+namespace Demo4DotNetCore.ResourceServer.Books.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
     public class BookController : ControllerBase
     {
         private IBookService service;

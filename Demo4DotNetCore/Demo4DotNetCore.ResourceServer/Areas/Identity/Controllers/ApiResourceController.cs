@@ -10,7 +10,7 @@ namespace Demo4DotNetCore.AuthorizationServer.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Microsoft.AspNetCore.Authorization.Authorize]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class ApiResourceController : ControllerBase
     {
         private ILogger<ApiResourceController> Logger { get; }

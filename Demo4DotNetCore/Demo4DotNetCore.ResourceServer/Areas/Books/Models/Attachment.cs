@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Demo4DotNetCore.ResourceServer.Models;
+using System;
 
-namespace Demo4DotNetCore.ResourceServer.Model
+namespace Demo4DotNetCore.ResourceServer.Books.Models
 {
     /// <summary>
     /// 文件上传
     /// </summary>
     public class Attachment : BaseModel
     {
-        public Attachment() : base(true) { }
+        public Attachment() : base() { }
 
         /// <summary>
         /// 文件名称
@@ -52,11 +53,6 @@ namespace Demo4DotNetCore.ResourceServer.Model
         /// 上传人员标识
         /// </summary>
         public string UploadBy { get; set; }
-
-        /// <summary>
-        /// 操作标志 0：未改 1：新增 2：更新 3：删除
-        /// </summary>
-        public int Flag { get; set; }
 
         /// <summary>
         /// MD5

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Demo4DotNetCore.AuthorizationServer.Model
+namespace Demo4DotNetCore.ResourceServer.Models
 {
     /// <summary>
     /// Model基类

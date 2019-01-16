@@ -1,5 +1,4 @@
 ﻿using Demo4DotNetCore.AuthorizationServer.Model;
-using Demo4DotNetCore.AuthorizationServer.Service;
 using Demo4DotNetCore.AuthorizationServer.ViewModel;
 using IdentityModel;
 using IdentityServer4.Events;
