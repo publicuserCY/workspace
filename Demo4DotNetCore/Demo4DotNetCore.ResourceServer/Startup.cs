@@ -23,14 +23,23 @@ namespace Demo4DotNetCore.ResourceServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<Model.ResourceContext>(options =>
-            {
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
-            });
-            services.AddScoped<Service.IBookService, Service.BookService>();
-            services.AddScoped<Service.IApiResourceService, Service.ApiResourceService>();
-            services.AddScoped<Service.IApiScopeService, Service.ApiScopeService>();
-            services.AddScoped<Service.IApiSecretService, Service.ApiSecretService>();
+            var identityConnection = Configuration.GetConnectionString("IdentityConnection");
+            services.AddIdentityServer()
+                 .AddConfigurationStore(options =>
+                 {
+                     options.ConfigureDbContext = b => b.UseSqlite(identityConnection);
+                 })
+                 .AddOperationalStore(options =>
+                 {
+                     options.ConfigureDbContext = b => b.UseSqlite(identityConnection);
+                 });
+            services.AddDbContext<Identity.Model.AspNetIdentityContext>(options => options.UseSqlite(identityConnection));
+            services.AddDbContext<IdentityServer4.EntityFramework.DbContexts.ConfigurationDbContext>(options => options.UseSqlite(identityConnection));
+            services.AddDbContext<Books.Model.ResourceContext>(options => { options.UseSqlite(Configuration.GetConnectionString("BooksConnection")); });
+            services.AddScoped<Books.Service.IBookService, Books.Service.BookService>();
+            services.AddScoped<Identity.Service.IApiResourceService, Identity.Service.ApiResourceService>();
+            services.AddScoped<Identity.Service.IApiScopeService, Identity.Service.ApiScopeService>();
+            services.AddScoped<Identity.Service.IApiSecretService, Identity.Service.ApiSecretService>();
             services.AddMvc(options =>
             {
                 options.RequireHttpsPermanent = false;
@@ -51,10 +60,10 @@ namespace Demo4DotNetCore.ResourceServer
             })
             .ConfigureApiBehaviorOptions(options =>
             {
-                options.SuppressConsumesConstraintForFormFileParameters = true;
-                options.SuppressInferBindingSourcesForParameters = true;
-                options.SuppressModelStateInvalidFilter = true;
-                options.SuppressMapClientErrors = true;
+                //options.SuppressConsumesConstraintForFormFileParameters = true;
+                //options.SuppressInferBindingSourcesForParameters = true;
+                //options.SuppressModelStateInvalidFilter = true;
+                //options.SuppressMapClientErrors = true;
             });
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
@@ -87,8 +96,8 @@ namespace Demo4DotNetCore.ResourceServer
             app.UseAuthentication();
             app.UseMvc(routes =>
             {
-                routes.MapRoute(name: "areas", template: "api/{area:exists}/{controller}/{action}");
-                routes.MapRoute("default", "api/{controller}/{action}");
+                //routes.MapRoute(name: "areas", template: "api/{area:exists}/{controller}/{action}");
+                //routes.MapRoute("default", "api/{controller}/{action}");
             });
         }
     }

@@ -1,7 +1,7 @@
-﻿using Demo4DotNetCore.AuthorizationServer.RequestModel;
+﻿using Demo4DotNetCore.ResourceServer.Identity.RequestModel;
 using System.Threading.Tasks;
 
-namespace Demo4DotNetCore.AuthorizationServer.Service
+namespace Demo4DotNetCore.ResourceServer.Identity.Service
 {
     public interface IApiScopeService
     {

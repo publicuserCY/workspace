@@ -1,8 +1,10 @@
 import { DefaultConfig } from './const';
 
 export abstract class RequestModel {
+    url: string;
     criteria?: string;
-    constructor() {
+    constructor(url: string) {
+        this.url = url;
         this.criteria = '';
     }
 }
@@ -13,8 +15,8 @@ export class PaginatedRequestModel extends RequestModel {
     orderBy = '';
     direction = 'asc';
 
-    constructor(pageIndex?: number, pageSize?: number, orderBy?: string, direction?: string) {
-        super();
+    constructor(url: string, pageIndex?: number, pageSize?: number, orderBy?: string, direction?: string) {
+        super(url);
         if (pageIndex) { this.pageIndex = pageIndex; }
         if (pageSize) { this.pageSize = pageSize; }
         if (orderBy) { this.orderBy = orderBy; }

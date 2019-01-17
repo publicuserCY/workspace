@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Demo4DotNetCore.ResourceServer.Model;
+using System.Collections.Generic;
 
-namespace Demo4DotNetCore.ResourceServer.Model
+namespace Demo4DotNetCore.ResourceServer.Books.Model
 {
-    public class BookRequestModel: PaginatedRequestModel
+    public class BookRequestModel : PaginatedRequestModel
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public List<Attachment> Attachments { get; set; }
+        public Book Book { get; set; }
     }
 }

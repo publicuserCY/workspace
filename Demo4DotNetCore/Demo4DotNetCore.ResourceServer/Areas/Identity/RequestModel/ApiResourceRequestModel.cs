@@ -1,6 +1,7 @@
-﻿using Demo4DotNetCore.AuthorizationServer.Model;
+﻿using Demo4DotNetCore.ResourceServer.Identity.Model;
+using Demo4DotNetCore.ResourceServer.Model;
 
-namespace Demo4DotNetCore.AuthorizationServer.RequestModel
+namespace Demo4DotNetCore.ResourceServer.Identity.RequestModel
 {
     public class ApiResourceRequestModel : PaginatedRequestModel
     {

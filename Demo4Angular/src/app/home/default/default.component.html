@@ -4,24 +4,23 @@
       {{isCollapsed?'Demo':'Demo4Angular'}}
     </div>
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
-      <li nz-submenu [(nzOpen)]="openMap.authority" (nzOpenChange)="openHandler('authority')">
-        <span title><i nz-icon type="team"></i><span class="nav-text">Authority</span></span>
+      <li nz-submenu [(nzOpen)]="openMap.identity" (nzOpenChange)="openHandler('identity')">
+        <span title><i nz-icon type="team"></i><span class="nav-text">Identity</span></span>
         <ul>
-          <li nz-menu-item [routerLink]="['/Authority','ApiResources']">Api Resources</li>
-          <li nz-menu-item [routerLink]="['/Authority','IdentityResources']">Identity Resources</li>
-          <li nz-menu-item [routerLink]="['/Authority','Clients']">Clients</li>
-          <li nz-menu-item [routerLink]="['/Authority','Users']">Users</li>
-          <li nz-menu-item [routerLink]="['/Sample/root']">Sample</li>
+          <li nz-menu-item [routerLink]="['/Identity','ApiResources']">Api Resources</li>
+          <li nz-menu-item [routerLink]="['/Identity','IdentityResources']">Identity Resources</li>
+          <li nz-menu-item [routerLink]="['/Identity','Clients']">Clients</li>
+          <li nz-menu-item [routerLink]="['/Identity','Users']">Users</li>
         </ul>
       </li>
-      <li nz-submenu [(nzOpen)]="openMap.user" (nzOpenChange)="openHandler('user')">
+      <li nz-submenu [(nzOpen)]="openMap.login" (nzOpenChange)="openHandler('login')">
         <span title><i nz-icon type="user"></i><span class="nav-text">Login</span></span>
         <ul>
           <li nz-menu-item [routerLink]="['/Identity','Implicit']">Implicit</li>
           <li nz-menu-item [routerLink]="['/Identity','ResourceOwner']">Resource Owner</li>
         </ul>
       </li>
-      <li nz-menu-item><span><i nz-icon type="file"></i><span class="nav-text">File</span></span></li>
+      <li nz-menu-item [routerLink]="['/Sample/root']"><span><i nz-icon type="file"></i><span class="nav-text">Sample</span></span></li>
     </ul>
   </nz-sider>
   <nz-layout [ngClass]="{'right-collapsed': isCollapsed, 'right-expend': !isCollapsed}">

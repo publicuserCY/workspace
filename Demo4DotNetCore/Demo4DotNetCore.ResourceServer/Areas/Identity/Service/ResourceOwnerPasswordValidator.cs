@@ -1,12 +1,10 @@
-﻿using Demo4DotNetCore.AuthorizationServer.RequestModel;
+﻿using Demo4DotNetCore.ResourceServer.Identity.Model;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
-using System.Threading.Tasks;
-using System.Linq;
-using Demo4DotNetCore.AuthorizationServer.Model;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
-namespace Demo4DotNetCore.AuthorizationServer.Service
+namespace Demo4DotNetCore.ResourceServer.Identity.Service
 {
     public class ResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {

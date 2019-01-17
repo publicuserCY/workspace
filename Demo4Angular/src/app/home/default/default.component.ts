@@ -1,4 +1,4 @@
-import { Component, ViewChild, TemplateRef, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -9,8 +9,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class DefaultComponent implements OnInit {
   isCollapsed = false;
   openMap = {
-    authority: true,
-    user: false,
+    identity: true,
+    login: false,
     other: false
   };
 

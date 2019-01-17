@@ -1,15 +1,16 @@
-﻿using Demo4DotNetCore.ResourceServer.Model;
-using System.Collections.Generic;
+﻿using Demo4DotNetCore.ResourceServer.Books.Model;
+using Demo4DotNetCore.ResourceServer.Books.RequestModel;
+using Demo4DotNetCore.ResourceServer.Model;
 using System.Threading.Tasks;
 
-namespace Demo4DotNetCore.ResourceServer.Service
+namespace Demo4DotNetCore.ResourceServer.Books.Service
 {
     public interface IAttachmentService
     {
-        Task<PaginatedList<Attachment>> GetAttachments(AttachmentRequestModel model);
-        Task<Attachment> GetAttachment(AttachmentRequestModel model);
-        Task<Attachment> InsertAttachment(AttachmentRequestModel entity);
-        Task<Attachment> UpdateAttachment(AttachmentRequestModel entity);
-        Task<Attachment> DeleteAttachment(AttachmentRequestModel entity);
+        Task<PaginatedResult<Attachment>> Retrieve(AttachmentRequestModel model);
+        Task<Attachment> Single(AttachmentRequestModel model);
+        Task<Attachment> Add(AttachmentRequestModel model);
+        Task<Attachment> Modify(AttachmentRequestModel model);
+        Task<Attachment> Delete(AttachmentRequestModel model);
     }
 }

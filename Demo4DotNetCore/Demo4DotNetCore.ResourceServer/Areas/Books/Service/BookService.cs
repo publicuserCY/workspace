@@ -1,41 +1,44 @@
-﻿using Demo4DotNetCore.ResourceServer.Model;
+﻿using Demo4DotNetCore.ResourceServer.Books.Model;
+using Demo4DotNetCore.ResourceServer.Model;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Z.EntityFramework.Plus;
 
-namespace Demo4DotNetCore.ResourceServer.Service
+namespace Demo4DotNetCore.ResourceServer.Books.Service
 {
     public class BookService : IBookService
     {
-        private ResourceContext context;
+        private ResourceContext DbContext { get; }
+
         public BookService(ResourceContext context)
         {
-            this.context = context;
+            DbContext = context;
         }
-        public Task<PaginatedList<Book>> GetBooks(BookRequestModel model)
+        public Task<PaginatedResult<Book>> Retrieve(BookRequestModel model)
         {
-            var query = context.Books.AsExpandable();
-            if (!string.IsNullOrWhiteSpace(model.Criteria))
+            var query = DbContext.Books.Include(p => p.Attachments).AsExpandable();
+            var predicate = PredicateBuilder.New<Book>();
+            if (!string.IsNullOrEmpty(model.Criteria))
             {
-                var predicate = PredicateBuilder.New<Book>();
-                predicate = predicate.Or(p => p.Name.Contains(model.Criteria));
+                predicate = predicate.And(p => p.Name.Contains(model.Criteria, StringComparison.OrdinalIgnoreCase));
                 query = query.AsQueryable().Where(predicate);
             }
-            var result = query.Include(p => p.Attachments).SortBy(model.SortExpression).ToPaginatedList(model.PageIndex, model.PageSize);
+            var result = query.SortBy(model.SortExpression).ToPaginatedList(model.PageIndex, model.PageSize);
             return Task.FromResult(result);
         }
 
-        public Task<Book> GetBook(BookRequestModel model)
+        public Task<Book> Single(BookRequestModel model)
         {
-            var result = context.Books.Include(p => p.Attachments).SingleOrDefault(p => p.Id == model.Id);
+            var result = DbContext.Books.Include(p => p.Attachments).SingleOrDefault(p => p.Id == model.Id);
             return Task.FromResult(result);
         }
 
-        public Task<Book> InsertBook(BookRequestModel model)
+        public Task<Book> Add(BookRequestModel model)
         {
-            using (var dbContextTransaction = context.Database.BeginTransaction())
+            using (var dbContextTransaction = DbContext.Database.BeginTransaction())
             {
                 try
                 {
@@ -43,18 +46,21 @@ namespace Demo4DotNetCore.ResourceServer.Service
                     {
                         Name = model.Name
                     };
-                    context.Books.Add(entity);
-                    if (model.Attachments != null)
+                    var entry = DbContext.Entry(entity);
+                    entry.State = EntityState.Added;
+                    DbContext.SaveChanges();
+
+                    if (model.Book.Attachments != null)
                     {
-                        model.Attachments.ForEach((item) =>
+                        model.Book.Attachments.ToList().ForEach((item) =>
                         {
-                            context.Attachments.Where(p => p.Id == item.Id).Update(attachment => new Attachment() { Reference = entity.Id, Flag = 0 });
+                            DbContext.Attachments.Where(p => p.Id == item.Id).Update(attachment => new Attachment() { Reference = entity.Id, Flag = 0 });
                         });
                     }
-                    context.SaveChanges();
-                    entity = context.Books.Include(p => p.Attachments).SingleOrDefault(p => p.Id == entity.Id);
+                    DbContext.SaveChanges();                   
                     dbContextTransaction.Commit();
-                    return Task.FromResult(entity);
+                    entry.Reload();
+                    return Task.FromResult(entry.Entity);
                 }
                 catch
                 {
@@ -64,22 +70,24 @@ namespace Demo4DotNetCore.ResourceServer.Service
             }
         }
 
-        public Task<Book> UpdateBook(BookRequestModel model)
+        public Task<Book> Modify(BookRequestModel model)
         {
-            using (var dbContextTransaction = context.Database.BeginTransaction())
+            using (var dbContextTransaction = DbContext.Database.BeginTransaction())
             {
                 try
                 {
-                    model.Attachments.Where(p => p.Flag == 3).ToList().ForEach((item) =>
+                    var entity = model.Book;
+                    var entry = DbContext.Entry(entity);
+                    entry.State = EntityState.Modified;
+                    model.Book.Attachments.Where(p => p.Flag == 3).ToList().ForEach((item) =>
                         {
-                            context.Attachments.Where(p => p.Id == item.Id).Delete();
+                            DbContext.Attachments.Where(p => p.Id == item.Id).Delete();
                         });
-                    context.Attachments.Where(p => p.Reference == model.Id && p.Flag == 1).Update(attachment => new Attachment() { Flag = 0 });
-                    var entity = context.Books.Include(p => p.Attachments).SingleOrDefault(p => p.Id == model.Id);
-                    entity.Name = model.Name;
-                    context.SaveChanges();
+                    DbContext.Attachments.Where(p => p.Reference == model.Id && p.Flag == 1).Update(attachment => new Attachment() { Flag = 0 });
+                    DbContext.SaveChanges();
                     dbContextTransaction.Commit();
-                    return Task.FromResult(entity);
+                    entry.Reload();
+                    return Task.FromResult(entry.Entity);
                 }
                 catch
                 {
@@ -88,18 +96,19 @@ namespace Demo4DotNetCore.ResourceServer.Service
                 }
             }
         }
-        public Task<Book> DeleteBook(BookRequestModel model)
+        public Task<Book> Delete(BookRequestModel model)
         {
-            using (var dbContextTransaction = context.Database.BeginTransaction())
+            using (var dbContextTransaction = DbContext.Database.BeginTransaction())
             {
                 try
                 {
-                    var entity = context.Books.SingleOrDefault(p => p.Id == model.Id);
-                    context.Attachments.Where(p => p.Reference == model.Id).Delete();
-                    context.Books.Where(p => p.Id == model.Id).Delete();
-                    context.SaveChanges();
+                    var entity = model.Book;
+                    var entry = DbContext.Entry(entity);
+                    entry.State = EntityState.Deleted;
+                    DbContext.Attachments.Where(p => p.Reference == entity.Id).Delete();
+                    DbContext.SaveChanges();
                     dbContextTransaction.Commit();
-                    return Task.FromResult(entity);
+                    return Task.FromResult(entry.Entity);
                 }
                 catch
                 {

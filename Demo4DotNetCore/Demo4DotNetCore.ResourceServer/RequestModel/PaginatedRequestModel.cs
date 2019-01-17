@@ -1,13 +1,8 @@
-﻿using Demo4DotNetCore.Tools;
-
-namespace Demo4DotNetCore.ResourceServer.Model
+﻿namespace Demo4DotNetCore.ResourceServer.Model
 {
     public class PaginatedRequestModel : BaseRequestModel
     {
-        public PaginatedRequestModel()
-        {
-            //pageSize = AppSettingTool.Value("Data_PageSize", 10);
-        }
+        public PaginatedRequestModel() { }
 
         private int pageIndex = 1;
         public int PageIndex

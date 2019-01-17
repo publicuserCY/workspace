@@ -4,7 +4,7 @@ import {
   HttpHandler,
   HttpRequest
 } from '@angular/common/http';
-import { AuthServer } from './const';
+import { ResourceServer } from './const';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -18,7 +18,7 @@ export class AuthInterceptor implements HttpInterceptor {
     ) {
       return next.handle(req);
     } */
-    if (!req.url.startsWith(AuthServer + '/api')) {
+    if (!req.url.startsWith(ResourceServer)) {
       return next.handle(req);
     }
 

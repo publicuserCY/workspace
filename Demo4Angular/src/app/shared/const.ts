@@ -1,32 +1,35 @@
-// export const AuthServer = 'http://192.168.11.62:5000';
 // export const AuthServer = 'http://192.168.11.12:5000';
-export const AuthServer = 'http://localhost:5000';
+// export const ResourceServer = 'http://192.168.11.12:5001';
 // export const AuthServer = 'http://120.79.33.159:5000';
-// export const ResourceServer = 'https://192.168.11.12:5001';
+/* export const AuthServer = 'http://localhost:5000';
+export const ResourceServer = 'http://localhost:5001'; */
+export const AuthServer = 'https://localhost:5500';
+export const ResourceServer = 'https://localhost:5501';
+
 export const Uris = {
     DiscoveryEndpoint: AuthServer + '/.well-known/openid-configuration',
     AuthorizeEndpoint: AuthServer + '/connect/authorize',
     TokenEndpoint: AuthServer + '/connect/token',
 
-    RetrieveApiResource: AuthServer + '/api/ApiResource/Retrieve',
-    SingleApiResource: AuthServer + '/api/ApiResource/Single',
-    AddApiResource: AuthServer + '/api/ApiResource/Add',
-    ModifyApiResource: AuthServer + '/api/ApiResource/Modify',
-    DeleteApiResource: AuthServer + '/api/ApiResource/Delete',
-    UniqueApiResourceName: AuthServer + '/api/ApiResource/UniqueApiResourceName',
+    RetrieveApiResource: ResourceServer + '/api/Identity/ApiResource/Retrieve',
+    SingleApiResource: ResourceServer + '/api/Identity/ApiResource/Single',
+    AddApiResource: ResourceServer + '/api/Identity/ApiResource/Add',
+    ModifyApiResource: ResourceServer + '/api/Identity/ApiResource/Modify',
+    DeleteApiResource: ResourceServer + '/api/Identity/ApiResource/Delete',
+    UniqueApiResourceName: ResourceServer + '/api/Identity/ApiResource/UniqueApiResourceName',
 
-    AddApiScope: AuthServer + '/api/ApiScope/Add',
-    ModifyApiScope: AuthServer + '/api/ApiScope/Modify',
-    DeleteApiScope: AuthServer + '/api/ApiScope/Delete',
+    AddApiScope: ResourceServer + '/api/Identity/ApiScope/Add',
+    ModifyApiScope: ResourceServer + '/api/Identity/ApiScope/Modify',
+    DeleteApiScope: ResourceServer + '/api/Identity/ApiScope/Delete',
 
-    AddApiScopeClaim: AuthServer + '/api/ApiScopeClaim/Add',
-    ModifyApiScopeClaim: AuthServer + '/api/ApiScopeClaim/Modify',
-    DeleteApiScopeClaim: AuthServer + '/api/ApiScopeClaim/Delete',
-    UniqueApiScopeName: AuthServer + '/api/ApiScope/UniqueApiScopeName',
+    AddApiScopeClaim: ResourceServer + '/api/Identity/ApiScopeClaim/Add',
+    ModifyApiScopeClaim: ResourceServer + '/api/Identity/ApiScopeClaim/Modify',
+    DeleteApiScopeClaim: ResourceServer + '/api/Identity/ApiScopeClaim/Delete',
+    UniqueApiScopeName: ResourceServer + '/api/Identity/ApiScope/UniqueApiScopeName',
 
-    AddApiSecret: AuthServer + '/api/ApiSecret/Add',
-    ModifyApiSecret: AuthServer + '/api/ApiSecret/Modify',
-    DeleteApiSecret: AuthServer + '/api/ApiSecret/Delete',
+    AddApiSecret: ResourceServer + '/api/Identity/ApiSecret/Add',
+    ModifyApiSecret: ResourceServer + '/api/Identity/ApiSecret/Modify',
+    DeleteApiSecret: ResourceServer + '/api/Identity/ApiSecret/Delete',
 };
 export const DefaultConfig = {
     PageSize: 10,

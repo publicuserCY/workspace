@@ -1,17 +1,11 @@
-﻿using Demo4DotNetCore.AuthorizationServer.Model;
-using Demo4DotNetCore.AuthorizationServer.RequestModel;
+﻿using Demo4DotNetCore.ResourceServer.Identity.Model;
 using IdentityServer4.EntityFramework.DbContexts;
-using LinqKit;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using Z.EntityFramework.Plus;
 
-namespace Demo4DotNetCore.AuthorizationServer.Service
+namespace Demo4DotNetCore.ResourceServer.Identity.Service
 {
     public class IdentityService : IIdentityService
     {

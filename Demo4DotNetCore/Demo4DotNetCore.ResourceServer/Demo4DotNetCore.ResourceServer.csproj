@@ -6,13 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\BookRequestModelBinder.cs" />
-    <Compile Remove="Models\PaginatedListExtensions.cs" />
-    <Compile Remove="Models\PaginatedRequestModelBinder.cs" />
+    <Compile Remove="Controllers\TestController.cs" />
+    <Compile Remove="Model\BookRequestModelBinder.cs" />
+    <Compile Remove="Model\PaginatedListExtensions.cs" />
+    <Compile Remove="Model\PaginatedRequestModelBinder.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
+    <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
     <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="1.1.15" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
@@ -43,7 +45,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\" />
-    <Folder Include="Areas\Identity\Views\" />
+    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>

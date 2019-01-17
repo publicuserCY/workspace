@@ -77,6 +77,7 @@ namespace Demo4DotNetCore.AuthorizationServer
                 //app.UseHsts();
                 //app.UseHttpsRedirection();
             }
+            app.UseHttpsRedirection();
             app.UseCors(corsPolicyBuilder => { corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
             app.UseStaticFiles();
             app.UseIdentityServer();            

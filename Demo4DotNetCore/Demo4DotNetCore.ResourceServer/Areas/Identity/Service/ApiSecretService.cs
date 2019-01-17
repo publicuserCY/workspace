@@ -1,11 +1,11 @@
-﻿using Demo4DotNetCore.AuthorizationServer.RequestModel;
+﻿using Demo4DotNetCore.ResourceServer.Identity.RequestModel;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Demo4DotNetCore.AuthorizationServer.Service
+namespace Demo4DotNetCore.ResourceServer.Identity.Service
 {
     public class ApiSecretService : IApiSecretService
     {

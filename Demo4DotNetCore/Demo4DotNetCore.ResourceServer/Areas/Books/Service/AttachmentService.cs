@@ -1,71 +1,70 @@
-﻿using Demo4DotNetCore.ResourceServer.Model;
+﻿using Demo4DotNetCore.ResourceServer.Books.Model;
+using Demo4DotNetCore.ResourceServer.Books.RequestModel;
+using Demo4DotNetCore.ResourceServer.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Demo4DotNetCore.ResourceServer.Service
+namespace Demo4DotNetCore.ResourceServer.Books.Service
 {
     public class AttachmentsService : IAttachmentService
     {
-        private ResourceContext context;
+        private ResourceContext DbContext { get; }
 
         public AttachmentsService(ResourceContext context)
         {
-            this.context = context;
+            DbContext = context;
         }
-        public Task<PaginatedList<Attachment>> GetAttachments(AttachmentRequestModel model)
+        public Task<PaginatedResult<Attachment>> Retrieve(AttachmentRequestModel model)
         {
-            var result = context.Attachments.ToPaginatedList(model.PageIndex, model.PageSize);
+            var result = DbContext.Attachments.ToPaginatedList(model.PageIndex, model.PageSize);
             return Task.FromResult(result);
         }
 
-        public Task<Attachment> GetAttachment(AttachmentRequestModel model)
+        public Task<Attachment> Single(AttachmentRequestModel model)
         {
-            var result = context.Attachments.SingleOrDefault(p => p.Id == model.Id);
+            var result = DbContext.Attachments.SingleOrDefault(p => p.Id == model.Id);
             return Task.FromResult(result);
         }
 
-        public Task<Attachment> InsertAttachment(AttachmentRequestModel model)
+        public Task<Attachment> Add(AttachmentRequestModel model)
         {
             var entity = new Attachment()
             {
-                FileName = model.FileName,
-                FileSize = model.FileSize,
-                FileType = model.FileType,
-                FilePath = model.FilePath,
-                Category = model.Category,
-                AllowAnonymous = model.AllowAnonymous,
-                Reference = model.Reference,
+                FileName = model.Attachment.FileName,
+                FileSize = model.Attachment.FileSize,
+                FileType = model.Attachment.FileType,
+                FilePath = model.Attachment.FilePath,
+                Category = model.Attachment.Category,
+                AllowAnonymous = model.Attachment.AllowAnonymous,
+                Reference = model.Attachment.Reference,
                 UploadTime = DateTime.Now,
-                UploadBy = model.UploadBy,
-                Flag = model.Flag,
-                MD5 = model.MD5
+                UploadBy = model.Attachment.UploadBy,
+                MD5 = model.Attachment.MD5
             };
-            var result = context.Attachments.Add(entity).Entity;
-            context.SaveChanges();
-            return Task.FromResult(result);
+            var entry = DbContext.Entry(entity);
+            entry.State = EntityState.Added;
+            DbContext.SaveChanges();
+            entry.Reload();
+            return Task.FromResult(entry.Entity);
         }
-        public Task<Attachment> UpdateAttachment(AttachmentRequestModel model)
+        public Task<Attachment> Modify(AttachmentRequestModel model)
         {
-            var entity = context.Attachments.SingleOrDefault(p => p.Id == model.Id);
-            if (entity == null)
-            {
-                return Task.FromResult<Attachment>(null);
-            }
-            entity.FileName = model.FileName;
-            context.SaveChanges();
-            return Task.FromResult(entity);
+            var entity = model.Attachment;
+            var entry = DbContext.Entry(entity);
+            entry.State = EntityState.Modified;
+            DbContext.SaveChanges();
+            entry.Reload();
+            return Task.FromResult(entry.Entity);
         }
-        public Task<Attachment> DeleteAttachment(AttachmentRequestModel model)
+        public Task<Attachment> Delete(AttachmentRequestModel model)
         {
-            var entity = context.Attachments.SingleOrDefault(p => p.Id == model.Id);
-            if (entity == null)
-            {
-                return Task.FromResult<Attachment>(null);
-            }
-            context.Attachments.Remove(entity);
-            context.SaveChanges();
-            return Task.FromResult(entity);
+            var entity = model.Attachment;
+            var entry = DbContext.Entry(entity);
+            entry.State = EntityState.Deleted;
+            DbContext.SaveChanges();
+            return Task.FromResult(entry.Entity);
         }
     }
 }

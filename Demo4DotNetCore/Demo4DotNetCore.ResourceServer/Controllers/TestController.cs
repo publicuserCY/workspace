@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Demo4DotNetCore.ResourceServer.Model;
 using Demo4DotNetCore.ResourceServer.Service;
 using Demo4DotNetCore.Tools;
+using Demo4DotNetCore.ResourceServer.Books.Model;
 
 namespace Demo4DotNetCore.ResourceServer.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class TestController : ControllerBase
     {
