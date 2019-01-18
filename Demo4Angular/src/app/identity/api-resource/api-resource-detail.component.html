@@ -60,13 +60,13 @@
     </button>
   </div>
 </div> -->
-<nz-form-split>Api Secret</nz-form-split>
+<nz-form-split><h3>Api Secret</h3></nz-form-split>
 <app-api-secret *ngFor="let item of apiResource.secrets" [apiSecret]="item"></app-api-secret>
 <div class="empty-subitem">
     <button nz-button type="button" nzType="dashed" (click)="addApiScret()" [disabled]="this.apiResource.state===4">Add Api Secret</button>
 </div>
 
-<nz-form-split>Api Scope</nz-form-split>
+<nz-form-split><h3>Api Scope</h3></nz-form-split>
 <app-api-scope *ngFor="let item of apiResource.scopes" [apiScope]="item"></app-api-scope>
 <div class="empty-subitem">
     <button nz-button type="button" nzType="dashed" (click)="addApiScope()" [disabled]="this.apiResource.state===4">Add Api Scope</button>

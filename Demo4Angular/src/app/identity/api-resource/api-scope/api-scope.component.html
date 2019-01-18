@@ -102,7 +102,7 @@
       <nz-form-item nzFlex>
         <nz-form-label nzSpan="6" nzFor="displayName">DisplayName</nz-form-label>
         <nz-form-control nzSpan="18">
-          <input nz-input id="displayName" placeholder="DisplayName" formControlName="displayName">         
+          <input nz-input id="displayName" placeholder="DisplayName" formControlName="displayName">
         </nz-form-control>
       </nz-form-item>
     </div>
@@ -138,6 +138,35 @@
       </nz-form-item>
     </div>
   </div>
+  <div nz-row>
+    <div nz-col nzSpan="6" formArrayName="userClaims" class="user-claims">
+      <nz-form-item nzFlex *ngFor="let userClaim of userClaims.controls; let i=index">
+        <nz-form-label nzSpan="6" nzFor="i">Type</nz-form-label>
+        <nz-form-control nzSpan="12">
+          <input nz-input placeholder="Type" [formControlName]="i">
+          <nz-form-explain *ngIf="userClaim.dirty && userClaim.errors">
+              <ng-container *ngIf="userClaim.hasError('required')">
+                请输入Type
+              </ng-container>             
+            </nz-form-explain>
+        </nz-form-control>
+        <nz-form-control nzSpan="6">
+          <button nz-button type="button" nzType="dashed" (click)="deleteUserClaim(i)" >Delete</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-control>
+          <div class="empty-subitem">
+            <button nz-button type="button" nzType="dashed" (click)="addUserClaim()">Add UserClaim</button>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
   <div class="operation">
     <a (click)="submit()" [ngClass]="{'disabled': !mainForm.valid}">
       <i nz-icon type="check-circle" theme="twotone"></i>
@@ -147,4 +176,3 @@
     </a>
   </div>
 </form>
-{{mainForm.get('name').errors | json}}

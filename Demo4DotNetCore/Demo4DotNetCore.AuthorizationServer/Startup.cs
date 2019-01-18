@@ -74,13 +74,13 @@ namespace Demo4DotNetCore.AuthorizationServer
             else
             {
                 //app.UseExceptionHandler("/Error");
-                //app.UseHsts();
-                //app.UseHttpsRedirection();
+                app.UseHsts();
+                app.UseHttpsRedirection();
             }
-            app.UseHttpsRedirection();
             app.UseCors(corsPolicyBuilder => { corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
             app.UseStaticFiles();
-            app.UseIdentityServer();            
+            app.UseIdentityServer();
+            app.UseMvcWithDefaultRoute();
         }
     }
 }

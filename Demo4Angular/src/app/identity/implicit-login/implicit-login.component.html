@@ -4,14 +4,11 @@
 <h1 *ngIf="name">
   Hallo, {{name}}
 </h1>
-
-<button class="btn btn-default" (click)="login()">
-  Login
-</button>
-<button class="btn btn-default" (click)="logoff()">
-  Logout
-</button>
-
+<h1 *ngIf="id">
+  ID:{{id}}
+</h1>
+<button nz-button nzType="default" (click)="login()">login</button>
+<button nz-button nzType="default" (click)="logout()">logout</button>
 <div>
-  Username/Passwort zum Testen: max/geheim
+  Username/Passwort admin/LO3tGX&6
 </div>

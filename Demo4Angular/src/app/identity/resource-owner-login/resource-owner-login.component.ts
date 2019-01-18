@@ -28,17 +28,20 @@ export class ResourceOwnerLoginComponent implements OnInit {
   }
 
   login() {
-    this.oAuthService.fetchTokenUsingPasswordFlow('admin', 'LO3tGX&6').then((obj) => {
-      this.oAuthService.loadUserProfile();
+    this.oAuthService.fetchTokenUsingPasswordFlowAndLoadUserProfile('admin', 'LO3tGX&6').then((obj) => {
       console.log('oauth/oidc event', obj);
     }).catch(reason => {
       console.log(reason.error.error + '  ' + reason.error.error_description);
     });
   }
 
+  public logout() {
+    this.oAuthService.logOut();
+  }
+
   refresh() {
     this.oAuthService.refreshToken().then((obj) => {
-      const token = this.oAuthService.getRefreshToken();
+      this.oAuthService.getRefreshToken();
       console.log('refresh ok');
     });
   }

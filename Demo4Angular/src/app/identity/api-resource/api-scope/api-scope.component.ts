@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 
@@ -42,13 +42,25 @@ export class ApiScopeComponent implements OnInit {
             description: [this.apiScope.description],
             required: [this.apiScope.required],
             emphasize: [this.apiScope.emphasize, Validators.required],
-            showInDiscoveryDocument: [this.apiScope.showInDiscoveryDocument, Validators.required]
+            showInDiscoveryDocument: [this.apiScope.showInDiscoveryDocument, Validators.required],
+            userClaims: this.fb.array([])
         });
         if (this.apiScope.state === EntityState.Added) {
             this.isEdit = true;
         } else {
             this.apiScope.state = EntityState.Modified;
         }
+    }
+
+    get userClaims() {
+        return this.mainForm.get('userClaims') as FormArray;
+    }
+
+    addUserClaim() {
+        this.userClaims.push(this.fb.control('', Validators.required));
+    }
+    deleteUserClaim(index: number) {
+        this.userClaims.removeAt(index);
     }
 
     submit() {
@@ -63,10 +75,10 @@ export class ApiScopeComponent implements OnInit {
         let requestModel: ApiScopeRequestModel;
         switch (this.apiScope.state) {
             case EntityState.Added:
-                requestModel = new ApiScopeRequestModel(Uris.AddApiResource);
+                requestModel = new ApiScopeRequestModel(Uris.AddApiScope);
                 break;
             case EntityState.Modified:
-                requestModel = new ApiScopeRequestModel(Uris.ModifyApiResource);
+                requestModel = new ApiScopeRequestModel(Uris.ModifyApiScope);
                 break;
         }
         requestModel.apiScope = this.apiScope;
@@ -100,7 +112,7 @@ export class ApiScopeComponent implements OnInit {
 
     delete() {
         this.apiScope.state = EntityState.Deleted;
-        const requestModel = new ApiScopeRequestModel(Uris.DeleteApiResource);
+        const requestModel = new ApiScopeRequestModel(Uris.DeleteApiScope);
         requestModel.apiScope = this.apiScope;
         this.apiScopeService.submit(requestModel).pipe(
             finalize(() => this.isSpinning = false)

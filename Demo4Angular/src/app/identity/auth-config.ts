@@ -8,6 +8,7 @@ export const roAuthConfig: AuthConfig = {
     requireHttps: false,
     // URL of the SPA to redirect the user to after login
     redirectUri: window.location.origin + '/Identity/ResourceOwner',
+    postLogoutRedirectUri: window.location.origin + '/Identity/ResourceOwner',
     // The SPA's id. The SPA is registerd with this id at the auth-server
     clientId: 'resource-owner-client',
 
@@ -24,6 +25,7 @@ export const implicitAuthConfig: AuthConfig = {
     requireHttps: false,
     // URL of the SPA to redirect the user to after login
     redirectUri: window.location.origin + '/Identity/Implicit',
+    postLogoutRedirectUri: window.location.origin + '/Identity/Implicit',
     // dummyClientSecret: 'secret',
     // The SPA's id. The SPA is registerd with this id at the auth-server
     clientId: 'implicit-client',

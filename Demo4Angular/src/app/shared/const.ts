@@ -1,11 +1,9 @@
-// export const AuthServer = 'http://192.168.11.12:5000';
-// export const ResourceServer = 'http://192.168.11.12:5001';
-// export const AuthServer = 'http://120.79.33.159:5000';
-/* export const AuthServer = 'http://localhost:5000';
-export const ResourceServer = 'http://localhost:5001'; */
-export const AuthServer = 'https://localhost:5500';
-export const ResourceServer = 'https://localhost:5501';
-
+/* export const AuthServer = 'https://192.168.11.12:44300';
+export const ResourceServer = 'https://192.168.11.12:44301'; */
+/* export const AuthServer = 'https://192.168.11.62:44300';
+export const ResourceServer = 'https://192.168.11.62:44301'; */
+export const AuthServer = 'http://localhost:5000';
+export const ResourceServer = 'http://localhost:5001';
 export const Uris = {
     DiscoveryEndpoint: AuthServer + '/.well-known/openid-configuration',
     AuthorizeEndpoint: AuthServer + '/connect/authorize',

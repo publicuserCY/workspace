@@ -23,8 +23,14 @@ export class ImplicitLoginComponent implements OnInit {
     this.oAuthService.initImplicitFlow();
   }
 
-  public logoff() {
+  public logout() {
     this.oAuthService.logOut();
+  }
+
+  public get id() {
+    const claims: any = this.oAuthService.getIdentityClaims();
+    if (!claims) { return null; }
+    return claims.sub;
   }
 
   public get name() {
