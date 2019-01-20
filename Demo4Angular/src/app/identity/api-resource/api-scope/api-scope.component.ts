@@ -1,26 +1,27 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 
-import { ApiScope } from '../../model/api-resource.model';
+import { ApiScope, ApiScopeClaim } from '../../model/api-resource.model';
 import { ApiScopeRequestModel } from '../../model/api-resource-request.model';
 import { ApiScopeService } from '../../service/api-scope.service';
 import { AuthorityInteractionService } from '../../service/authority-Interaction.service';
 import { EntityState, Uris } from 'src/app/shared/const';
 import { uniqueApiScopeNameValidatorFn } from '../../validator/api-scope-name.validator';
-
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-api-scope',
     templateUrl: './api-scope.component.html',
     styleUrls: ['./api-scope.component.css']
 })
-export class ApiScopeComponent implements OnInit {
+export class ApiScopeComponent implements OnInit, OnDestroy {
     @Input() apiScope: ApiScope;
     isSpinning = false;
     isEdit = false;
     mainForm: FormGroup;
+    apiScopeClaimSubscription: Subscription;
 
     constructor(
         private fb: FormBuilder,
@@ -45,22 +46,38 @@ export class ApiScopeComponent implements OnInit {
             showInDiscoveryDocument: [this.apiScope.showInDiscoveryDocument, Validators.required],
             userClaims: this.fb.array([])
         });
+        /* this.apiScope.userClaims.forEach(apiScopeClaim => {
+            this.userClaims.push(this.fb.group({
+                id: [apiScopeClaim.id],
+                type: [apiScopeClaim.type, Validators.required]
+            }));
+        }); */
         if (this.apiScope.state === EntityState.Added) {
             this.isEdit = true;
-        } else {
-            this.apiScope.state = EntityState.Modified;
         }
+        this.apiScopeClaimSubscription = this.authorityInteractionService.apiScopeClaim$.subscribe(
+            (source: any) => {
+                if (source instanceof AbstractControl) {
+                    source.setParent(this.mainForm);
+                }
+            });
     }
 
     get userClaims() {
         return this.mainForm.get('userClaims') as FormArray;
     }
 
-    addUserClaim() {
-        this.userClaims.push(this.fb.control('', Validators.required));
-    }
-    deleteUserClaim(index: number) {
-        this.userClaims.removeAt(index);
+    addScopeClaim() {
+        const apiScopeClaim = new ApiScopeClaim();
+        this.userClaims.push(this.fb.group({
+            id: [apiScopeClaim.id],
+            type: [apiScopeClaim.type, Validators.required]
+        }));
+        /* this.mainForm.addControl(apiScopeClaim.sid, this.fb.group({
+            id: [apiScopeClaim.id],
+            type: [apiScopeClaim.type, Validators.required]
+        })); */
+        this.apiScope.addScopeClaim(apiScopeClaim);
     }
 
     submit() {
@@ -73,13 +90,10 @@ export class ApiScopeComponent implements OnInit {
         this.apiScope.showInDiscoveryDocument = this.mainForm.get('showInDiscoveryDocument').value;
 
         let requestModel: ApiScopeRequestModel;
-        switch (this.apiScope.state) {
-            case EntityState.Added:
-                requestModel = new ApiScopeRequestModel(Uris.AddApiScope);
-                break;
-            case EntityState.Modified:
-                requestModel = new ApiScopeRequestModel(Uris.ModifyApiScope);
-                break;
+        if (this.apiScope.state === EntityState.Added) {
+            requestModel = new ApiScopeRequestModel(Uris.AddApiScope);
+        } else {
+            requestModel = new ApiScopeRequestModel(Uris.ModifyApiScope);
         }
         requestModel.apiScope = this.apiScope;
         this.apiScopeService.submit(requestModel).pipe(
@@ -87,15 +101,15 @@ export class ApiScopeComponent implements OnInit {
         ).subscribe(
             result => {
                 if (result.isSuccess) {
-                    Object.assign(this.apiScope, result.data);
-                    this.mainForm.get('name').setAsyncValidators(uniqueApiScopeNameValidatorFn(this.apiScopeService, this.apiScope.id));
-                    this.reset();
-                    this.authorityInteractionService.apiScopeChanged(this.apiScope);
+                    ApiScope.assign(this.apiScope, result.data);
                     if (this.apiScope.state === EntityState.Added) {
                         this.nzMessageService.info('ApiScope 新增完成');
                     } else if (this.apiScope.state === EntityState.Modified) {
                         this.nzMessageService.info('ApiScope 更新完成');
                     }
+                    this.mainForm.get('name').setAsyncValidators(uniqueApiScopeNameValidatorFn(this.apiScopeService, this.apiScope.id));
+                    this.reset();
+                    // this.authorityInteractionService.apiScopeChanged(this.apiScope);
                     this.apiScope.state = EntityState.Modified;
                     this.isEdit = false;
                 } else {
@@ -106,7 +120,6 @@ export class ApiScopeComponent implements OnInit {
     }
 
     edit() {
-        this.apiScope.state = EntityState.Modified;
         this.isEdit = true;
     }
 
@@ -149,5 +162,9 @@ export class ApiScopeComponent implements OnInit {
             showInDiscoveryDocument: this.apiScope.showInDiscoveryDocument
         };
         this.mainForm.reset(initialMap);
+    }
+
+    ngOnDestroy(): void {
+        this.apiScopeClaimSubscription.unsubscribe();
     }
 }

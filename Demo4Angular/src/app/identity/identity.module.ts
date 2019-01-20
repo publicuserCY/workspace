@@ -9,6 +9,7 @@ import { ResourceOwnerLoginComponent } from './resource-owner-login/resource-own
 import { ApiResourceComponent } from './api-resource/api-resource.component';
 import { ApiResourceDetailComponent } from './api-resource/api-resource-detail.component';
 import { ApiScopeComponent } from './api-resource/api-scope/api-scope.component';
+import { ApiScopeClaimComponent } from './api-resource/api-scope/api-scope-claim.component';
 import { ApiSecretComponent } from './api-resource/api-secret/api-secret.component';
 import { IdentityResourceComponent } from './identity-resource/identity-resource.component';
 import { ClientsComponent } from './clients/clients.component';
@@ -18,6 +19,7 @@ import { PaginatedService } from '../shared/paginated.service';
 import { AuthorityInteractionService } from './service/authority-Interaction.service';
 import { ApiResourceService } from './service/api-resource.service';
 import { ApiScopeService } from './service/api-scope.service';
+import { NestableFormDirective } from '../shared/nestable-form.directive';
 
 @NgModule({
   declarations: [
@@ -26,10 +28,12 @@ import { ApiScopeService } from './service/api-scope.service';
     ApiResourceComponent,
     ApiResourceDetailComponent,
     ApiScopeComponent,
+    ApiScopeClaimComponent,
     ApiSecretComponent,
     IdentityResourceComponent,
     ClientsComponent,
     UsersComponent,
+    NestableFormDirective
   ],
   imports: [
     CommonModule,

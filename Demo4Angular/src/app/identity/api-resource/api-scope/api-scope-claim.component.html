@@ -1,0 +1,52 @@
+<form [formGroup]="mainForm" class="main-form" [style.display]="isEdit || apiScopeClaim.state===2 ? 'none' : 'block'">
+  <div nz-row>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <nz-form-text>{{mainForm.get('id').value}}</nz-form-text>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6" nzRequired>Type</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <nz-form-text>{{mainForm.get('type').value}}</nz-form-text>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+<form nz-form [formGroup]="mainForm" appNestableForm class="main-form" [style.display]="!isEdit || apiScopeClaim.state===2 ? 'none' : 'block'">
+  <div nz-row>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+        <nz-form-control nzSpan="18">
+          <nz-form-text>{{mainForm.get('id').value}}</nz-form-text>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-label nzSpan="6" nzFor="type" nzRequired>Type</nz-form-label>
+        <nz-form-control nzSpan="18" nzHasFeedback>
+          <input nz-input name="type" placeholder="Type" formControlName="type">
+          <nz-form-explain *ngIf="mainForm.get('type').dirty && mainForm.get('type').errors">
+            <ng-container *ngIf="mainForm.get('type').hasError('required')">
+              请输入Type
+            </ng-container>
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-form-item nzFlex>
+        <nz-form-control>
+          <button nz-button type="button" nzType="dashed" (click)="deleteScopeClaim()">Delete</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>

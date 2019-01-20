@@ -39,8 +39,6 @@ export class ApiSecretComponent implements OnInit {
         });
         if (this.apiSecret.state === EntityState.Added) {
             this.isEdit = true;
-        } else {
-            this.apiSecret.state = EntityState.Modified;
         }
     }
 
@@ -52,13 +50,10 @@ export class ApiSecretComponent implements OnInit {
         this.apiSecret.type = this.mainForm.get('type').value;
         this.apiSecret.created = this.mainForm.get('created').value;
         let requestModel: ApiSecretRequestModel;
-        switch (this.apiSecret.state) {
-            case EntityState.Added:
-                requestModel = new ApiSecretRequestModel(Uris.AddApiSecret);
-                break;
-            case EntityState.Modified:
-                requestModel = new ApiSecretRequestModel(Uris.ModifyApiSecret);
-                break;
+        if (this.apiSecret.state === EntityState.Added) {
+            requestModel = new ApiSecretRequestModel(Uris.AddApiSecret);
+        } else {
+            requestModel = new ApiSecretRequestModel(Uris.ModifyApiSecret);
         }
         requestModel.apiSecret = this.apiSecret;
         this.apiSecretService.submit(requestModel).pipe(
@@ -66,14 +61,14 @@ export class ApiSecretComponent implements OnInit {
         ).subscribe(
             result => {
                 if (result.isSuccess) {
-                    Object.assign(this.apiSecret, result.data);
-                    this.reset();
-                    this.authorityInteractionService.apiSecretChanged(this.apiSecret);
+                    ApiSecret.assign(this.apiSecret, result.data);
+                    // this.authorityInteractionService.apiSecretChanged(this.apiSecret);
                     if (this.apiSecret.state === EntityState.Added) {
                         this.nzMessageService.info('ApiSecret 新增完成');
-                    } else if (this.apiSecret.state === EntityState.Modified) {
+                    } else {
                         this.nzMessageService.info('ApiSecret 更新完成');
                     }
+                    this.reset();
                     this.apiSecret.state = EntityState.Modified;
                     this.isEdit = false;
                 } else {
@@ -84,7 +79,6 @@ export class ApiSecretComponent implements OnInit {
     }
 
     edit() {
-        this.apiSecret.state = EntityState.Modified;
         this.isEdit = true;
     }
 

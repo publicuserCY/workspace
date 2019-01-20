@@ -9,9 +9,9 @@ namespace Demo4DotNetCore.ResourceServer.Model
     /// </summary>
     public abstract class BaseModel<T>
     {
-        public BaseModel() { }
+        public BaseModel() { State = EntityState.Unchanged; }
 
-        public BaseModel(bool autoGenerateId)
+        public BaseModel(bool autoGenerateId) : base()
         {
             if (Id is string)
             {
@@ -28,25 +28,25 @@ namespace Demo4DotNetCore.ResourceServer.Model
         [NotMapped]
         public EntityState State { get; set; }
 
-        private static U Convert<T, U>(T value)
+        private static D Convert<S, D>(S value)
         {
-            if (value is U && typeof(U) != typeof(IComparable) && typeof(U) != typeof(IFormattable))
+            if (value is D && typeof(D) != typeof(IComparable) && typeof(D) != typeof(IFormattable))
             {
-                return (U)(object)value;
+                return (D)(object)value;
             }
             else
             {
-                Type targetType = typeof(U);
+                Type targetType = typeof(D);
 
                 if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
                     if (value == null)
-                        return default(U);
+                        return default(D);
 
                     targetType = Nullable.GetUnderlyingType(targetType);
                 }
 
-                return (U)System.Convert.ChangeType(value, targetType, System.Globalization.CultureInfo.InvariantCulture);
+                return (D)System.Convert.ChangeType(value, targetType, System.Globalization.CultureInfo.InvariantCulture);
             }
         }
     }

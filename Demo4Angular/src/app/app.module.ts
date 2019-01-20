@@ -12,7 +12,6 @@ import { HomeModule } from './home/home.module';
 import { AppRoutingModule } from './app-routing.module';
 import { DefaultComponent } from './home/default/default.component';
 import { httpInterceptorProviders } from './shared/auth.interceptor.index';
-
 registerLocaleData(zh);
 
 @NgModule({

@@ -51,15 +51,16 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
 
         public Task<IdentityServer4.EntityFramework.Entities.ApiSecret> Modify(ApiSecretRequestModel model)
         {
-            var apiSecret = new IdentityServer4.EntityFramework.Entities.ApiSecret()
+            var apiSecret = DbContext.ApiResources.SelectMany(p => p.Secrets).SingleOrDefault(p => p.Id == model.ApiSecret.Id);
+            if (apiSecret == null)
             {
-                Id = model.ApiSecret.Id,
-                ApiResourceId = model.ApiSecret.ApiResourceId,
-                Description = model.ApiSecret.Description,
-                Value = model.ApiSecret.Value,
-                Expiration = model.ApiSecret.Expiration ?? null,
-                Type = model.ApiSecret.Type
-            };
+                throw new Exception($"Id={model.ApiSecret.Id}的ApiSecret不存在");
+            }
+            apiSecret.Description = model.ApiSecret.Description;
+            apiSecret.Value = model.ApiSecret.Value;
+            apiSecret.Expiration = model.ApiSecret.Expiration ?? null;
+            apiSecret.Type = model.ApiSecret.Type;
+
             var entry = DbContext.Entry(apiSecret);
             entry.State = EntityState.Modified;
             DbContext.SaveChanges();

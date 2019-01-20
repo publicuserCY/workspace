@@ -70,45 +70,39 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
                 NonEditable = model.ApiResource.NonEditable
             };
 
-            var entry = DbContext.Entry(apiResource);
+            var entry = DbContext.Entry(apiResource);           
             entry.State = EntityState.Added;
             DbContext.SaveChanges();
             entry.Reload();
+            entry.Collection(p => p.Secrets).Load();
+            entry.Collection(p => p.Scopes).Load();
+            entry.Collection(p => p.UserClaims).Load();
+            entry.Collection(p => p.Properties).Load();
             return Task.FromResult(entry.Entity);
         }
 
         public Task<IdentityServer4.EntityFramework.Entities.ApiResource> Modify(ApiResourceRequestModel model)
         {
-            //var apiResource = ConfigurationDbContext.ApiResources.SingleOrDefault(p => p.Id == model.ApiResource.Id);
-            //if (apiResource == null)
-            //{
-            //    throw new Exception($"Id={model.Id}的Api Resource 不存在");
-            //}
-            //apiResource.Enabled = model.ApiResource.Enabled;
-            //apiResource.Name = model.ApiResource.Name;
-            //apiResource.DisplayName = model.ApiResource.DisplayName;
-            //apiResource.Description = model.ApiResource.Description;
-            //apiResource.Updated = DateTime.Now;
-            //apiResource.NonEditable = model.ApiResource.NonEditable;
-
-            //ConfigurationDbContext.Entry(apiResource).State = EntityState.Modified;
-            //ConfigurationDbContext.SaveChanges();
-            //return Task.FromResult(apiResource);
-            var apiResource = new IdentityServer4.EntityFramework.Entities.ApiResource()
+            var apiResource = DbContext.ApiResources.SingleOrDefault(p => p.Id == model.ApiResource.Id);
+            if (apiResource == null)
             {
-                Id = model.ApiResource.Id,
-                Enabled = model.ApiResource.Enabled,
-                Name = model.ApiResource.Name,
-                DisplayName = model.ApiResource.DisplayName,
-                Description = model.ApiResource.Description,
-                Updated = DateTime.Now,
-                NonEditable = model.ApiResource.NonEditable
-            };
+                throw new Exception($"Id={model.ApiResource.Id}的ApiResource不存在");
+            }
+            apiResource.Enabled = model.ApiResource.Enabled;
+            apiResource.Name = model.ApiResource.Name;
+            apiResource.DisplayName = model.ApiResource.DisplayName;
+            apiResource.Description = model.ApiResource.Description;
+            apiResource.Updated = DateTime.Now;
+            apiResource.NonEditable = model.ApiResource.NonEditable;
 
             var entry = DbContext.Entry(apiResource);
             entry.State = EntityState.Modified;
             DbContext.SaveChanges();
             entry.Reload();
+            entry.Collection(p => p.Secrets).Load();
+            entry.Collection(p => p.Scopes).Load();
+            entry.Collection(p => p.UserClaims).Load();
+            entry.Collection(p => p.Properties).Load();
             return Task.FromResult(entry.Entity);
         }
 

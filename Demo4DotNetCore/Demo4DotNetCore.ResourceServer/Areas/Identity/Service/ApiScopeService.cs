@@ -42,26 +42,29 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
             entry.State = EntityState.Added;
             DbContext.SaveChanges();
             entry.Reload();
+            entry.Collection(p => p.UserClaims).Load();
             return Task.FromResult(entry.Entity);
         }
 
         public Task<IdentityServer4.EntityFramework.Entities.ApiScope> Modify(ApiScopeRequestModel model)
         {
-            var apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope()
+            var apiScope = DbContext.ApiResources.SelectMany(p => p.Scopes).SingleOrDefault(p => p.Id == model.ApiScope.Id);
+            if (apiScope == null)
             {
-                Id = model.ApiScope.Id,
-                Name = model.ApiScope.Name,
-                DisplayName = model.ApiScope.DisplayName,
-                Description = model.ApiScope.Description,
-                Required = model.ApiScope.Required,
-                Emphasize = model.ApiScope.Emphasize,
-                ShowInDiscoveryDocument = model.ApiScope.ShowInDiscoveryDocument,
-                ApiResourceId = model.ApiScope.ApiResourceId
-            };
+                throw new Exception($"Id={model.ApiScope.Id}的ApiScope不存在");
+            }
+            apiScope.Name = model.ApiScope.Name;
+            apiScope.DisplayName = model.ApiScope.DisplayName;
+            apiScope.Description = model.ApiScope.Description;
+            apiScope.Required = model.ApiScope.Required;
+            apiScope.Emphasize = model.ApiScope.Emphasize;
+            apiScope.ShowInDiscoveryDocument = model.ApiScope.ShowInDiscoveryDocument;
+
             var entry = DbContext.Entry(apiScope);
             entry.State = EntityState.Modified;
             DbContext.SaveChanges();
             entry.Reload();
+            entry.Collection(p => p.UserClaims).Load();
             return Task.FromResult(entry.Entity);
         }
 
@@ -76,7 +79,7 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
 
         public Task<bool> UniqueApiScopeName(int id, string name)
         {
-            var result = DbContext.ApiResources.SelectMany(apiResource=>apiResource.Scopes).Any(p => !p.Id.Equals(id) && p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            var result = DbContext.ApiResources.SelectMany(apiResource => apiResource.Scopes).Any(p => !p.Id.Equals(id) && p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             return Task.FromResult(result);
         }
     }

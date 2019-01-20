@@ -25,7 +25,7 @@ namespace Demo4DotNetCore.AuthorizationServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = Configuration.GetConnectionString("DefaultConnection");            
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<AspNetIdentityContext>(options => options.UseSqlite(connectionString));
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AspNetIdentityContext>()
@@ -60,6 +60,10 @@ namespace Demo4DotNetCore.AuthorizationServer
                  {
                      options.ConfigureDbContext = b => b.UseSqlite(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
                  });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("default", corsPolicyBuilder => { corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -77,7 +81,7 @@ namespace Demo4DotNetCore.AuthorizationServer
                 app.UseHsts();
                 app.UseHttpsRedirection();
             }
-            app.UseCors(corsPolicyBuilder => { corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
+            app.UseCors("default");
             app.UseStaticFiles();
             app.UseIdentityServer();
             app.UseMvcWithDefaultRoute();

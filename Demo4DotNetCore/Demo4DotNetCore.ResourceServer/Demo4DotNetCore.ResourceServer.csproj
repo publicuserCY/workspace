@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Identity\Data\**" />
+    <Content Remove="Areas\Identity\Data\**" />
+    <EmbeddedResource Remove="Areas\Identity\Data\**" />
+    <None Remove="Areas\Identity\Data\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Controllers\TestController.cs" />
     <Compile Remove="Model\BookRequestModelBinder.cs" />
     <Compile Remove="Model\PaginatedListExtensions.cs" />
@@ -44,7 +51,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Identity\Data\" />
     <Folder Include="Controllers\" />
   </ItemGroup>
 

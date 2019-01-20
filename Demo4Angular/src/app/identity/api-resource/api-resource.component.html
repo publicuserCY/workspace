@@ -64,7 +64,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let item of table.data; let i=index">
+    <tr *ngFor="let item of table.data;let i=index">
       <td>{{(paginatedresult.pageIndex-1)*paginatedresult.pageSize+i+1}}</td>
       <td>{{item.id}}</td>
       <td [nzShowCheckbox]="true" [nzDisabled]="true" [nzChecked]="item.enabled"></td>
