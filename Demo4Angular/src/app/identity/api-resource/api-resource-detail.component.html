@@ -85,7 +85,157 @@
         </nz-form-item>
       </div>
     </div>
+    <nz-form-split>
+      <h3>Api Secret</h3>
+    </nz-form-split>
+    <ng-container *ngFor="let secret of mainForm.get('secrets').controls;index as i">
+      <div [formGroup]="secret" class="sub-containner" [style.display]="secretState.value==2? 'none' : 'block'">
+        <input type="hidden" formControlName="state" #secretState />
+        <div nz-row nzGutter="16">
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{secret.get('id').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Value</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{secret.get('value').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Type</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{secret.get('type').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div nz-row>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6">Description</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{secret.get('description').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6">Expiration</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{secret.get('expiration').value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Created</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{secret.get('created').value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <nz-form-split>
+      <h3>Api Scope</h3>
+    </nz-form-split>
+    <ng-container *ngFor="let scope of mainForm.get('scopes').controls;index as i">
+      <div [formGroup]="scope" class="sub-containner" [style.display]="scopeState.value==2? 'none' : 'block'">
+        <input type="hidden" formControlName="state" #scopeState />
+        <div nz-row>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{scope.get('id').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Name</nz-form-label>
+              <nz-form-control nzSpan="18" nzHasFeedback>
+                <nz-form-text>{{scope.get('name').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6">DisplayName</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{scope.get('displayName').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div nz-row>
+          <div nz-col nzSpan="6">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6">Description</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{scope.get('description').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="6">
+            <nz-form-item nzFlex>
+              <nz-form-control nzSpan="18" nzPush="6">
+                <label nz-checkbox name="required" formControlName="required" nzDisabled nzRequired>Required</label>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="6">
+            <nz-form-item nzFlex>
+              <nz-form-control nzSpan="18" nzPush="6">
+                <label nz-checkbox name="emphasize" formControlName="emphasize" nzDisabled nzRequired>Emphasize</label>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="6">
+            <nz-form-item nzFlex>
+              <nz-form-control nzSpan="18" nzPush="6">
+                <label nz-checkbox name="showInDiscoveryDocument" formControlName="showInDiscoveryDocument" nzDisabled nzRequired>ShowInDiscoveryDocument</label>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <ng-container *ngFor="let claim of scope.get('userClaims').controls;index as claimIndex">
+          <ng-container [formGroup]="claim">
+            <input type="hidden" #claimState formControlName="state" />
+            <div nz-row class="user-claims" [style.display]="claimState.value==2? 'none' : 'block'">
+              <div nz-col nzSpan="6">
+                <nz-form-item nzFlex>
+                  <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+                  <nz-form-control nzSpan="18">
+                    <nz-form-text>{{claim.get('id').value}}</nz-form-text>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzSpan="6">
+                <nz-form-item nzFlex>
+                  <nz-form-label nzSpan="6" nzRequired>Type</nz-form-label>
+                  <nz-form-control nzSpan="18">
+                    <nz-form-text>{{claim.get('type').value}}</nz-form-text>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </ng-container>
   </ng-container>
+  <!-------------------------------------------------------------------------------------------------------------------------------------------------->
+
   <ng-container *ngIf="isEdit">
     <div nz-row nzGutter="16">
       <div nz-col [nzSpan]="mainFormSpan">
@@ -131,9 +281,7 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col [nzSpan]="0">
-        <nz-form-item nzFlex></nz-form-item>
-      </div>
+      <div nz-col [nzSpan]="0"> </div>
     </div>
     <div nz-row nzGutter="16">
       <div nz-col [nzSpan]="mainFormSpan">
@@ -178,92 +326,222 @@
     <nz-form-split>
       <h3>Api Secret</h3>
     </nz-form-split>
-    <ng-container formArrayName="secrets">
-      <ng-container *ngFor="let secret of secrets.controls;index as i">
-        <div [formGroup]="secret" class="sub-containner">
-          <div nz-row nzGutter="16">
-            <div nz-col nzSpan="8">
-              <nz-form-item nzFlex>
-                <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
-                <nz-form-control nzSpan="18">
-                  <nz-form-text>{{secret.get('id').value}}</nz-form-text>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col nzSpan="8">
-              <nz-form-item nzFlex>
-                <nz-form-label nzSpan="6" nzFor="value" nzRequired>Value</nz-form-label>
-                <nz-form-control nzSpan="18">
-                  <input nz-input id="value" placeholder="Value" formControlName="value">
-                  <nz-form-explain *ngIf="secret.get('value').dirty && secret.get('value').errors">
-                    <ng-container *ngIf="secret.get('value').hasError('required')">
-                      请输入Value
-                    </ng-container>
-                  </nz-form-explain>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col nzSpan="8">
-              <nz-form-item nzFlex>
-                <nz-form-label nzSpan="6" nzFor="type" nzRequired>Type</nz-form-label>
-                <nz-form-control nzSpan="18">
-                  <input nz-input id="type" placeholder="Type" formControlName="type">
-                  <nz-form-explain *ngIf="secret.get('type').dirty && secret.get('type').errors">
-                    <ng-container *ngIf="secret.get('type').hasError('required')">
-                      请输入Type
-                    </ng-container>
-                  </nz-form-explain>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
+    <ng-container *ngFor="let secret of mainForm.get('secrets').controls;index as secretIndex">
+      <div [formGroup]="secret" class="sub-containner" [style.display]="secretState.value==2? 'none' : 'block'">
+        <input type="hidden" formControlName="state" #secretState />
+        <div nz-row nzGutter="16">
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{secret.get('id').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
           </div>
-          <div nz-row>
-            <div nz-col nzSpan="8">
-              <nz-form-item nzFlex>
-                <nz-form-label nzSpan="6" nzFor="description">Description</nz-form-label>
-                <nz-form-control nzSpan="18">
-                  <input nz-input name="description" placeholder="Description" formControlName="description">
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col nzSpan="8">
-              <nz-form-item nzFlex>
-                <nz-form-label nzSpan="6" nzFor="expiration">Expiration</nz-form-label>
-                <nz-form-control nzSpan="18">
-                  <nz-date-picker name="expiration" formControlName="expiration" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"></nz-date-picker>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col nzSpan="8">
-              <nz-form-item nzFlex>
-                <nz-form-label nzSpan="6" nzFor="created" nzRequired>Created</nz-form-label>
-                <nz-form-control nzSpan="18">
-                  <nz-form-text>{{secret.get('created')?.value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="value" nzRequired>Value</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <input nz-input id="value" placeholder="Value" formControlName="value">
+                <nz-form-explain *ngIf="secret.get('value').dirty && secret.get('value').errors">
+                  <ng-container *ngIf="secret.get('value').hasError('required')">
+                    请输入Value
+                  </ng-container>
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="type" nzRequired>Type</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <input nz-input id="type" placeholder="Type" formControlName="type">
+                <nz-form-explain *ngIf="secret.get('type').dirty && secret.get('type').errors">
+                  <ng-container *ngIf="secret.get('type').hasError('required')">
+                    请输入Type
+                  </ng-container>
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
           </div>
         </div>
-      </ng-container>
+        <div nz-row>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="description">Description</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <input nz-input name="description" placeholder="Description" formControlName="description">
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="expiration">Expiration</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-date-picker name="expiration" formControlName="expiration" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"></nz-date-picker>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="created" nzRequired>Created</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{secret.get('created')?.value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div class="operation">
+          <nz-popconfirm [nzTitle]="'确定删除?'" (nzOnConfirm)="deleteApiSecret(secret,secretIndex)">
+            <a nz-popconfirm>
+              <i nz-icon type="delete" theme="twotone" twoToneColor="#eb2f96"></i>
+            </a>
+          </nz-popconfirm>
+        </div>
+      </div>
     </ng-container>
     <div class="new-item-containner">
-      <button nz-button type="button" nzType="dashed" (click)="addApiScret()" [style.display]="!isEdit? 'none' : 'block'">
+      <button nz-button type="button" nzType="dashed" (click)="addApiScret()">
         Add ApiSecret
+      </button>
+    </div>
+    <nz-form-split>
+      <h3>Api Scope</h3>
+    </nz-form-split>
+    <ng-container *ngFor="let scope of mainForm.get('scopes').controls;index as scopeIndex">
+      <div [formGroup]="scope" class="sub-containner" [style.display]="scopeState.value==2? 'none' : 'block'">
+        <input type="hidden" formControlName="state" #scopeState />
+        <div nz-row>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{scope.get('id').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="name" nzRequired>Name</nz-form-label>
+              <nz-form-control nzSpan="18" nzHasFeedback>
+                <input nz-input name="name" placeholder="Name" formControlName="name">
+                <nz-form-explain *ngIf="scope.get('name').dirty && scope.get('name').errors || scope.get('name').pending">
+                  <ng-container *ngIf="scope.get('name').hasError('required')">
+                    请输入Name
+                  </ng-container>
+                  <ng-container *ngIf="scope.get('name').hasError('uniqueApiScopeName')">
+                    {{scope.get('name').value}} 已经存在
+                  </ng-container>
+                  <ng-container *ngIf="scope.get('name').pending">
+                    验证中...
+                  </ng-container>
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="displayName">DisplayName</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <input nz-input name="displayName" placeholder="DisplayName" formControlName="displayName">
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div nz-row>
+          <div nz-col nzSpan="6">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="description">Description</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <input nz-input name="description" placeholder="Description" formControlName="description">
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="6">
+            <nz-form-item nzFlex>
+              <nz-form-control nzSpan="18" nzPush="6">
+                <label nz-checkbox name="required" formControlName="required" nzRequired>Required</label>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="6">
+            <nz-form-item nzFlex>
+              <nz-form-control nzSpan="18" nzPush="6">
+                <label nz-checkbox name="emphasize" formControlName="emphasize" nzRequired>Emphasize</label>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="6">
+            <nz-form-item nzFlex>
+              <nz-form-control nzSpan="18" nzPush="6">
+                <label nz-checkbox name="showInDiscoveryDocument" formControlName="showInDiscoveryDocument" nzRequired>ShowInDiscoveryDocument</label>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <ng-container *ngFor="let claim of scope.get('userClaims').controls;index as claimIndex">
+          <ng-container [formGroup]="claim">
+            <input type="hidden" #claimState formControlName="state" />
+            <div nz-row class="user-claims" [style.display]="claimState.value==2? 'none' : 'block'">
+              <div nz-col nzSpan="6">
+                <nz-form-item nzFlex>
+                  <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+                  <nz-form-control nzSpan="18">
+                    <nz-form-text>{{claim.get('id').value}}</nz-form-text>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzSpan="6">
+                <nz-form-item nzFlex>
+                  <nz-form-label nzSpan="6" nzFor="type" nzRequired>Type</nz-form-label>
+                  <nz-form-control nzSpan="18" nzHasFeedback>
+                    <input nz-input name="type" placeholder="Type" formControlName="type">
+                    <nz-form-explain *ngIf="claim.get('type').dirty && claim.get('type').errors">
+                      <ng-container *ngIf="claim.get('type').hasError('required')">
+                        请输入Type
+                      </ng-container>
+                    </nz-form-explain>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col nzSpan="6">
+                <nz-form-item nzFlex>
+                  <nz-form-control>
+                    <button nz-button type="button" nzType="dashed" (click)="deleteApiScopeClaim(claim,claimIndex)">Delete</button>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+        <div nz-row>
+          <div nz-col nzSpan="6">
+            <nz-form-item nzFlex>
+              <nz-form-control>
+                <div class="empty-subitem">
+                  <button nz-button type="button" nzType="dashed" (click)="addApiScopeClaim(scope)">Add UserClaim</button>
+                </div>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div class="operation">
+          <nz-popconfirm [nzTitle]="'确定删除?'" (nzOnConfirm)="deleteApiScope(scope,scopeIndex)">
+            <a nz-popconfirm>
+              <i nz-icon type="delete" theme="twotone" twoToneColor="#eb2f96"></i>
+            </a>
+          </nz-popconfirm>
+        </div>
+      </div>
+    </ng-container>
+    <div class="new-item-containner">
+      <button nz-button type="button" nzType="dashed" (click)="addApiScope()">
+        Add ApiScope
       </button>
     </div>
   </ng-container>
 </form>
 
-
-
-<nz-form-split>
-  <h3>Api Scope</h3>
-</nz-form-split>
-<div class="new-item-containner">
-  <button nz-button type="button" nzType="dashed" (click)="addApiScope()" [style.display]="!isEdit? 'none' : 'block'">
-    Add ApiScope
-  </button>
-</div>
 
 <div nz-row class="operation">
   <div nz-col nzSpan="12">
@@ -271,13 +549,11 @@
   </div>
   <div nz-col nzSpan="12" class="right">
     <button nz-button type="button" nzType="defalut" [style.display]="isEdit?'none':'block'" (click)="isEdit=true">编辑</button>
-    <button nz-button type="button" nzType="primary" [style.display]="!isEdit?'none':'block'" [disabled]="!mainForm.valid"
-      [nzLoading]="isSpinning" (click)="submit()">保存</button>
-    <button nz-button type="button" nzType="defalut" [style.display]="!isEdit?'none':'block'" (click)="reset()">重置</button>
-    <button nz-button type="button" nzType="defalut" [style.display]="!isEdit?'none':'block'" (click)="isEdit=false">取消</button>
+    <button nz-button type="button" nzType="primary" [style.display]="!isEdit?'none':'block'" [disabled]="!mainForm.valid" [nzLoading]="isSpinning" (click)="submit()">保存</button>
+    <button nz-button type="button" nzType="defalut" [style.display]="!isEdit?'none':'block'" (click)="cancel()">取消</button>
   </div>
 </div>
 
-<nz-modal [(nzVisible)]="isConfirmResetVisible" nzTitle="重置数据" (nzOnCancel)="isConfirmResetVisible=false" (nzOnOk)="reload()">
-  <p>确定要放弃所有更改，重新加载数据？</p>
+<nz-modal [(nzVisible)]="isConfirmCancelVisible" nzTitle="放弃修改" (nzOnCancel)="isConfirmCancelVisible=false" (nzOnOk)="confirmCancel()">
+  <p>确定要放弃所有更改？</p>
 </nz-modal>
