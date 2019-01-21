@@ -1,17 +1,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { Subscription, of, empty } from 'rxjs';
 import { finalize, switchMap } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 
 import { ApiResourceRequestModel } from '../model/api-resource-request.model';
-import { ApiResource, ApiSecret, ApiScope } from '../model/api-resource.model';
+import { ApiResource, ApiSecret, ApiScope, ApiScopeClaim } from '../model/api-resource.model';
 import { ApiResourceService } from '../service/api-resource.service';
 import { AuthorityInteractionService } from '../service/authority-Interaction.service';
 import { uniqueApiResourceNameValidatorFn } from '../validator/api-resource-name.validator';
 import { EntityState, Uris } from 'src/app/shared/const';
-import { OperationResult, PaginatedResult } from 'src/app/shared/result';
+import { OperationResult } from 'src/app/shared/result';
 // import * as fns from 'date-fns';
 @Component({
   selector: 'app-authority-api-resource-detail',
@@ -20,10 +20,15 @@ import { OperationResult, PaginatedResult } from 'src/app/shared/result';
 })
 export class ApiResourceDetailComponent implements OnInit, OnDestroy {
   isSpinning = false;
-  apiResource = new ApiResource();
+  isEdit = false;
+  isConfirmResetVisible = false;
   mainForm: FormGroup;
-  apiSecretSubscription: Subscription;
-  apiScopeSubscription: Subscription;
+  mainFormSpan = 5;
+  labelSpan = 6;
+  controlSpan = 18;
+  // apiResource = new ApiResource();
+  /* apiSecretSubscription: Subscription;
+  apiScopeSubscription: Subscription; */
 
   constructor(
     private route: ActivatedRoute,
@@ -36,18 +41,20 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.mainForm = this.fb.group({
-      id: [this.apiResource.id],
-      enabled: [this.apiResource.enabled],
-      name: [this.apiResource.name,
-      {
-        validators: [Validators.required],
-        asyncValidators: [uniqueApiResourceNameValidatorFn(this.apiResourceService, this.apiResource.id)],
-        updateOn: 'blur'
-      }],
-      displayName: [this.apiResource.displayName],
-      description: [this.apiResource.description],
-      nonEditable: [this.apiResource.nonEditable],
-      created: [this.apiResource.created]
+      id: [null, Validators.required],
+      enabled: [null, Validators.required],
+      name: [null, { validators: [Validators.required], updateOn: 'blur' }],
+      displayName: [null],
+      description: [null],
+      secrets: this.fb.array([]),
+      scopes: this.fb.array([]),
+      userClaims: this.fb.array([]),
+      properties: this.fb.array([]),
+      created: [null, Validators.required],
+      updated: [null],
+      lastAccessed: [null],
+      nonEditable: [null, Validators.required],
+      state: [null]
     });
     this.route.paramMap
       .pipe(
@@ -60,25 +67,77 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
               finalize(() => this.isSpinning = false)
             );
           } else {
-            this.apiResource.state = EntityState.Added;
-            const v: OperationResult<ApiResource> = { isSuccess: true, data: null };
+            const apiResource = new ApiResource();
+            apiResource.id = 0;
+            apiResource.enabled = true;
+            apiResource.state = EntityState.Added;
+            const v: OperationResult<ApiResource> = { isSuccess: true, data: apiResource };
             return of(v);
           }
         })
       ).subscribe(
         result => {
           if (result.isSuccess) {
-            if (result.data) {
-              ApiResource.assign(this.apiResource, result.data);
-              this.mainForm.get('name').setAsyncValidators(uniqueApiResourceNameValidatorFn(this.apiResourceService, this.apiResource.id));
-              this.reset();
-            }
+            result.data.secrets.forEach(secret => {
+              (this.mainForm.get('secrets') as FormArray).push(this.fb.group({
+                id: [secret.id, Validators.required],
+                description: [secret.description],
+                value: [secret.value, Validators.required],
+                expiration: [secret.expiration],
+                type: [secret.type, Validators.required],
+                created: [secret.created, Validators.required],
+                apiResourceId: [secret.apiResourceId, Validators.required],
+                state: [EntityState.Unchanged]
+              }));
+            });
+            result.data.scopes.forEach(scope => {
+              const scopeGroup = this.fb.group({
+                id: [scope.id, Validators.required],
+                name: [scope.name, Validators.required],
+                displayName: [scope.displayName],
+                description: [scope.description],
+                required: [scope.required, Validators.required],
+                emphasize: [scope.emphasize, Validators.required],
+                showInDiscoveryDocument: [scope.showInDiscoveryDocument],
+                apiResourceId: [scope.apiResourceId, Validators.required],
+                userClaims: this.fb.array([]),
+                state: [EntityState.Unchanged]
+              });
+              scope.userClaims.forEach(claim => {
+                (scopeGroup.get('userClaims') as FormArray).push(this.fb.group({
+                  id: [claim.id, Validators.required],
+                  type: [claim.type, Validators.required],
+                  apiScopeId: [claim.apiScopeId, Validators.required],
+                  state: [EntityState.Unchanged]
+                }));
+              });
+              (this.mainForm.get('scopes') as FormArray).push(scopeGroup);
+            });
+            result.data.userClaims.forEach(claim => {
+              (this.mainForm.get('userClaims') as FormArray).push(this.fb.group({
+                id: [claim.id, Validators.required],
+                type: [claim.type, Validators.required],
+                apiResourceId: [claim.apiResourceId, Validators.required],
+                state: [EntityState.Unchanged]
+              }));
+            });
+            result.data.properties.forEach(property => {
+              (this.mainForm.get('properties') as FormArray).push(this.fb.group({
+                id: [property.id, Validators.required],
+                key: [property.key, Validators.required],
+                value: [property.value, Validators.required],
+                apiResourceId: [property.apiResourceId, Validators.required],
+                state: [EntityState.Unchanged]
+              }));
+            });
+            this.mainForm.get('name').setAsyncValidators(uniqueApiResourceNameValidatorFn(this.apiResourceService, result.data.id));
+            this.mainForm.reset(result.data);
           } else {
             this.nzMessageService.error(result.message);
           }
         }
       );
-    this.apiSecretSubscription = this.authorityInteractionService.apiSecret$.subscribe(
+    /* this.apiSecretSubscription = this.authorityInteractionService.apiSecret$.subscribe(
       item => {
         switch (item.state) {
           case EntityState.Added:
@@ -103,41 +162,103 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
             this.apiResource.deleteScope(item);
             break;
         }
-      });
+      }); */
+  }
+
+  get secrets(): FormArray {
+    return this.mainForm.get('secrets') as FormArray;
   }
 
   addApiScret() {
-    const secret = new ApiSecret();
-    this.apiResource.addSecret(secret);
+    (this.mainForm.get('secrets') as FormArray).push(this.fb.group({
+      id: [0, Validators.required],
+      description: [null],
+      value: [null, Validators.required],
+      expiration: [null],
+      type: [null, Validators.required],
+      created: [new Date(), Validators.required],
+      apiResourceId: [this.mainForm.get('id').value, Validators.required],
+      state: [EntityState.Added]
+    }));
   }
 
   addApiScope() {
-    const apiScope = new ApiScope();
-    this.apiResource.addScope(apiScope);
+    (this.mainForm.get('scopes') as FormArray).push(this.fb.group({
+      id: [0, Validators.required],
+      name: [null, Validators.required],
+      displayName: [null],
+      description: [null],
+      required: [false, Validators.required],
+      emphasize: [false, Validators.required],
+      showInDiscoveryDocument: [false],
+      apiResourceId: [this.mainForm.get('id').value, Validators.required],
+      userClaims: this.fb.array([]),
+      state: [EntityState.Added]
+    }));
   }
 
   submit() {
     this.isSpinning = true;
-
-    this.apiResource.enabled = this.mainForm.get('enabled').value;
-    this.apiResource.name = this.mainForm.get('name').value;
-    this.apiResource.displayName = this.mainForm.get('displayName').value;
-    this.apiResource.description = this.mainForm.get('description').value;
-    this.apiResource.nonEditable = this.mainForm.get('nonEditable').value;
-
+    const apiResource = new ApiResource();
+    apiResource.id = this.mainForm.get('id').value;
+    apiResource.enabled = this.mainForm.get('enabled').value;
+    apiResource.name = this.mainForm.get('name').value;
+    apiResource.displayName = this.mainForm.get('displayName').value;
+    apiResource.description = this.mainForm.get('description').value;
+    apiResource.created = this.mainForm.get('created').value;
+    apiResource.updated = this.mainForm.get('updated').value;
+    apiResource.lastAccessed = this.mainForm.get('lastAccessed').value;
+    apiResource.nonEditable = this.mainForm.get('nonEditable').value;
+    (this.mainForm.get('secrets') as FormArray).controls.forEach(secret => {
+      if (secret.dirty) {
+        const apisecret = new ApiSecret();
+        apisecret.id = secret.get('id').value;
+        apisecret.description = secret.get('description').value;
+        apisecret.value = secret.get('value').value;
+        apisecret.expiration = secret.get('expiration').value;
+        apisecret.type = secret.get('type').value;
+        apisecret.created = secret.get('created').value;
+        apisecret.apiResourceId = secret.get('apiResourceId').value;
+        apisecret.state = secret.get('state').value === EntityState.Unchanged ? EntityState.Modified : secret.get('state').value;
+        apiResource.secrets.push(apisecret);
+      }
+    });
+    (this.mainForm.get('scopes') as FormArray).controls.forEach(scope => {
+      if (scope.dirty) {
+        const apiScope = new ApiScope();
+        apiScope.id = scope.get('id').value;
+        apiScope.name = scope.get('name').value;
+        apiScope.displayName = scope.get('displayName').value;
+        apiScope.description = scope.get('description').value;
+        apiScope.required = scope.get('required').value;
+        apiScope.emphasize = scope.get('emphasize').value;
+        apiScope.showInDiscoveryDocument = scope.get('showInDiscoveryDocument').value;
+        apiScope.apiResourceId = scope.get('apiResourceId').value;
+        apiScope.state = scope.get('state').value === EntityState.Unchanged ? EntityState.Modified : scope.get('state').value;
+        (scope.get('userClaims') as FormArray).controls.forEach(claim => {
+          const apiScopeClaim = new ApiScopeClaim();
+          apiScopeClaim.id = claim.get('id').value;
+          apiScopeClaim.type = claim.get('type').value;
+          apiScopeClaim.apiScopeId = claim.get('apiScopeId').value;
+          apiScopeClaim.state = scope.get('state').value === EntityState.Unchanged ? EntityState.Modified : claim.get('state').value;
+          apiScope.userClaims.push(apiScopeClaim);
+        });
+        apiResource.scopes.push(apiScope);
+      }
+    });
     let requestModel: ApiResourceRequestModel;
-    if (this.apiResource.state === EntityState.Added) {
+    if (this.mainForm.get('state').value === EntityState.Added) {
       requestModel = new ApiResourceRequestModel(Uris.AddApiResource);
     } else {
       requestModel = new ApiResourceRequestModel(Uris.ModifyApiResource);
     }
-    requestModel.apiResource = this.apiResource;
+    requestModel.apiResource = apiResource;
     this.apiResourceService.submit(requestModel).pipe(
       finalize(() => this.isSpinning = false)
     ).subscribe(
       result => {
         if (result.isSuccess) {
-          if (this.apiResource.state === EntityState.Added) {
+          if (this.mainForm.get('state').value === EntityState.Added) {
             this.nzMessageService.info('ApiResource 新增完成');
             this.router.navigate(['../', result.data.id], { relativeTo: this.route });
           } else {
@@ -151,33 +272,13 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
   }
 
   reset(): void {
-    let initialMap = {};
-    if (this.apiResource.state === EntityState.Added) {
-      initialMap = {
-        id: null,
-        enabled: true,
-        name: null,
-        displayName: null,
-        description: null,
-        nonEditable: false,
-        created: null
-      };
-    } else {
-      initialMap = {
-        id: this.apiResource.id,
-        enabled: this.apiResource.enabled,
-        name: this.apiResource.name,
-        displayName: this.apiResource.displayName,
-        description: this.apiResource.description,
-        nonEditable: this.apiResource.nonEditable,
-        created: this.apiResource.created
-      };
+    if (this.mainForm.dirty) {
+      this.isConfirmResetVisible = true;
     }
-    this.mainForm.reset(initialMap);
-    /* for (const key of Object.keys(this.mainForm.controls)) {
-      this.mainForm.controls[key].markAsPristine();
-      this.mainForm.controls[key].updateValueAndValidity();
-    } */
+  }
+
+  reload() {
+    this.router.navigate(['../', this.mainForm.get('id').value], { relativeTo: this.route });
   }
 
   goBack() {
@@ -185,10 +286,10 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       relativeTo: this.route,
       queryParamsHandling: 'preserve'
     };
-    this.router.navigate(['../', { id: this.apiResource.id }], navigationExtras);
+    this.router.navigate(['../', { id: this.mainForm.get('id').value }], navigationExtras);
   }
 
   ngOnDestroy(): void {
-    this.apiSecretSubscription.unsubscribe();
+    // this.apiSecretSubscription.unsubscribe();
   }
 }

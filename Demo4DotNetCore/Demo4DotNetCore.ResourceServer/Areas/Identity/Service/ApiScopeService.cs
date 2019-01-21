@@ -48,24 +48,79 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
 
         public Task<IdentityServer4.EntityFramework.Entities.ApiScope> Modify(ApiScopeRequestModel model)
         {
-            var apiScope = DbContext.ApiResources.SelectMany(p => p.Scopes).SingleOrDefault(p => p.Id == model.ApiScope.Id);
+            var apiScope = DbContext.ApiResources.SelectMany(p => p.Scopes).Include(p => p.UserClaims).SingleOrDefault(p => p.Id == model.ApiScope.Id);
             if (apiScope == null)
             {
                 throw new Exception($"Id={model.ApiScope.Id}的ApiScope不存在");
             }
-            apiScope.Name = model.ApiScope.Name;
-            apiScope.DisplayName = model.ApiScope.DisplayName;
-            apiScope.Description = model.ApiScope.Description;
-            apiScope.Required = model.ApiScope.Required;
-            apiScope.Emphasize = model.ApiScope.Emphasize;
-            apiScope.ShowInDiscoveryDocument = model.ApiScope.ShowInDiscoveryDocument;
+            using (var transaction = DbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    apiScope.Name = model.ApiScope.Name;
+                    apiScope.DisplayName = model.ApiScope.DisplayName;
+                    apiScope.Description = model.ApiScope.Description;
+                    apiScope.Required = model.ApiScope.Required;
+                    apiScope.Emphasize = model.ApiScope.Emphasize;
+                    apiScope.ShowInDiscoveryDocument = model.ApiScope.ShowInDiscoveryDocument;                    
+                    var entry = DbContext.Entry(apiScope);
+                    entry.State = EntityState.Modified;
+                    DbContext.SaveChanges();
+                    /***** ApiScopeClaim *****/
+                    Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiScopeClaim> claimEntity = null;
+                    model.ApiScope.UserClaims.ForEach(item =>
+                    {
+                        switch (item.State)
+                        {
+                            case EntityState.Detached:
+                                break;
+                            case EntityState.Unchanged:
+                                break;
+                            case EntityState.Deleted:
+                                var claimDeleted = new IdentityServer4.EntityFramework.Entities.ApiScopeClaim()
+                                {
+                                    Id = item.Id
+                                };
+                                claimEntity = DbContext.Entry(claimDeleted);
+                                claimEntity.State = EntityState.Deleted;
+                                break;
+                            case EntityState.Modified:
+                                var claimModified = new IdentityServer4.EntityFramework.Entities.ApiScopeClaim()
+                                {
+                                    Id = item.Id,
+                                    ApiScopeId = apiScope.Id,
+                                    Type = item.Type
+                                };
+                                claimEntity = DbContext.Entry(claimModified);
+                                claimEntity.State = EntityState.Modified;
+                                break;
+                            case EntityState.Added:
+                                var claimAdded = new IdentityServer4.EntityFramework.Entities.ApiScopeClaim()
+                                {
+                                    ApiScopeId = apiScope.Id,
+                                    Type = item.Type
+                                };
+                                claimEntity = DbContext.Entry(claimAdded);
+                                claimEntity.State = EntityState.Added;
+                                break;
+                            default:
+                                break;
+                        }
+                        DbContext.SaveChanges();
+                    });
 
-            var entry = DbContext.Entry(apiScope);
-            entry.State = EntityState.Modified;
-            DbContext.SaveChanges();
-            entry.Reload();
-            entry.Collection(p => p.UserClaims).Load();
-            return Task.FromResult(entry.Entity);
+                    entry.Reload();
+                    //entry.Collection(p => p.UserClaims).Load();
+                    transaction.Commit();
+                    return Task.FromResult(entry.Entity);
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+
         }
 
         public Task<IdentityServer4.EntityFramework.Entities.ApiScope> Delete(ApiScopeRequestModel model)

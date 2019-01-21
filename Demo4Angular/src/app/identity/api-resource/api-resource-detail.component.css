@@ -6,7 +6,21 @@
   border-radius: 6px;
 }
 
-.empty-subitem {
+.sub-containner {
+  position: relative;
+  margin-bottom: 8px;
+  padding: 24px 24px 0 24px;
+  background: #fbfbfb;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  transition: all .3s;
+}
+
+.sub-containner:hover {
+  border: 1px solid #1890ff;
+}
+
+.new-item-containner {
   display: flex;
   justify-content: center;
   height: 154px;
@@ -16,29 +30,25 @@
   transition: all .3s;
 }
 
-.empty-subitem:hover {
+.new-item-containner:hover {
   border: 1px solid #1890ff;
 }
 
-.empty-subitem button {
+.new-item-containner button {
   width: 40%;
   height: 50px;
   margin: auto;
 }
 
-/* .operation a {
-  margin-right: 8px;
-  font-size: 20px;
-} */
-
-/* .editable-add-btn {
-  margin: 8px;
-} */
-
 .operation {
-  margin: 8px;
+  margin: 8px 0;
 }
 
-/* .final-operation [nz-button] {
-  margin-right: 8px;
-} */
+.operation .right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.operation .right>[nz-button] {
+  margin-left: 8px;
+}

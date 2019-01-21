@@ -17,8 +17,6 @@ export class ApiResource extends BaseModel<number> {
 
     constructor() {
         super();
-        this.id = 0;
-        this.enabled = true;
     }
 
     static assign(des: ApiResource, src: ApiResource): ApiResource {
@@ -210,13 +208,9 @@ export class ApiScope extends BaseModel<number> {
         des.required = src.required;
         des.emphasize = src.emphasize;
         des.showInDiscoveryDocument = src.showInDiscoveryDocument;
+        des.userClaims = [];
         src.userClaims.forEach(item => {
-            const target = des.userClaims.find(p => p.id === item.id);
-            if (target) {
-                ApiScopeClaim.assign(target, item);
-            } else {
-                des.userClaims.push(ApiScopeClaim.assign(new ApiScopeClaim(), item));
-            }
+            des.userClaims.push(ApiScopeClaim.assign(new ApiScopeClaim(), item));
         });
         return des;
     }

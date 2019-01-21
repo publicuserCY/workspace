@@ -7,7 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./default.component.css']
 })
 export class DefaultComponent implements OnInit {
-  isCollapsed = false;
+  isCollapsed = true;
   openMap = {
     identity: true,
     login: false,

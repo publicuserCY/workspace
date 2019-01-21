@@ -3,81 +3,281 @@
     <a [routerLink]="['../']">API Resources</a>
   </nz-breadcrumb-item>
   <nz-breadcrumb-item>
-    New
+    Detail
   </nz-breadcrumb-item>
 </nz-breadcrumb>
 <form nz-form nzLayout="horizontal" [formGroup]="mainForm" class="main-form">
-  <nz-form-item>
-    <nz-form-label nzSpan="3" [nzFor]="name" nzRequired>Name</nz-form-label>
-    <nz-form-control nzSpan="21" nzHasFeedback>
-      <input nz-input name="name" placeholder="Name" formControlName="name">
-      <nz-form-explain *ngIf="mainForm.get('name').dirty && mainForm.get('name').errors || mainForm.get('name').pending">
-        <ng-container *ngIf="mainForm.get('name').hasError('required')">
-          请输入Api Resource Name
-        </ng-container>
-        <ng-container *ngIf="mainForm.get('name').hasError('uniqueApiResourceName')">
-          {{mainForm.get('name').value}} 已经存在
-        </ng-container>
-        <ng-container *ngIf="mainForm.get('name').pending">
-          验证中...
-        </ng-container>
-      </nz-form-explain>
-    </nz-form-control>
-  </nz-form-item>
-  <nz-form-item>
-    <nz-form-label nzSpan="3" [nzFor]="displayName">Display Name</nz-form-label>
-    <nz-form-control nzSpan="21">
-      <input nz-input name="displayName" placeholder="DisplayName" formControlName="displayName">
-    </nz-form-control>
-  </nz-form-item>
-  <nz-form-item>
-    <nz-form-label nzSpan="3" [nzFor]="description">Description</nz-form-label>
-    <nz-form-control nzSpan="21">
-      <textarea nz-input name="description" rows="2" placeholder="Description" formControlName="description"></textarea>
-    </nz-form-control>
-  </nz-form-item>
-  <nz-form-item>
-    <nz-form-control nzSpan="3">
-      <label nz-checkbox formControlName="enabled" nzRequired>Enabled</label>
-    </nz-form-control>
-    <nz-form-control nzSpan="3">
-      <label nz-checkbox formControlName="nonEditable" nzRequired>NonEditable</label>
-    </nz-form-control>
-    <nz-form-label nzSpan="3" nzRequired>Created</nz-form-label>
-    <nz-form-control nzSpan="3">
-      <nz-form-text>{{mainForm.get('created')?.value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
-    </nz-form-control>
-    <nz-form-label nzSpan="3">Id</nz-form-label>
-    <nz-form-control nzSpan="3">
-      <nz-form-text>{{mainForm.get('id').value}}</nz-form-text>
-    </nz-form-control>
-  </nz-form-item>
+  <ng-container *ngIf="!isEdit">
+    <div nz-row nzGutter="16">
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan" nzRequired>Id</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <nz-form-text>{{mainForm.get('id').value}}</nz-form-text>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan" nzRequired>Name</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <nz-form-text>{{mainForm.get('name').value}}</nz-form-text>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan">DisplayName</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <nz-form-text>{{mainForm.get('displayName').value}}</nz-form-text>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan+4">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan">Description</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <nz-form-text>{{mainForm.get('description').value}}</nz-form-text>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="0">
+        <nz-form-item nzFlex> </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzGutter="16">
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan" nzRequired>Created</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <nz-form-text>{{mainForm.get('created')?.value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan">Updated</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <nz-form-text>{{mainForm.get('updated')?.value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan">LastAccessed</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <nz-form-text>{{mainForm.get('lastAccessed')?.value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-control>
+            <label nz-checkbox formControlName="enabled" nzDisabled nzRequired>Enabled</label>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="4">
+        <nz-form-item nzFlex>
+          <nz-form-control>
+            <label nz-checkbox formControlName="nonEditable" nzDisabled nzRequired>NonEditable</label>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="isEdit">
+    <div nz-row nzGutter="16">
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan" nzRequired>Id</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <nz-form-text>{{mainForm.get('id').value}}</nz-form-text>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan" nzRequired>Name</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <input nz-input name="name" placeholder="Name" formControlName="name">
+            <nz-form-explain *ngIf="mainForm.get('name').dirty && mainForm.get('name').errors || mainForm.get('name').pending">
+              <ng-container *ngIf="mainForm.get('name').hasError('required')">
+                请输入Api Resource Name
+              </ng-container>
+              <ng-container *ngIf="mainForm.get('name').hasError('uniqueApiResourceName')">
+                {{mainForm.get('name').value}} 已经存在
+              </ng-container>
+              <ng-container *ngIf="mainForm.get('name').pending">
+                验证中...
+              </ng-container>
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan">DisplayName</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <input nz-input name="displayName" placeholder="DisplayName" formControlName="displayName">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan+4">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan">Description</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <textarea nz-input name="description" rows="1" placeholder="Description" formControlName="description"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="0">
+        <nz-form-item nzFlex></nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzGutter="16">
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan" nzRequired>Created</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <nz-form-text>{{mainForm.get('created')?.value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan">Updated</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <nz-form-text>{{mainForm.get('updated')?.value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-label [nzSpan]="labelSpan">LastAccessed</nz-form-label>
+          <nz-form-control [nzSpan]="controlSpan">
+            <nz-form-text>{{mainForm.get('lastAccessed')?.value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="mainFormSpan">
+        <nz-form-item nzFlex>
+          <nz-form-control>
+            <label nz-checkbox formControlName="enabled" nzRequired>Enabled</label>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="4">
+        <nz-form-item nzFlex>
+          <nz-form-control>
+            <label nz-checkbox formControlName="nonEditable" nzRequired>NonEditable</label>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <nz-form-split>
+      <h3>Api Secret</h3>
+    </nz-form-split>
+    <ng-container formArrayName="secrets">
+      <ng-container *ngFor="let secret of secrets.controls;index as i">
+        <div [formGroup]="secret" class="sub-containner">
+          <div nz-row nzGutter="16">
+            <div nz-col nzSpan="8">
+              <nz-form-item nzFlex>
+                <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+                <nz-form-control nzSpan="18">
+                  <nz-form-text>{{secret.get('id').value}}</nz-form-text>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="8">
+              <nz-form-item nzFlex>
+                <nz-form-label nzSpan="6" nzFor="value" nzRequired>Value</nz-form-label>
+                <nz-form-control nzSpan="18">
+                  <input nz-input id="value" placeholder="Value" formControlName="value">
+                  <nz-form-explain *ngIf="secret.get('value').dirty && secret.get('value').errors">
+                    <ng-container *ngIf="secret.get('value').hasError('required')">
+                      请输入Value
+                    </ng-container>
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="8">
+              <nz-form-item nzFlex>
+                <nz-form-label nzSpan="6" nzFor="type" nzRequired>Type</nz-form-label>
+                <nz-form-control nzSpan="18">
+                  <input nz-input id="type" placeholder="Type" formControlName="type">
+                  <nz-form-explain *ngIf="secret.get('type').dirty && secret.get('type').errors">
+                    <ng-container *ngIf="secret.get('type').hasError('required')">
+                      请输入Type
+                    </ng-container>
+                  </nz-form-explain>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+          <div nz-row>
+            <div nz-col nzSpan="8">
+              <nz-form-item nzFlex>
+                <nz-form-label nzSpan="6" nzFor="description">Description</nz-form-label>
+                <nz-form-control nzSpan="18">
+                  <input nz-input name="description" placeholder="Description" formControlName="description">
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="8">
+              <nz-form-item nzFlex>
+                <nz-form-label nzSpan="6" nzFor="expiration">Expiration</nz-form-label>
+                <nz-form-control nzSpan="18">
+                  <nz-date-picker name="expiration" formControlName="expiration" nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss"></nz-date-picker>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="8">
+              <nz-form-item nzFlex>
+                <nz-form-label nzSpan="6" nzFor="created" nzRequired>Created</nz-form-label>
+                <nz-form-control nzSpan="18">
+                  <nz-form-text>{{secret.get('created')?.value | date:'yyyy-MM-dd HH:mm:ss' }}</nz-form-text>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <div class="new-item-containner">
+      <button nz-button type="button" nzType="dashed" (click)="addApiScret()" [style.display]="!isEdit? 'none' : 'block'">
+        Add ApiSecret
+      </button>
+    </div>
+  </ng-container>
 </form>
-<!-- <div nz-row class="operation">
-  <div nz-col nzSpan="24">
-    <button nz-button type="button" class="editable-add-btn" (click)="addApiScret()" [disabled]="this.apiResource.state===4">
-      Add ApiScret
-    </button>
-  </div>
-</div> -->
-<nz-form-split><h3>Api Secret</h3></nz-form-split>
-<app-api-secret *ngFor="let item of apiResource.secrets" [apiSecret]="item"></app-api-secret>
-<div class="empty-subitem">
-    <button nz-button type="button" nzType="dashed" (click)="addApiScret()" [disabled]="this.apiResource.state===4">Add Api Secret</button>
-</div>
 
-<nz-form-split><h3>Api Scope</h3></nz-form-split>
-<app-api-scope *ngFor="let item of apiResource.scopes" [apiScope]="item"></app-api-scope>
-<div class="empty-subitem">
-    <button nz-button type="button" nzType="dashed" (click)="addApiScope()" [disabled]="this.apiResource.state===4">Add Api Scope</button>
+
+
+<nz-form-split>
+  <h3>Api Scope</h3>
+</nz-form-split>
+<div class="new-item-containner">
+  <button nz-button type="button" nzType="dashed" (click)="addApiScope()" [style.display]="!isEdit? 'none' : 'block'">
+    Add ApiScope
+  </button>
 </div>
 
 <div nz-row class="operation">
   <div nz-col nzSpan="12">
     <button nz-button (click)="goBack()">返回</button>
   </div>
-  <div nz-col nzSpan="12" style="text-align: right;">
-    <button nz-button nzType="primary" [disabled]="!mainForm.valid" [nzLoading]="isSpinning" (click)="submit()" style="margin-right: 8px;">Submit</button>
-    <button nz-button type="button" (click)="reset()">Reset</button>
+  <div nz-col nzSpan="12" class="right">
+    <button nz-button type="button" nzType="defalut" [style.display]="isEdit?'none':'block'" (click)="isEdit=true">编辑</button>
+    <button nz-button type="button" nzType="primary" [style.display]="!isEdit?'none':'block'" [disabled]="!mainForm.valid"
+      [nzLoading]="isSpinning" (click)="submit()">保存</button>
+    <button nz-button type="button" nzType="defalut" [style.display]="!isEdit?'none':'block'" (click)="reset()">重置</button>
+    <button nz-button type="button" nzType="defalut" [style.display]="!isEdit?'none':'block'" (click)="isEdit=false">取消</button>
   </div>
 </div>
+
+<nz-modal [(nzVisible)]="isConfirmResetVisible" nzTitle="重置数据" (nzOnCancel)="isConfirmResetVisible=false" (nzOnOk)="reload()">
+  <p>确定要放弃所有更改，重新加载数据？</p>
+</nz-modal>

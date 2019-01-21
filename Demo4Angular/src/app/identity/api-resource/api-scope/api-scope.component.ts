@@ -46,21 +46,22 @@ export class ApiScopeComponent implements OnInit, OnDestroy {
             showInDiscoveryDocument: [this.apiScope.showInDiscoveryDocument, Validators.required],
             userClaims: this.fb.array([])
         });
-        /* this.apiScope.userClaims.forEach(apiScopeClaim => {
+        this.apiScope.userClaims.forEach(apiScopeClaim => {
             this.userClaims.push(this.fb.group({
                 id: [apiScopeClaim.id],
-                type: [apiScopeClaim.type, Validators.required]
+                type: [apiScopeClaim.type, Validators.required],
+                state: [EntityState.Unchanged]
             }));
-        }); */
+        });
         if (this.apiScope.state === EntityState.Added) {
             this.isEdit = true;
         }
-        this.apiScopeClaimSubscription = this.authorityInteractionService.apiScopeClaim$.subscribe(
+        /* this.apiScopeClaimSubscription = this.authorityInteractionService.apiScopeClaim$.subscribe(
             (source: any) => {
                 if (source instanceof AbstractControl) {
                     source.setParent(this.mainForm);
                 }
-            });
+            }); */
     }
 
     get userClaims() {
@@ -68,16 +69,22 @@ export class ApiScopeComponent implements OnInit, OnDestroy {
     }
 
     addScopeClaim() {
-        const apiScopeClaim = new ApiScopeClaim();
+        /* const apiScopeClaim = new ApiScopeClaim();
+        this.apiScope.addScopeClaim(apiScopeClaim); */
         this.userClaims.push(this.fb.group({
-            id: [apiScopeClaim.id],
-            type: [apiScopeClaim.type, Validators.required]
+            id: [null],
+            type: [null, Validators.required],
+            state: [EntityState.Added]
         }));
-        /* this.mainForm.addControl(apiScopeClaim.sid, this.fb.group({
-            id: [apiScopeClaim.id],
-            type: [apiScopeClaim.type, Validators.required]
-        })); */
-        this.apiScope.addScopeClaim(apiScopeClaim);
+    }
+
+    deleteScopeClaim(formGroup: FormGroup, index: number) {
+        // this.apiScopeClaim.state = EntityState.Deleted;
+        if (formGroup.get('state').value === EntityState.Added) {
+            this.userClaims.removeAt(index);
+        } else {
+            formGroup.patchValue({ state: EntityState.Deleted });
+        }
     }
 
     submit() {
@@ -88,6 +95,16 @@ export class ApiScopeComponent implements OnInit, OnDestroy {
         this.apiScope.required = this.mainForm.get('required').value;
         this.apiScope.emphasize = this.mainForm.get('emphasize').value;
         this.apiScope.showInDiscoveryDocument = this.mainForm.get('showInDiscoveryDocument').value;
+        this.userClaims.controls.forEach(group => {
+            let target = this.apiScope.userClaims.find(p => p.id === group.get('id').value);
+            if (target) {
+                if (group.dirty) { target.state = EntityState.Modified; }
+            } else {
+                target = new ApiScopeClaim();
+                this.apiScope.addScopeClaim(target);
+            }
+            target.type = group.get('type').value;
+        });
 
         let requestModel: ApiScopeRequestModel;
         if (this.apiScope.state === EntityState.Added) {

@@ -58,7 +58,30 @@
         </nz-form-item>
       </div>
     </div>
-
+    <ng-container formArrayName="userClaims">
+      <ng-container *ngFor="let claim of userClaims.controls; index as i">
+        <ng-container [formGroup]="claim" *ngIf="claim.get('state')!==2">
+          <div nz-row class="user-claims">
+            <div nz-col nzSpan="6">
+              <nz-form-item nzFlex>
+                <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+                <nz-form-control nzSpan="18">
+                  <nz-form-text>{{claim.get('id').value}}</nz-form-text>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div nz-col nzSpan="6">
+              <nz-form-item nzFlex>
+                <nz-form-label nzSpan="6" nzFor="type" nzRequired>Type</nz-form-label>
+                <nz-form-control nzSpan="18" nzHasFeedback>
+                  <nz-form-text>{{claim.get('type').value}}</nz-form-text>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
     <div class="operation">
       <a (click)="edit()">
         <i nz-icon type="edit" theme="twotone"></i>
@@ -140,9 +163,10 @@
       </div>
     </div>
     <ng-container formArrayName="userClaims">
-      <ng-container *ngFor="let claim of userClaims.controls; let i=index">
+      <ng-container *ngFor="let claim of userClaims.controls;index as i">
         <ng-container [formGroup]="claim">
-          <div nz-row class="user-claims">
+          <input type="hidden" #z formControlName="state" />
+          <div nz-row class="user-claims" [style.display]="z.value==2? 'none' : 'block'">
             <div nz-col nzSpan="6">
               <nz-form-item nzFlex>
                 <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
@@ -167,7 +191,7 @@
             <div nz-col nzSpan="6">
               <nz-form-item nzFlex>
                 <nz-form-control>
-                  <button nz-button type="button" nzType="dashed" (click)="deleteScopeClaim()">Delete</button>
+                  <button nz-button type="button" nzType="dashed" (click)="deleteScopeClaim(claim,i)">Delete</button>
                 </nz-form-control>
               </nz-form-item>
             </div>
