@@ -2,11 +2,11 @@ import { AbstractControl, ValidationErrors, AsyncValidatorFn } from '@angular/fo
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
-import { ApiScopeService } from '../service/api-scope.service';
+import { ApiResourceService } from '../service/api-resource.service';
 
-export function uniqueApiScopeNameValidatorFn(apiScopeService: ApiScopeService, id: number): AsyncValidatorFn {
+export function uniqueApiScopeNameValidatorFn(apiResourceService: ApiResourceService, id: number): AsyncValidatorFn {
     return (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
-        return apiScopeService.uniqueApiScopeName(id, control.value)
+        return apiResourceService.uniqueApiScopeName(id, control.value)
             .pipe(
                 map(result => (result ? { uniqueApiScopeName: control.value } : null)),
                 catchError(() => null)

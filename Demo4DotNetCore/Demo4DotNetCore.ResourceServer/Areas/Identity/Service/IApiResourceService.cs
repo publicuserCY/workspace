@@ -12,5 +12,6 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
         Task<IdentityServer4.EntityFramework.Entities.ApiResource> Modify(ApiResourceRequestModel model);
         Task<IdentityServer4.EntityFramework.Entities.ApiResource> Delete(ApiResourceRequestModel model);
         Task<bool> UniqueApiResourceName(int id, string name);
+        Task<bool> UniqueApiScopeName(int id, string name);
     }
 }

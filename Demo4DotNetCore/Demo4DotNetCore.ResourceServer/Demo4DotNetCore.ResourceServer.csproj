@@ -13,6 +13,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Identity\Controller\ApiScopeController.cs" />
+    <Compile Remove="Areas\Identity\Controller\ApiSecretController.cs" />
+    <Compile Remove="Areas\Identity\Service\ApiScopeService.cs" />
+    <Compile Remove="Areas\Identity\Service\ApiSecretService.cs" />
+    <Compile Remove="Areas\Identity\Service\IApiScopeService.cs" />
+    <Compile Remove="Areas\Identity\Service\IApiSecretService.cs" />
     <Compile Remove="Controllers\TestController.cs" />
     <Compile Remove="Model\BookRequestModelBinder.cs" />
     <Compile Remove="Model\PaginatedListExtensions.cs" />

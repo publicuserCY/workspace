@@ -37,4 +37,13 @@ export class ApiResourceService extends PaginatedService<ApiResourceRequestModel
         };
         return this.http.get<boolean>(Uris.UniqueApiResourceName, options);
     }
+
+    uniqueApiScopeName(id: number, name: string): Observable<boolean> {
+        const options = {
+            params: new HttpParams()
+                .set('id', id.toString())
+                .set('name', name)
+        };
+        return this.http.get<boolean>(Uris.UniqueApiScopeName, options);
+    }
 }

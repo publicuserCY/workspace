@@ -38,8 +38,6 @@ namespace Demo4DotNetCore.ResourceServer
             services.AddDbContext<Books.Model.ResourceContext>(options => { options.UseSqlite(Configuration.GetConnectionString("BooksConnection")); });
             services.AddScoped<Books.Service.IBookService, Books.Service.BookService>();
             services.AddScoped<Identity.Service.IApiResourceService, Identity.Service.ApiResourceService>();
-            services.AddScoped<Identity.Service.IApiScopeService, Identity.Service.ApiScopeService>();
-            services.AddScoped<Identity.Service.IApiSecretService, Identity.Service.ApiSecretService>();
             services.AddMvc(options =>
             {
                 options.RequireHttpsPermanent = false;

@@ -15,8 +15,9 @@ export const Uris = {
     ModifyApiResource: ResourceServer + '/api/Identity/ApiResource/Modify',
     DeleteApiResource: ResourceServer + '/api/Identity/ApiResource/Delete',
     UniqueApiResourceName: ResourceServer + '/api/Identity/ApiResource/UniqueApiResourceName',
+    UniqueApiScopeName: ResourceServer + '/api/Identity/ApiResource/UniqueApiScopeName',
 
-    AddApiScope: ResourceServer + '/api/Identity/ApiScope/Add',
+    /* AddApiScope: ResourceServer + '/api/Identity/ApiScope/Add',
     ModifyApiScope: ResourceServer + '/api/Identity/ApiScope/Modify',
     DeleteApiScope: ResourceServer + '/api/Identity/ApiScope/Delete',
 
@@ -27,7 +28,7 @@ export const Uris = {
 
     AddApiSecret: ResourceServer + '/api/Identity/ApiSecret/Add',
     ModifyApiSecret: ResourceServer + '/api/Identity/ApiSecret/Modify',
-    DeleteApiSecret: ResourceServer + '/api/Identity/ApiSecret/Delete',
+    DeleteApiSecret: ResourceServer + '/api/Identity/ApiSecret/Delete', */
 };
 export const DefaultConfig = {
     PageSize: 10,

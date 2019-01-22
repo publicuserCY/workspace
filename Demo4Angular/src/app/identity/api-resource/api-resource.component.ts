@@ -130,10 +130,11 @@ export class ApiResourceComponent implements OnInit {
     });
   }
 
-  navigate(id: number) {
+  edit(id: number) {
     const navigationExtras: NavigationExtras = {
       relativeTo: this.route,
       queryParams: {
+        'isEdit': true,
         'pageIndex': this.paginatedresult.pageIndex
       }
     };

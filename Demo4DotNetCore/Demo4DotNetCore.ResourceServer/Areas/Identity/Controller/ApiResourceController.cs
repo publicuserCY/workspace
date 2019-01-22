@@ -118,5 +118,21 @@ namespace Demo4DotNetCore.AuthorizationServer.Controllers
             }
 
         }
+
+        [HttpGet]
+        public async Task<ActionResult> UniqueApiScopeName(int id, string name)
+        {
+            try
+            {
+                var result = await Service.UniqueApiScopeName(id, name);
+                return new JsonResult(result);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                return BadRequest();
+            }
+
+        }
     }
 }

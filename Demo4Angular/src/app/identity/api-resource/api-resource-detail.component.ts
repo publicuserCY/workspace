@@ -6,9 +6,8 @@ import { finalize, switchMap } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 
 import { ApiResourceRequestModel } from '../model/api-resource-request.model';
-import { ApiResource, ApiSecret, ApiScope, ApiScopeClaim } from '../model/api-resource.model';
+import { ApiResource, ApiSecret, ApiScope, ApiScopeClaim, ApiResourceClaim, ApiResourceProperty } from '../model/api-resource.model';
 import { ApiResourceService } from '../service/api-resource.service';
-import { ApiScopeService } from '../service/api-scope.service';
 import { AuthorityInteractionService } from '../service/authority-Interaction.service';
 import { uniqueApiResourceNameValidatorFn } from '../validator/api-resource-name.validator';
 import { uniqueApiScopeNameValidatorFn } from '../validator/api-scope-name.validator';
@@ -28,7 +27,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
   mainFormSpan = 5;
   labelSpan = 6;
   controlSpan = 18;
-  initModel: ApiResource;
+  initModel = new ApiResource();
   /* apiSecretSubscription: Subscription;
   apiScopeSubscription: Subscription; */
 
@@ -38,8 +37,6 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private nzMessageService: NzMessageService,
     private apiResourceService: ApiResourceService,
-    private apiScopeService: ApiScopeService,
-    private authorityInteractionService: AuthorityInteractionService
   ) { }
 
   ngOnInit() {
@@ -59,6 +56,9 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       nonEditable: [null, Validators.required],
       state: [null]
     });
+    this.route.queryParamMap.subscribe(queryParams => {
+      this.isEdit = queryParams.get('isEdit') === 'true';
+    });
     this.route.paramMap
       .pipe(
         switchMap((params) => {
@@ -73,6 +73,8 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
             const apiResource = new ApiResource();
             apiResource.id = 0;
             apiResource.enabled = true;
+            apiResource.created = new Date();
+            apiResource.nonEditable = false;
             apiResource.state = EntityState.Added;
             const v: OperationResult<ApiResource> = { isSuccess: true, data: apiResource };
             return of(v);
@@ -98,7 +100,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
                 id: [scope.id, Validators.required],
                 name: [scope.name, {
                   validators: [Validators.required],
-                  asyncValidators: [uniqueApiScopeNameValidatorFn(this.apiScopeService, scope.id)],
+                  asyncValidators: [uniqueApiScopeNameValidatorFn(this.apiResourceService, scope.id)],
                   updateOn: 'blur'
                 }],
                 displayName: [scope.displayName],
@@ -138,8 +140,8 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
               }));
             });
             this.mainForm.get('name').setAsyncValidators(uniqueApiResourceNameValidatorFn(this.apiResourceService, result.data.id));
-            this.mainForm.reset(result.data);
-            this.initModel = result.data;
+            Object.assign(this.initModel, result.data);
+            this.mainForm.reset(this.initModel);
           } else {
             this.nzMessageService.error(result.message);
           }
@@ -173,10 +175,6 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       }); */
   }
 
-  /* get secrets(): FormArray {
-    return this.mainForm.get('secrets') as FormArray;
-  } */
-
   addApiScret() {
     (this.mainForm.get('secrets') as FormArray).push(this.fb.group({
       id: [0, Validators.required],
@@ -195,6 +193,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       (formGroup.parent as FormArray).removeAt(index);
     } else {
       formGroup.patchValue({ state: EntityState.Deleted });
+      formGroup.markAsDirty();
     }
   }
 
@@ -203,7 +202,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       id: [0, Validators.required],
       name: [null, {
         validators: [Validators.required],
-        asyncValidators: [uniqueApiScopeNameValidatorFn(this.apiScopeService, 0)],
+        asyncValidators: [uniqueApiScopeNameValidatorFn(this.apiResourceService, 0)],
         updateOn: 'blur'
       }],
       displayName: [null],
@@ -222,6 +221,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       (formGroup.parent as FormArray).removeAt(index);
     } else {
       formGroup.patchValue({ state: EntityState.Deleted });
+      formGroup.markAsDirty();
     }
   }
 
@@ -238,6 +238,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       (formGroup.parent as FormArray).removeAt(index);
     } else {
       formGroup.patchValue({ state: EntityState.Deleted });
+      formGroup.markAsDirty();
     }
   }
 
@@ -262,7 +263,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
         apisecret.expiration = secret.get('expiration').value;
         apisecret.type = secret.get('type').value;
         apisecret.created = secret.get('created').value;
-        apisecret.apiResourceId = secret.get('apiResourceId').value;
+        apisecret.apiResourceId = apiResource.id;
         apisecret.state = secret.get('state').value === EntityState.Unchanged ? EntityState.Modified : secret.get('state').value;
         apiResource.secrets.push(apisecret);
       }
@@ -283,11 +284,34 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
           const apiScopeClaim = new ApiScopeClaim();
           apiScopeClaim.id = claim.get('id').value;
           apiScopeClaim.type = claim.get('type').value;
-          apiScopeClaim.apiScopeId = claim.get('apiScopeId').value;
+          apiScopeClaim.apiScopeId = apiScope.id;
           apiScopeClaim.state = scope.get('state').value === EntityState.Unchanged ? EntityState.Modified : claim.get('state').value;
           apiScope.userClaims.push(apiScopeClaim);
         });
         apiResource.scopes.push(apiScope);
+        // 更新scope name校验函数
+        scope.get('name').setAsyncValidators(uniqueApiScopeNameValidatorFn(this.apiResourceService, apiScope.id));
+      }
+    });
+    (this.mainForm.get('userClaims') as FormArray).controls.forEach(userClaim => {
+      if (userClaim.dirty) {
+        const apiResourceClaim = new ApiResourceClaim();
+        apiResourceClaim.id = userClaim.get('id').value;
+        apiResourceClaim.type = userClaim.get('type').value;
+        apiResourceClaim.apiResourceId = apiResource.id;
+        apiResourceClaim.state = userClaim.get('state').value === EntityState.Unchanged ? EntityState.Modified : userClaim.get('state').value;
+        apiResource.userClaims.push(apiResourceClaim);
+      }
+    });
+    (this.mainForm.get('properties') as FormArray).controls.forEach(property => {
+      if (property.dirty) {
+        const apiResourceProperty = new ApiResourceProperty();
+        apiResourceProperty.id = property.get('id').value;
+        apiResourceProperty.key = property.get('key').value;
+        apiResourceProperty.value = property.get('value').value;
+        apiResourceProperty.apiResourceId = apiResource.id;
+        apiResourceProperty.state = property.get('state').value === EntityState.Unchanged ? EntityState.Modified : property.get('state').value;
+        apiResource.properties.push(apiResourceProperty);
       }
     });
     let requestModel: ApiResourceRequestModel;
