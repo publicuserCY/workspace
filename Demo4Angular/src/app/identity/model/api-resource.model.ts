@@ -1,5 +1,6 @@
 import { EntityState } from 'src/app/shared/const';
 import { BaseModel } from 'src/app/shared/base.model';
+import { FormBuilder, FormGroup, AbstractControl, Validators, FormArray } from '@angular/forms';
 
 export class ApiResource extends BaseModel<number> {
     enabled: boolean;
@@ -19,24 +20,23 @@ export class ApiResource extends BaseModel<number> {
         super();
     }
 
-    static assign(des: ApiResource, src: ApiResource): ApiResource {
-        des.state = src.state;
-        des.id = src.id;
-        des.enabled = src.enabled;
-        des.name = src.name;
-        des.displayName = src.displayName;
-        des.description = src.description;
-        des.created = src.created;
-        des.updated = src.updated;
-        des.lastAccessed = src.lastAccessed;
-        des.nonEditable = src.nonEditable;
-        src.secrets.forEach(item => {
-            const target = des.secrets.find(p => p.id === item.id);
-            if (target) {
-                ApiSecret.assign(target, item);
-            } else {
-                des.secrets.push(ApiSecret.assign(new ApiSecret(), item));
-            }
+    toControl(fb: FormBuilder): AbstractControl {
+        const control = super.toControl(fb) as FormGroup;
+        control.addControl('enabled', fb.control(this.enabled, Validators.required));
+        control.addControl('name', fb.control(this.name, { validators: [Validators.required], updateOn: 'blur' }));
+        control.addControl('displayName', fb.control(this.displayName, Validators.required));
+        control.addControl('description', fb.control(this.description));
+        control.addControl('secrets', fb.array([]));
+        control.addControl('scopes', fb.array([]));
+        control.addControl('userClaims', fb.array([]));
+        control.addControl('properties', fb.array([]));
+        control.addControl('created', fb.control(this.created, Validators.required));
+        control.addControl('updated', fb.control(this.updated));
+        control.addControl('lastAccessed', fb.control(this.lastAccessed));
+        control.addControl('nonEditable', fb.control(this.nonEditable, Validators.required));
+        this.secrets.forEach(item => {
+            const secretControl = new ApiSecret();
+            (control.get('secrets') as FormArray).push(secretControl.toControl());
         });
         src.scopes.forEach(item => {
             const target = des.scopes.find(p => p.id === item.id);
@@ -234,11 +234,8 @@ export class ApiResourceClaim extends UserClaim {
     constructor() {
         super();
     }
-    static assign(des: ApiResourceClaim, src: ApiResourceClaim): ApiResourceClaim {
-        des.id = src.id;
-        des.apiResourceId = src.apiResourceId;
-        des.type = src.type;
-        return des;
+    toControl(fb: FormBuilder): AbstractControl {
+        
     }
 }
 

@@ -83,6 +83,22 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       ).subscribe(
         result => {
           if (result.isSuccess) {
+            this.mainForm = this.fb.group({
+              id: [null, Validators.required],
+              enabled: [null, Validators.required],
+              name: [null, { validators: [Validators.required], updateOn: 'blur' }],
+              displayName: [null],
+              description: [null],
+              secrets: this.fb.array([]),
+              scopes: this.fb.array([]),
+              userClaims: this.fb.array([]),
+              properties: this.fb.array([]),
+              created: [null, Validators.required],
+              updated: [null],
+              lastAccessed: [null],
+              nonEditable: [null, Validators.required],
+              state: [null]
+            });
             result.data.secrets.forEach(secret => {
               (this.mainForm.get('secrets') as FormArray).push(this.fb.group({
                 id: [secret.id, Validators.required],

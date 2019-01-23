@@ -1,11 +1,17 @@
 import { EntityState } from './const';
 import * as uuidV4 from 'uuid/v4';
+import { FormBuilder, AbstractControl, Validators } from '@angular/forms';
 
 export abstract class BaseModel<T> {
     sid = uuidV4();
     id: T;
     state = EntityState.Unchanged;
     constructor() { }
+
+    toControl(fb: FormBuilder): AbstractControl {
+        const control = fb.group({ id: [null, Validators.required] });
+        return control;
+    }
 
     /* UUID(len: number, radix: number) {
         const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
