@@ -1,6 +1,6 @@
 import { EntityState } from 'src/app/shared/const';
 import { BaseModel } from 'src/app/shared/base.model';
-import { FormBuilder, FormGroup, AbstractControl, Validators, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 
 export class ApiResource extends BaseModel<number> {
     enabled: boolean;
@@ -20,117 +20,68 @@ export class ApiResource extends BaseModel<number> {
         super();
     }
 
-    toControl(fb: FormBuilder): AbstractControl {
-        const control = super.toControl(fb) as FormGroup;
-        control.addControl('enabled', fb.control(this.enabled, Validators.required));
-        control.addControl('name', fb.control(this.name, { validators: [Validators.required], updateOn: 'blur' }));
-        control.addControl('displayName', fb.control(this.displayName, Validators.required));
-        control.addControl('description', fb.control(this.description));
-        control.addControl('secrets', fb.array([]));
-        control.addControl('scopes', fb.array([]));
-        control.addControl('userClaims', fb.array([]));
-        control.addControl('properties', fb.array([]));
-        control.addControl('created', fb.control(this.created, Validators.required));
-        control.addControl('updated', fb.control(this.updated));
-        control.addControl('lastAccessed', fb.control(this.lastAccessed));
-        control.addControl('nonEditable', fb.control(this.nonEditable, Validators.required));
-        this.secrets.forEach(item => {
-            const secretControl = new ApiSecret();
-            (control.get('secrets') as FormArray).push(secretControl.toControl());
+    static toControl(fb: FormBuilder, src: ApiResource): FormGroup {
+        src.state = EntityState.Unchanged;
+        const control = fb.group({
+            state: [src.state],
+            id: [src.id, Validators.required],
+            enabled: [src.enabled, Validators.required],
+            name: [src.name, { validators: [Validators.required], updateOn: 'blur' }],
+            displayName: [src.displayName],
+            description: [src.description],
+            secrets: fb.array([]),
+            scopes: fb.array([]),
+            userClaims: fb.array([]),
+            properties: fb.array([]),
+            created: [src.created, Validators.required],
+            updated: [src.updated],
+            lastAccessed: [src.lastAccessed],
+            nonEditable: [src.nonEditable, Validators.required]
+        });
+        src.secrets.forEach(item => {
+            (control.get('secrets') as FormArray).push(ApiSecret.toControl(fb, item));
         });
         src.scopes.forEach(item => {
-            const target = des.scopes.find(p => p.id === item.id);
-            if (target) {
-                ApiScope.assign(target, item);
-            } else {
-                des.scopes.push(ApiScope.assign(new ApiScope(), item));
-            }
+            (control.get('scopes') as FormArray).push(ApiScope.toControl(fb, item));
         });
         src.userClaims.forEach(item => {
-            const target = des.userClaims.find(p => p.id === item.id);
-            if (target) {
-                ApiResourceClaim.assign(target, item);
-            } else {
-                des.userClaims.push(ApiResourceClaim.assign(new ApiResourceClaim(), item));
-            }
+            (control.get('userClaims') as FormArray).push(ApiResourceClaim.toControl(fb, item));
         });
         src.properties.forEach(item => {
-            const target = des.properties.find(p => p.id === item.id);
-            if (target) {
-                ApiResourceProperty.assign(target, item);
-            } else {
-                des.properties.push(ApiResourceProperty.assign(new ApiResourceProperty(), item));
-            }
+            (control.get('properties') as FormArray).push(ApiResourceProperty.toControl(fb, item));
         });
-        return des;
+        return control;
     }
 
-    /* private getNewApiSecretId(): number {
-        const sorted = this.secrets.sort((a: { id: number; }, b: { id: number; }) => b.id - a.id);
-        if (sorted.length > 0) {
-            return sorted[0].id + 1;
-        }
-        return 1;
-    } */
-
-    /*** secrets ***/
-    addSecret(item: ApiSecret) {
-        item.apiResourceId = this.id;
-        item.state = EntityState.Added;
-        this.secrets = [...this.secrets, item];
-    }
-    modifySecret(item: ApiSecret) {
-        const target = this.secrets.find(p => p.sid === item.sid);
-        target.state = EntityState.Modified;
-        ApiSecret.assign(target, item);
-    }
-    deleteSecret(item: ApiSecret) {
-        this.secrets = this.secrets.filter(p => p.sid !== item.sid);
-    }
-
-    /*** scopes ***/
-    addScope(item: ApiScope) {
-        item.apiResourceId = this.id;
-        item.state = EntityState.Added;
-        this.scopes = [...this.scopes, item];
-    }
-    modifyScope(item: ApiScope) {
-        const target = this.scopes.find(p => p.sid === item.sid);
-        target.state = EntityState.Modified;
-        ApiScope.assign(target, item);
-    }
-    deleteScope(item: ApiScope) {
-        this.scopes = this.scopes.filter(p => p.sid !== item.sid);
-    }
-
-    /*** userClaims ***/
-    addUserClaim(item: ApiResourceClaim) {
-        item.apiResourceId = this.id;
-        item.state = EntityState.Added;
-        this.userClaims = [...this.userClaims, item];
-    }
-    modifyUserClaim(item: ApiResourceClaim) {
-        const target = this.userClaims.find(p => p.sid === item.sid);
-        target.state = EntityState.Modified;
-        ApiResourceClaim.assign(target, item);
-    }
-    deleteUserClaim(item: ApiResourceClaim) {
-        this.userClaims = this.userClaims.filter(p => p.sid !== item.sid);
-    }
-
-    /*** properties ***/
-    addProperty(item: ApiResourceProperty) {
-        item.apiResourceId = this.id;
-        item.state = EntityState.Added;
-        this.properties = [...this.properties, item];
-    }
-    modifyProperty(item: ApiResourceProperty) {
-        const target = this.properties.find(p => p.sid === item.sid);
-        target.state = EntityState.Modified;
-        ApiResourceProperty.assign(target, item);
-    }
-    deleteProperty(item: ApiResourceProperty) {
-        this.properties = this.properties.filter(p => p.sid !== item.sid);
+    static fromControl(formGroup: FormGroup): ApiResource {
+        const result = new ApiResource();
+        result.state = formGroup.get('state').value;
+        result.id = formGroup.get('id').value;
+        result.enabled = formGroup.get('enabled').value;
+        result.name = formGroup.get('name').value;
+        result.displayName = formGroup.get('displayName').value;
+        result.description = formGroup.get('description').value;
+        result.created = formGroup.get('created').value;
+        result.updated = formGroup.get('updated').value;
+        result.lastAccessed = formGroup.get('lastAccessed').value;
+        result.nonEditable = formGroup.get('nonEditable').value;
+        result.secrets = [];
+        result.scopes = [];
+        result.userClaims = [];
+        result.properties = [];
+        (formGroup.get('secrets') as FormArray).controls.forEach(form => {
+            result.secrets.push(ApiSecret.fromControl(form as FormGroup));
+        });
+        (formGroup.get('scopes') as FormArray).controls.forEach(form => {
+            result.scopes.push(ApiScope.fromControl(form as FormGroup));
+        });
+        (formGroup.get('userClaims') as FormArray).controls.forEach(form => {
+            result.userClaims.push(ApiResourceClaim.fromControl(form as FormGroup));
+        });
+        (formGroup.get('properties') as FormArray).controls.forEach(form => {
+            result.properties.push(ApiResourceProperty.fromControl(form as FormGroup));
+        });
+        return result;
     }
 }
 
@@ -144,6 +95,20 @@ abstract class Secret extends BaseModel<number> {
     constructor() {
         super();
     }
+
+    static toControl(fb: FormBuilder, src: Secret): FormGroup {
+        src.state = EntityState.Unchanged;
+        const control = fb.group({
+            state: [EntityState.Unchanged],
+            id: [src.id, Validators.required],
+            description: [src.description],
+            value: [src.value, Validators.required],
+            expiration: [src.expiration],
+            type: [src.type, Validators.required],
+            created: [src.created, Validators.required]
+        });
+        return control;
+    }
 }
 
 export class ApiSecret extends Secret {
@@ -151,15 +116,23 @@ export class ApiSecret extends Secret {
     constructor() {
         super();
     }
-    static assign(des: ApiSecret, src: ApiSecret): ApiSecret {
-        des.id = src.id;
-        des.apiResourceId = src.apiResourceId;
-        des.description = src.description;
-        des.value = src.value;
-        des.expiration = src.expiration;
-        des.type = src.type;
-        des.created = src.created;
-        return des;
+    static toControl(fb: FormBuilder, src: ApiSecret): FormGroup {
+        const control = super.toControl(fb, src);
+        control.addControl('apiResourceId', fb.control(src.apiResourceId, Validators.required));
+        return control;
+    }
+
+    static fromControl(formGroup: FormGroup): ApiSecret {
+        const result = new ApiSecret();
+        result.state = formGroup.get('state').value;
+        result.id = formGroup.get('id').value;
+        result.description = formGroup.get('description').value;
+        result.value = formGroup.get('value').value;
+        result.expiration = formGroup.get('expiration').value;
+        result.type = formGroup.get('type').value;
+        result.created = formGroup.get('created').value;
+        result.apiResourceId = formGroup.get('apiResourceId').value;
+        return result;
     }
 }
 
@@ -168,6 +141,16 @@ abstract class UserClaim extends BaseModel<number> {
     constructor() {
         super();
     }
+
+    static toControl(fb: FormBuilder, src: UserClaim): FormGroup {
+        src.state = EntityState.Unchanged;
+        const control = fb.group({
+            state: [EntityState.Unchanged],
+            id: [src.id, Validators.required],
+            type: [src.type, Validators.required]
+        });
+        return control;
+    }
 }
 
 export class ApiScopeClaim extends UserClaim {
@@ -175,11 +158,20 @@ export class ApiScopeClaim extends UserClaim {
     constructor() {
         super();
     }
-    static assign(des: ApiScopeClaim, src: ApiScopeClaim): ApiScopeClaim {
-        des.id = src.id;
-        des.apiScopeId = src.apiScopeId;
-        des.type = src.type;
-        return des;
+
+    static toControl(fb: FormBuilder, src: ApiScopeClaim): FormGroup {
+        const control = super.toControl(fb, src);
+        control.addControl('apiScopeId', fb.control(src.apiScopeId, Validators.required));
+        return control;
+    }
+
+    static fromControl(formGroup: FormGroup): ApiScopeClaim {
+        const result = new ApiScopeClaim();
+        result.state = formGroup.get('state').value;
+        result.id = formGroup.get('id').value;
+        result.type = formGroup.get('type').value;
+        result.apiScopeId = formGroup.get('apiScopeId').value;
+        return result;
     }
 }
 
@@ -199,33 +191,46 @@ export class ApiScope extends BaseModel<number> {
         this.emphasize = false;
         this.showInDiscoveryDocument = false;
     }
-    static assign(des: ApiScope, src: ApiScope): ApiScope {
-        des.id = src.id;
-        des.apiResourceId = src.apiResourceId;
-        des.name = src.name;
-        des.displayName = src.displayName;
-        des.description = src.description;
-        des.required = src.required;
-        des.emphasize = src.emphasize;
-        des.showInDiscoveryDocument = src.showInDiscoveryDocument;
-        des.userClaims = [];
-        src.userClaims.forEach(item => {
-            des.userClaims.push(ApiScopeClaim.assign(new ApiScopeClaim(), item));
+
+    static toControl(fb: FormBuilder, src: ApiScope): FormGroup {
+        src.state = EntityState.Unchanged;
+        const control = fb.group({
+            state: [EntityState.Unchanged],
+            id: [src.id, Validators.required],
+            name: [src.name, {
+                validators: [Validators.required],
+                updateOn: 'blur'
+            }],
+            displayName: [src.displayName],
+            description: [src.description],
+            required: [src.required, Validators.required],
+            emphasize: [src.emphasize, Validators.required],
+            showInDiscoveryDocument: [src.showInDiscoveryDocument],
+            apiResourceId: [src.apiResourceId, Validators.required],
+            userClaims: fb.array([]),
         });
-        return des;
+        src.userClaims.forEach(item => {
+            (control.get('userClaims') as FormArray).push(ApiScopeClaim.toControl(fb, item));
+        });
+        return control;
     }
-    addScopeClaim(item: ApiScopeClaim) {
-        item.apiScopeId = this.id;
-        item.state = EntityState.Added;
-        this.userClaims = [...this.userClaims, item];
-    }
-    modifyScopeClaim(item: ApiScopeClaim) {
-        const target = this.userClaims.find(p => p.sid === item.sid);
-        target.state = EntityState.Modified;
-        ApiScopeClaim.assign(target, item);
-    }
-    deleteScopeClaim(item: ApiScopeClaim) {
-        item.state = EntityState.Deleted;
+
+    static fromControl(formGroup: FormGroup): ApiScope {
+        const result = new ApiScope();
+        result.state = formGroup.get('state').value;
+        result.id = formGroup.get('id').value;
+        result.name = formGroup.get('name').value;
+        result.displayName = formGroup.get('displayName').value;
+        result.description = formGroup.get('description').value;
+        result.required = formGroup.get('required').value;
+        result.emphasize = formGroup.get('emphasize').value;
+        result.showInDiscoveryDocument = formGroup.get('showInDiscoveryDocument').value;
+        result.apiResourceId = formGroup.get('apiResourceId').value;
+        result.userClaims = [];
+        (formGroup.get('userClaims') as FormArray).controls.forEach(form => {
+            result.userClaims.push(ApiScopeClaim.fromControl(form as FormGroup));
+        });
+        return result;
     }
 }
 
@@ -234,8 +239,19 @@ export class ApiResourceClaim extends UserClaim {
     constructor() {
         super();
     }
-    toControl(fb: FormBuilder): AbstractControl {
-        
+
+    static toControl(fb: FormBuilder, src: ApiResourceClaim): FormGroup {
+        const control = super.toControl(fb, src);
+        control.addControl('apiResourceId', fb.control(src.apiResourceId, Validators.required));
+        return control;
+    }
+
+    static fromControl(formGroup: FormGroup): ApiResourceClaim {
+        const result = new ApiResourceClaim();
+        result.state = formGroup.get('state').value;
+        result.id = formGroup.get('id').value;
+        result.type = formGroup.get('type').value;
+        return result;
     }
 }
 
@@ -245,6 +261,17 @@ abstract class Property extends BaseModel<number> {
     constructor() {
         super();
     }
+
+    static toControl(fb: FormBuilder, src: Property): FormGroup {
+        src.state = EntityState.Unchanged;
+        const control = fb.group({
+            state: [EntityState.Unchanged],
+            id: [src.id, Validators.required],
+            key: [src.key, Validators.required],
+            value: [src.value, Validators.required]
+        });
+        return control;
+    }
 }
 
 export class ApiResourceProperty extends Property {
@@ -252,11 +279,19 @@ export class ApiResourceProperty extends Property {
     constructor() {
         super();
     }
-    static assign(des: ApiResourceProperty, src: ApiResourceProperty): ApiResourceProperty {
-        des.id = src.id;
-        des.apiResourceId = src.apiResourceId;
-        des.key = src.key;
-        des.value = src.value;
-        return des;
+
+    static toControl(fb: FormBuilder, src: ApiResourceProperty): FormGroup {
+        const control = super.toControl(fb, src);
+        control.addControl('apiResourceId', fb.control(src.apiResourceId, Validators.required));
+        return control;
+    }
+
+    static fromControl(formGroup: FormGroup): ApiResourceProperty {
+        const result = new ApiResourceProperty();
+        result.state = formGroup.get('state').value;
+        result.id = formGroup.get('id').value;
+        result.key = formGroup.get('key').value;
+        result.value = formGroup.get('value').value;
+        return result;
     }
 }

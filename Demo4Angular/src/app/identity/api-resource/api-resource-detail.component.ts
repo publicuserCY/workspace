@@ -40,7 +40,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.mainForm = this.fb.group({
+    /* this.mainForm = this.fb.group({
       id: [null, Validators.required],
       enabled: [null, Validators.required],
       name: [null, { validators: [Validators.required], updateOn: 'blur' }],
@@ -55,7 +55,8 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       lastAccessed: [null],
       nonEditable: [null, Validators.required],
       state: [null]
-    });
+    }); */
+    this.mainForm = ApiResource.toControl(this.fb, this.initModel);
     this.route.queryParamMap.subscribe(queryParams => {
       this.isEdit = queryParams.get('isEdit') === 'true';
     });
@@ -83,7 +84,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       ).subscribe(
         result => {
           if (result.isSuccess) {
-            this.mainForm = this.fb.group({
+            /* this.mainForm = this.fb.group({
               id: [null, Validators.required],
               enabled: [null, Validators.required],
               name: [null, { validators: [Validators.required], updateOn: 'blur' }],
@@ -154,9 +155,13 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
                 apiResourceId: [property.apiResourceId, Validators.required],
                 state: [EntityState.Unchanged]
               }));
-            });
-            this.mainForm.get('name').setAsyncValidators(uniqueApiResourceNameValidatorFn(this.apiResourceService, result.data.id));
+            }); */
             Object.assign(this.initModel, result.data);
+            this.mainForm = ApiResource.toControl(this.fb, this.initModel);
+            this.mainForm.get('name').setAsyncValidators(uniqueApiResourceNameValidatorFn(this.apiResourceService, this.initModel.id));
+            (this.mainForm.get('scopes') as FormArray).controls.forEach(scope => {
+              (scope as FormGroup).get('name').setAsyncValidators(uniqueApiScopeNameValidatorFn(this.apiResourceService, (scope as FormGroup).get('id').value));
+            });
             this.mainForm.reset(this.initModel);
           } else {
             this.nzMessageService.error(result.message);
@@ -193,14 +198,14 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
 
   addApiScret() {
     (this.mainForm.get('secrets') as FormArray).push(this.fb.group({
+      state: [EntityState.Added],
       id: [0, Validators.required],
       description: [null],
       value: [null, Validators.required],
       expiration: [null],
       type: [null, Validators.required],
       created: [new Date(), Validators.required],
-      apiResourceId: [this.mainForm.get('id').value, Validators.required],
-      state: [EntityState.Added]
+      apiResourceId: [this.mainForm.get('id').value, Validators.required]
     }));
   }
 
@@ -215,6 +220,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
 
   addApiScope() {
     (this.mainForm.get('scopes') as FormArray).push(this.fb.group({
+      state: [EntityState.Added],
       id: [0, Validators.required],
       name: [null, {
         validators: [Validators.required],
@@ -227,8 +233,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       emphasize: [false, Validators.required],
       showInDiscoveryDocument: [false],
       apiResourceId: [this.mainForm.get('id').value, Validators.required],
-      userClaims: this.fb.array([]),
-      state: [EntityState.Added]
+      userClaims: this.fb.array([])
     }));
   }
 
@@ -243,9 +248,9 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
 
   addApiScopeClaim(formGroup: FormGroup) {
     (formGroup.get('userClaims') as FormArray).push(this.fb.group({
+      state: [EntityState.Added],
       id: [0, Validators.required],
-      type: [null, Validators.required],
-      state: [EntityState.Added]
+      type: [null, Validators.required]
     }));
   }
 
@@ -260,8 +265,8 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
 
   submit() {
     this.isSpinning = true;
-    const apiResource = new ApiResource();
-    apiResource.id = this.mainForm.get('id').value;
+    this.initModel = ApiResource.fromControl(this.mainForm);
+    /* apiResource.id = this.mainForm.get('id').value;
     apiResource.enabled = this.mainForm.get('enabled').value;
     apiResource.name = this.mainForm.get('name').value;
     apiResource.displayName = this.mainForm.get('displayName').value;
@@ -329,14 +334,14 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
         apiResourceProperty.state = property.get('state').value === EntityState.Unchanged ? EntityState.Modified : property.get('state').value;
         apiResource.properties.push(apiResourceProperty);
       }
-    });
+    }); */
     let requestModel: ApiResourceRequestModel;
     if (this.mainForm.get('state').value === EntityState.Added) {
       requestModel = new ApiResourceRequestModel(Uris.AddApiResource);
     } else {
       requestModel = new ApiResourceRequestModel(Uris.ModifyApiResource);
     }
-    requestModel.apiResource = apiResource;
+    requestModel.apiResource = this.initModel;
     this.apiResourceService.submit(requestModel).pipe(
       finalize(() => this.isSpinning = false)
     ).subscribe(
@@ -346,6 +351,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
             this.nzMessageService.info('ApiResource 新增完成');
             this.router.navigate(['../', result.data.id], { relativeTo: this.route });
           } else {
+            this.mainForm = ApiResource.toControl(this.fb, this.initModel);
             this.nzMessageService.info('ApiResource 更新完成');
           }
         } else {
