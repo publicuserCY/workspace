@@ -55,7 +55,7 @@ export class ApiResource extends BaseModel<number> {
 
     static fromControl(formGroup: FormGroup): ApiResource {
         const result = new ApiResource();
-        result.state = formGroup.get('state').value;
+        result.state = formGroup.dirty ? formGroup.get('state').value === EntityState.Unchanged ? EntityState.Modified : formGroup.get('state').value : formGroup.get('state').value;
         result.id = formGroup.get('id').value;
         result.enabled = formGroup.get('enabled').value;
         result.name = formGroup.get('name').value;
@@ -124,7 +124,7 @@ export class ApiSecret extends Secret {
 
     static fromControl(formGroup: FormGroup): ApiSecret {
         const result = new ApiSecret();
-        result.state = formGroup.get('state').value;
+        result.state = formGroup.dirty ? formGroup.get('state').value === EntityState.Unchanged ? EntityState.Modified : formGroup.get('state').value : formGroup.get('state').value;
         result.id = formGroup.get('id').value;
         result.description = formGroup.get('description').value;
         result.value = formGroup.get('value').value;
@@ -167,7 +167,7 @@ export class ApiScopeClaim extends UserClaim {
 
     static fromControl(formGroup: FormGroup): ApiScopeClaim {
         const result = new ApiScopeClaim();
-        result.state = formGroup.get('state').value;
+        result.state = formGroup.dirty ? formGroup.get('state').value === EntityState.Unchanged ? EntityState.Modified : formGroup.get('state').value : formGroup.get('state').value;
         result.id = formGroup.get('id').value;
         result.type = formGroup.get('type').value;
         result.apiScopeId = formGroup.get('apiScopeId').value;
@@ -217,7 +217,7 @@ export class ApiScope extends BaseModel<number> {
 
     static fromControl(formGroup: FormGroup): ApiScope {
         const result = new ApiScope();
-        result.state = formGroup.get('state').value;
+        result.state = formGroup.dirty ? formGroup.get('state').value === EntityState.Unchanged ? EntityState.Modified : formGroup.get('state').value : formGroup.get('state').value;
         result.id = formGroup.get('id').value;
         result.name = formGroup.get('name').value;
         result.displayName = formGroup.get('displayName').value;
@@ -248,7 +248,7 @@ export class ApiResourceClaim extends UserClaim {
 
     static fromControl(formGroup: FormGroup): ApiResourceClaim {
         const result = new ApiResourceClaim();
-        result.state = formGroup.get('state').value;
+        result.state = formGroup.dirty ? formGroup.get('state').value === EntityState.Unchanged ? EntityState.Modified : formGroup.get('state').value : formGroup.get('state').value;
         result.id = formGroup.get('id').value;
         result.type = formGroup.get('type').value;
         return result;
@@ -288,7 +288,7 @@ export class ApiResourceProperty extends Property {
 
     static fromControl(formGroup: FormGroup): ApiResourceProperty {
         const result = new ApiResourceProperty();
-        result.state = formGroup.get('state').value;
+        result.state = formGroup.dirty ? formGroup.get('state').value === EntityState.Unchanged ? EntityState.Modified : formGroup.get('state').value : formGroup.get('state').value;
         result.id = formGroup.get('id').value;
         result.key = formGroup.get('key').value;
         result.value = formGroup.get('value').value;

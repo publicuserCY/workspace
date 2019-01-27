@@ -64,156 +64,75 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
             {
                 try
                 {
-                    var apiResource = new IdentityServer4.EntityFramework.Entities.ApiResource()
-                    {
-                        Enabled = model.ApiResource.Enabled,
-                        Name = model.ApiResource.Name,
-                        DisplayName = model.ApiResource.DisplayName,
-                        Description = model.ApiResource.Description,
-                        Created = DateTime.Now,
-                        NonEditable = model.ApiResource.NonEditable
-                    };
-                    var entryApiResource = DbContext.Entry(apiResource);
-                    entryApiResource.State = EntityState.Added;
-                    DbContext.SaveChanges();
-                    //entryApiResource.Reload();
+                    var entryApiResource = AddApiResource(model.ApiResource);
                     /***** ApiSecret *****/
-                    Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiSecret> entryApiSecret = null;
-                    IdentityServer4.EntityFramework.Entities.ApiSecret apiSecret = null;
                     model.ApiResource.Secrets.ForEach(item =>
                     {
                         switch (item.State)
                         {
                             case EntityState.Added:
-                                apiSecret = new IdentityServer4.EntityFramework.Entities.ApiSecret()
-                                {
-                                    Description = item.Description,
-                                    Value = item.Value,
-                                    Expiration = item.Expiration ?? null,
-                                    Type = item.Type,
-                                    Created = DateTime.Now,
-                                    ApiResourceId = apiResource.Id
-                                };
-                                entryApiSecret = DbContext.Entry(apiSecret);
-                                entryApiSecret.State = EntityState.Added;
+                                AddApiSecret(model.ApiResource, item);
                                 break;
                             default:
                                 break;
                         }
                     });
-                    DbContext.SaveChanges();
                     /***** ApiScope *****/
-                    Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiScope> entryApiScope = null;
-                    IdentityServer4.EntityFramework.Entities.ApiScope apiScope = null;
-                    Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiScopeClaim> entryApiScopeClaim = null;
-                    IdentityServer4.EntityFramework.Entities.ApiScopeClaim apiScopeClaim = null;
                     model.ApiResource.Scopes.ForEach(item =>
                     {
                         switch (item.State)
                         {
                             case EntityState.Added:
-                                apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope()
-                                {
-                                    Name = item.Name,
-                                    DisplayName = item.DisplayName,
-                                    Description = item.Description,
-                                    Required = item.Required,
-                                    Emphasize = item.Emphasize,
-                                    ShowInDiscoveryDocument = item.ShowInDiscoveryDocument,
-                                    ApiResourceId = apiResource.Id
-                                };
-                                entryApiScope = DbContext.Entry(apiScope);
-                                entryApiScope.State = EntityState.Added;
+                                AddApiScope(model.ApiResource, item);
                                 break;
                             default:
                                 break;
                         }
-                        DbContext.SaveChanges();
-
                         item.UserClaims.ForEach(claim =>
                         {
                             switch (claim.State)
                             {
                                 case EntityState.Added:
-                                    apiScopeClaim = new IdentityServer4.EntityFramework.Entities.ApiScopeClaim()
-                                    {
-                                        Type = claim.Type,
-                                        ApiScopeId = apiScope.Id
-                                    };
-                                    entryApiScopeClaim = DbContext.Entry(apiScopeClaim);
-                                    entryApiScopeClaim.State = EntityState.Added;
+                                    AddApiScopeClaim(item, claim);
                                     break;
                                 default:
                                     break;
                             }
                         });
                     });
-                    DbContext.SaveChanges();
                     /***** ApiResourceClaim *****/
-                    Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResourceClaim> entryApiResourceClaim = null;
-                    IdentityServer4.EntityFramework.Entities.ApiResourceClaim apiResourceClaim = null;
                     model.ApiResource.UserClaims.ForEach(item =>
                     {
                         switch (item.State)
                         {
                             case EntityState.Added:
-                                apiResourceClaim = new IdentityServer4.EntityFramework.Entities.ApiResourceClaim()
-                                {
-                                    Type = item.Type,
-                                    ApiResourceId = apiResource.Id
-                                };
-                                entryApiResourceClaim = DbContext.Entry(apiResourceClaim);
-                                entryApiResourceClaim.State = EntityState.Added;
+                                AddApiResourceClaim(model.ApiResource, item);
                                 break;
                             default:
                                 break;
                         }
                     });
-                    DbContext.SaveChanges();
                     /***** ApiResourceProperty *****/
-                    Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResourceProperty> entryApiResourceProperty = null;
-                    IdentityServer4.EntityFramework.Entities.ApiResourceProperty apiResourceProperty = null;
                     model.ApiResource.Properties.ForEach(item =>
                     {
                         switch (item.State)
                         {
                             case EntityState.Added:
-                                apiResourceProperty = new IdentityServer4.EntityFramework.Entities.ApiResourceProperty()
-                                {
-                                    Key = item.Key,
-                                    Value = item.Value,
-                                    ApiResourceId = apiResource.Id
-                                };
-                                entryApiResourceProperty = DbContext.Entry(apiResourceProperty);
-                                entryApiResourceProperty.State = EntityState.Added;
+                                AddApiResourceProperty(model.ApiResource, item);
                                 break;
                             default:
                                 break;
                         }
                     });
-                    DbContext.SaveChanges();
                     transaction.Commit();
                     return Task.FromResult(entryApiResource.Entity);
                 }
-                catch (Exception)
+                catch
                 {
                     transaction.Rollback();
                     throw;
                 }
             }
-            //var apiResource = new IdentityServer4.EntityFramework.Entities.ApiResource()
-            //{
-            //    Enabled = model.ApiResource.Enabled,
-            //    Name = model.ApiResource.Name,
-            //    DisplayName = model.ApiResource.DisplayName,
-            //    Description = model.ApiResource.Description,
-            //    Created = DateTime.Now,
-            //    NonEditable = model.ApiResource.NonEditable
-            //};
-
-            //var entry = DbContext.Entry(apiResource);
-            //entry.State = EntityState.Added;
-            //DbContext.SaveChanges();
             //entry.Reload();
             //entry.Collection(p => p.Secrets).Load();
             //entry.Collection(p => p.Scopes).Load();
@@ -224,28 +143,25 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
 
         public Task<IdentityServer4.EntityFramework.Entities.ApiResource> Modify(ApiResourceRequestModel model)
         {
-            var apiResource = DbContext.ApiResources.SingleOrDefault(p => p.Id == model.ApiResource.Id);
-            if (apiResource == null)
+            if (!DbContext.ApiResources.Any(p => p.Id == model.ApiResource.Id))
             {
                 throw new Exception($"Id={model.ApiResource.Id}的ApiResource不存在");
             }
+            Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResource> entryApiResource = null;
             using (var transaction = DbContext.Database.BeginTransaction())
             {
                 try
                 {
-                    apiResource.Enabled = model.ApiResource.Enabled;
-                    apiResource.Name = model.ApiResource.Name;
-                    apiResource.DisplayName = model.ApiResource.DisplayName;
-                    apiResource.Description = model.ApiResource.Description;
-                    apiResource.Updated = DateTime.Now;
-                    apiResource.NonEditable = model.ApiResource.NonEditable;
-
-                    var entry = DbContext.Entry(apiResource);
-                    entry.State = EntityState.Modified;
-                    DbContext.SaveChanges();
+                    switch (model.ApiResource.State)
+                    {
+                        case EntityState.Modified:
+                            entryApiResource = ModifyApiResource(model.ApiResource);
+                            break;
+                        default:
+                            break;
+                    }
+                    if (entryApiResource == null) { entryApiResource = DbContext.Entry(new IdentityServer4.EntityFramework.Entities.ApiResource() { Id = model.ApiResource.Id }); }
                     /***** ApiSecret *****/
-                    Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiSecret> entryApiSecret = null;
-                    IdentityServer4.EntityFramework.Entities.ApiSecret apiSecret = null;
                     model.ApiResource.Secrets.ForEach(item =>
                     {
                         switch (item.State)
@@ -255,45 +171,19 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
                             case EntityState.Unchanged:
                                 break;
                             case EntityState.Deleted:
-                                apiSecret = new IdentityServer4.EntityFramework.Entities.ApiSecret() { Id = item.Id };
-                                entryApiSecret = DbContext.Entry(apiSecret);
-                                entryApiSecret.State = EntityState.Deleted;
+                                DeleteApiSecret(item);
                                 break;
                             case EntityState.Modified:
-                                apiSecret = new IdentityServer4.EntityFramework.Entities.ApiSecret()
-                                {
-                                    Id = item.Id,
-                                    Description = item.Description,
-                                    Value = item.Value,
-                                    Expiration = item.Expiration ?? null,
-                                    Type = item.Type
-                                };
-                                entryApiSecret = DbContext.Entry(apiSecret);
-                                entryApiSecret.State = EntityState.Modified;
+                                ModifyApiSecret(model.ApiResource, item);
                                 break;
                             case EntityState.Added:
-                                apiSecret = new IdentityServer4.EntityFramework.Entities.ApiSecret()
-                                {
-                                    Description = item.Description,
-                                    Value = item.Value,
-                                    Expiration = item.Expiration ?? null,
-                                    Type = item.Type,
-                                    Created = DateTime.Now,
-                                    ApiResourceId = apiResource.Id
-                                };
-                                entryApiSecret = DbContext.Entry(apiSecret);
-                                entryApiSecret.State = EntityState.Added;
+                                AddApiSecret(model.ApiResource, item);
                                 break;
                             default:
                                 break;
                         }
                     });
-                    DbContext.SaveChanges();
                     /***** ApiScope *****/
-                    Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiScope> entryApiScope = null;
-                    IdentityServer4.EntityFramework.Entities.ApiScope apiScope = null;
-                    Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiScopeClaim> entryApiScopeClaim = null;
-                    IdentityServer4.EntityFramework.Entities.ApiScopeClaim apiScopeClaim = null;
                     model.ApiResource.Scopes.ForEach(item =>
                     {
                         switch (item.State)
@@ -303,82 +193,44 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
                             case EntityState.Unchanged:
                                 break;
                             case EntityState.Deleted:
-                                apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope() { Id = item.Id };
-                                entryApiScope = DbContext.Entry(apiScope);
-                                entryApiScope.State = EntityState.Deleted;
+                                DeleteApiScope(item);
                                 break;
                             case EntityState.Modified:
-                                apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope()
-                                {
-                                    Id = item.Id,
-                                    Name = item.Name,
-                                    DisplayName = item.DisplayName,
-                                    Description = item.Description,
-                                    Required = item.Required,
-                                    Emphasize = item.Emphasize,
-                                    ShowInDiscoveryDocument = item.ShowInDiscoveryDocument
-                                };
-                                entryApiScope = DbContext.Entry(apiScope);
-                                entryApiScope.State = EntityState.Modified;
+                                ModifyApiScope(model.ApiResource, item);
                                 break;
                             case EntityState.Added:
-                                apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope()
-                                {
-                                    Name = item.Name,
-                                    DisplayName = item.DisplayName,
-                                    Description = item.Description,
-                                    Required = item.Required,
-                                    Emphasize = item.Emphasize,
-                                    ShowInDiscoveryDocument = item.ShowInDiscoveryDocument,
-                                    ApiResourceId = apiResource.Id
-                                };
-                                entryApiScope = DbContext.Entry(apiScope);
-                                entryApiScope.State = EntityState.Added;
+                                AddApiScope(model.ApiResource, item);
                                 break;
                             default:
                                 break;
                         }
-                        DbContext.SaveChanges();
-                        item.UserClaims.ForEach(claim =>
+
+                        if (item.State != EntityState.Deleted)
                         {
-                            switch (claim.State)
+                            item.UserClaims.ForEach(claim =>
                             {
-                                case EntityState.Detached:
-                                    break;
-                                case EntityState.Unchanged:
-                                    break;
-                                case EntityState.Deleted:
-                                    apiScopeClaim = new IdentityServer4.EntityFramework.Entities.ApiScopeClaim() { Id = claim.Id };
-                                    entryApiScopeClaim = DbContext.Entry(apiScopeClaim);
-                                    entryApiScopeClaim.State = EntityState.Deleted;
-                                    break;
-                                case EntityState.Modified:
-                                    apiScopeClaim = new IdentityServer4.EntityFramework.Entities.ApiScopeClaim()
-                                    {
-                                        Id = claim.Id,
-                                        Type = claim.Type
-                                    };
-                                    entryApiScopeClaim = DbContext.Entry(apiScopeClaim);
-                                    entryApiScopeClaim.State = EntityState.Modified;
-                                    break;
-                                case EntityState.Added:
-                                    apiScopeClaim = new IdentityServer4.EntityFramework.Entities.ApiScopeClaim()
-                                    {
-                                        Type = claim.Type,
-                                        ApiScopeId = item.Id
-                                    };
-                                    entryApiScopeClaim = DbContext.Entry(apiScopeClaim);
-                                    entryApiScopeClaim.State = EntityState.Added;
-                                    break;
-                                default:
-                                    break;
-                            }
-                        });
-                        DbContext.SaveChanges();
+                                switch (claim.State)
+                                {
+                                    case EntityState.Detached:
+                                        break;
+                                    case EntityState.Unchanged:
+                                        break;
+                                    case EntityState.Deleted:
+                                        DeleteApiScopeClaim(claim);
+                                        break;
+                                    case EntityState.Modified:
+                                        ModifyApiScopeClaim(item, claim);
+                                        break;
+                                    case EntityState.Added:
+                                        AddApiScopeClaim(item, claim);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            });
+                        }
                     });
                     /***** ApiResourceClaim *****/
-                    Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResourceClaim> entryApiResourceClaim = null;
-                    IdentityServer4.EntityFramework.Entities.ApiResourceClaim apiResourceClaim = null;
                     model.ApiResource.UserClaims.ForEach(item =>
                     {
                         switch (item.State)
@@ -388,36 +240,19 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
                             case EntityState.Unchanged:
                                 break;
                             case EntityState.Deleted:
-                                apiResourceClaim = new IdentityServer4.EntityFramework.Entities.ApiResourceClaim() { Id = item.Id };
-                                entryApiResourceClaim = DbContext.Entry(apiResourceClaim);
-                                entryApiResourceClaim.State = EntityState.Deleted;
+                                DeleteApiResourceClaim(item);
                                 break;
                             case EntityState.Modified:
-                                apiResourceClaim = new IdentityServer4.EntityFramework.Entities.ApiResourceClaim()
-                                {
-                                    Id = item.Id,
-                                    Type = item.Type
-                                };
-                                entryApiResourceClaim = DbContext.Entry(apiResourceClaim);
-                                entryApiResourceClaim.State = EntityState.Modified;
+                                ModifyApiResourceClaim(model.ApiResource, item);
                                 break;
                             case EntityState.Added:
-                                apiResourceClaim = new IdentityServer4.EntityFramework.Entities.ApiResourceClaim()
-                                {
-                                    Type = item.Type,
-                                    ApiResourceId = apiResource.Id
-                                };
-                                entryApiResourceClaim = DbContext.Entry(apiResourceClaim);
-                                entryApiResourceClaim.State = EntityState.Added;
+                                AddApiResourceClaim(model.ApiResource, item);
                                 break;
                             default:
                                 break;
                         }
                     });
-                    DbContext.SaveChanges();
                     /***** ApiResourceProperty *****/
-                    Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResourceProperty> entryApiResourceProperty = null;
-                    IdentityServer4.EntityFramework.Entities.ApiResourceProperty apiResourceProperty = null;
                     model.ApiResource.Properties.ForEach(item =>
                     {
                         switch (item.State)
@@ -427,40 +262,24 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
                             case EntityState.Unchanged:
                                 break;
                             case EntityState.Deleted:
-                                apiResourceProperty = new IdentityServer4.EntityFramework.Entities.ApiResourceProperty() { Id = item.Id };
-                                entryApiResourceProperty = DbContext.Entry(apiResourceProperty);
-                                entryApiResourceProperty.State = EntityState.Deleted;
+                                DeleteApiResourceProperty(item);
                                 break;
                             case EntityState.Modified:
-                                apiResourceProperty = new IdentityServer4.EntityFramework.Entities.ApiResourceProperty()
-                                {
-                                    Id = item.Id,
-                                    Key = item.Key,
-                                    Value = item.Value
-                                };
-                                entryApiResourceProperty = DbContext.Entry(apiResourceProperty);
-                                entryApiResourceProperty.State = EntityState.Modified;
+                                ModifyApiResourceProperty(model.ApiResource, item);
                                 break;
                             case EntityState.Added:
-                                apiResourceProperty = new IdentityServer4.EntityFramework.Entities.ApiResourceProperty()
-                                {
-                                    Key = item.Key,
-                                    Value = item.Value,
-                                    ApiResourceId = apiResource.Id
-                                };
-                                entryApiResourceProperty = DbContext.Entry(apiResourceProperty);
-                                entryApiResourceProperty.State = EntityState.Added;
+                                AddApiResourceProperty(model.ApiResource, item);
                                 break;
                             default:
                                 break;
                         }
+                        DbContext.SaveChanges();
                     });
-                    DbContext.SaveChanges();
-                    entry.Reload();
+                    entryApiResource.Reload();
                     transaction.Commit();
-                    return Task.FromResult(entry.Entity);
+                    return Task.FromResult(entryApiResource.Entity);
                 }
-                catch (Exception)
+                catch
                 {
                     transaction.Rollback();
                     throw;
@@ -476,6 +295,265 @@ namespace Demo4DotNetCore.ResourceServer.Identity.Service
             DbContext.SaveChanges();
             return Task.FromResult(entry.Entity);
         }
+
+        #region ApiResource
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResource> AddApiResource(Model.ApiResource model)
+        {
+            var apiResource = new IdentityServer4.EntityFramework.Entities.ApiResource()
+            {
+                Enabled = model.Enabled,
+                Name = model.Name,
+                DisplayName = model.DisplayName,
+                Description = model.Description,
+                Created = DateTime.Now,
+                NonEditable = model.NonEditable
+            };
+            var entry = DbContext.Entry(apiResource);
+            entry.State = EntityState.Added;
+            DbContext.SaveChanges();
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResource> ModifyApiResource(Model.ApiResource model)
+        {
+            var apiResource = new IdentityServer4.EntityFramework.Entities.ApiResource()
+            {
+                Id = model.Id,
+                Enabled = model.Enabled,
+                Name = model.Name,
+                DisplayName = model.DisplayName,
+                Description = model.Description,
+                Created = model.Created,
+                Updated = DateTime.Now,
+                NonEditable = model.NonEditable
+            };
+            var entry = DbContext.Entry(apiResource);
+            entry.State = EntityState.Modified;
+            DbContext.SaveChanges();
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResource> DeleteApiResource(Model.ApiResource model)
+        {
+            var apiResource = new IdentityServer4.EntityFramework.Entities.ApiResource() { Id = model.Id };
+            var entry = DbContext.Entry(apiResource);
+            entry.State = EntityState.Deleted;
+            DbContext.SaveChanges();
+            return entry;
+        }
+        #endregion
+
+        #region ApiSecret
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiSecret> AddApiSecret(Model.ApiResource apiResource, Model.ApiSecret model)
+        {
+            var apiSecret = new IdentityServer4.EntityFramework.Entities.ApiSecret()
+            {
+                Description = model.Description,
+                Value = model.Value,
+                Expiration = model.Expiration ?? null,
+                Type = model.Type,
+                Created = DateTime.Now,
+                ApiResourceId = apiResource.Id
+            };
+            var entry = DbContext.Entry(apiSecret);
+            entry.State = EntityState.Added;
+            DbContext.SaveChanges();
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiSecret> ModifyApiSecret(Model.ApiResource apiResource, Model.ApiSecret model)
+        {
+            var apiSecret = new IdentityServer4.EntityFramework.Entities.ApiSecret()
+            {
+                Id = model.Id,
+                Description = model.Description,
+                Value = model.Value,
+                Expiration = model.Expiration ?? null,
+                Type = model.Type,
+                Created = model.Created,
+                ApiResourceId = apiResource.Id
+            };
+            var entry = DbContext.Entry(apiSecret);
+            entry.State = EntityState.Modified;
+            DbContext.SaveChanges();
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiSecret> DeleteApiSecret(Model.ApiSecret model)
+        {
+            var apiSecret = new IdentityServer4.EntityFramework.Entities.ApiSecret() { Id = model.Id };
+            var entry = DbContext.Entry(apiSecret);
+            entry.State = EntityState.Deleted;
+            DbContext.SaveChanges();
+            return entry;
+        }
+        #endregion
+
+        #region ApiScope
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiScope> AddApiScope(Model.ApiResource apiResource, Model.ApiScope model)
+        {
+            var apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope()
+            {
+                Name = model.Name,
+                DisplayName = model.DisplayName,
+                Description = model.Description,
+                Required = model.Required,
+                Emphasize = model.Emphasize,
+                ShowInDiscoveryDocument = model.ShowInDiscoveryDocument,
+                ApiResourceId = apiResource.Id
+            };
+            var entry = DbContext.Entry(apiScope);
+            entry.State = EntityState.Added;
+            DbContext.SaveChanges();
+            model.Id = apiScope.Id;
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiScope> ModifyApiScope(Model.ApiResource apiResource, Model.ApiScope model)
+        {
+            var apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope()
+            {
+                Id = model.Id,
+                Name = model.Name,
+                DisplayName = model.DisplayName,
+                Description = model.Description,
+                Required = model.Required,
+                Emphasize = model.Emphasize,
+                ShowInDiscoveryDocument = model.ShowInDiscoveryDocument,
+                ApiResourceId = apiResource.Id
+            };
+            var entry = DbContext.Entry(apiScope);
+            entry.State = EntityState.Modified;
+            DbContext.SaveChanges();
+            model.Id = apiScope.Id;
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiScope> DeleteApiScope(Model.ApiScope model)
+        {
+            var apiScope = new IdentityServer4.EntityFramework.Entities.ApiScope() { Id = model.Id };
+            var entry = DbContext.Entry(apiScope);
+            entry.State = EntityState.Deleted;
+            DbContext.SaveChanges();
+            return entry;
+        }
+        #endregion
+
+        #region ApiScopeClaim
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiScopeClaim> AddApiScopeClaim(Model.ApiScope apiScope, Model.ApiScopeClaim model)
+        {
+            var apiScopeClaim = new IdentityServer4.EntityFramework.Entities.ApiScopeClaim()
+            {
+                Type = model.Type,
+                ApiScopeId = apiScope.Id
+            };
+            var entry = DbContext.Entry(apiScopeClaim);
+            entry.State = EntityState.Added;
+            DbContext.SaveChanges();
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiScopeClaim> ModifyApiScopeClaim(Model.ApiScope apiScope, Model.ApiScopeClaim model)
+        {
+            var apiScopeClaim = new IdentityServer4.EntityFramework.Entities.ApiScopeClaim()
+            {
+                Id = model.Id,
+                Type = model.Type,
+                ApiScopeId = apiScope.Id
+            };
+            var entry = DbContext.Entry(apiScopeClaim);
+            entry.State = EntityState.Modified;
+            DbContext.SaveChanges();
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiScopeClaim> DeleteApiScopeClaim(Model.ApiScopeClaim model)
+        {
+            var apiScopeClaim = new IdentityServer4.EntityFramework.Entities.ApiScopeClaim() { Id = model.Id };
+            var entry = DbContext.Entry(apiScopeClaim);
+            entry.State = EntityState.Deleted;
+            DbContext.SaveChanges();
+            return entry;
+        }
+        #endregion
+
+        #region ApiResourceClaim
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResourceClaim> AddApiResourceClaim(Model.ApiResource apiResource, Model.ApiResourceClaim model)
+        {
+            var apiResourceClaim = new IdentityServer4.EntityFramework.Entities.ApiResourceClaim()
+            {
+                Type = model.Type,
+                ApiResourceId = apiResource.Id
+            };
+            var entry = DbContext.Entry(apiResourceClaim);
+            entry.State = EntityState.Added;
+            DbContext.SaveChanges();
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResourceClaim> ModifyApiResourceClaim(Model.ApiResource apiResource, Model.ApiResourceClaim model)
+        {
+            var apiResourceClaim = new IdentityServer4.EntityFramework.Entities.ApiResourceClaim()
+            {
+                Id = model.Id,
+                Type = model.Type,
+                ApiResourceId = apiResource.Id
+            };
+            var entry = DbContext.Entry(apiResourceClaim);
+            entry.State = EntityState.Modified;
+            DbContext.SaveChanges();
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResourceClaim> DeleteApiResourceClaim(Model.ApiResourceClaim model)
+        {
+            var apiResourceClaim = new IdentityServer4.EntityFramework.Entities.ApiResourceClaim() { Id = model.Id };
+            var entry = DbContext.Entry(apiResourceClaim);
+            entry.State = EntityState.Deleted;
+            DbContext.SaveChanges();
+            return entry;
+        }
+        #endregion
+
+        #region ApiResourceProperty
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResourceProperty> AddApiResourceProperty(Model.ApiResource apiResource, Model.ApiResourceProperty model)
+        {
+            var apiResourceProperty = new IdentityServer4.EntityFramework.Entities.ApiResourceProperty()
+            {
+                Key = model.Key,
+                Value = model.Value,
+                ApiResourceId = apiResource.Id
+            };
+            var entry = DbContext.Entry(apiResourceProperty);
+            entry.State = EntityState.Added;
+            DbContext.SaveChanges();
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResourceProperty> ModifyApiResourceProperty(Model.ApiResource apiResource, Model.ApiResourceProperty model)
+        {
+            var apiResourceProperty = new IdentityServer4.EntityFramework.Entities.ApiResourceProperty()
+            {
+                Id = model.Id,
+                Key = model.Key,
+                Value = model.Value,
+                ApiResourceId = apiResource.Id
+            };
+            var entry = DbContext.Entry(apiResourceProperty);
+            entry.State = EntityState.Modified;
+            DbContext.SaveChanges();
+            return entry;
+        }
+
+        private Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<IdentityServer4.EntityFramework.Entities.ApiResourceProperty> DeleteApiResourceProperty(Model.ApiResourceProperty model)
+        {
+            var apiResourceProperty = new IdentityServer4.EntityFramework.Entities.ApiResourceProperty() { Id = model.Id };
+            var entry = DbContext.Entry(apiResourceProperty);
+            entry.State = EntityState.Deleted;
+            DbContext.SaveChanges();
+            return entry;
+        }
+        #endregion
 
         public Task<bool> UniqueApiResourceName(int id, string name)
         {

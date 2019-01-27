@@ -56,7 +56,9 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       nonEditable: [null, Validators.required],
       state: [null]
     }); */
+
     this.mainForm = ApiResource.toControl(this.fb, this.initModel);
+    this.mainForm.get('name').setAsyncValidators(uniqueApiResourceNameValidatorFn(this.apiResourceService, 0));
     this.route.queryParamMap.subscribe(queryParams => {
       this.isEdit = queryParams.get('isEdit') === 'true';
     });
@@ -196,8 +198,8 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       }); */
   }
 
-  addApiScret() {
-    (this.mainForm.get('secrets') as FormArray).push(this.fb.group({
+  addApiScret(formGroup: FormGroup) {
+    (formGroup.get('secrets') as FormArray).push(this.fb.group({
       state: [EntityState.Added],
       id: [0, Validators.required],
       description: [null],
@@ -205,7 +207,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       expiration: [null],
       type: [null, Validators.required],
       created: [new Date(), Validators.required],
-      apiResourceId: [this.mainForm.get('id').value, Validators.required]
+      apiResourceId: [formGroup.get('id').value, Validators.required]
     }));
   }
 
@@ -218,8 +220,8 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  addApiScope() {
-    (this.mainForm.get('scopes') as FormArray).push(this.fb.group({
+  addApiScope(formGroup: FormGroup) {
+    (formGroup.get('scopes') as FormArray).push(this.fb.group({
       state: [EntityState.Added],
       id: [0, Validators.required],
       name: [null, {
@@ -232,7 +234,7 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
       required: [false, Validators.required],
       emphasize: [false, Validators.required],
       showInDiscoveryDocument: [false],
-      apiResourceId: [this.mainForm.get('id').value, Validators.required],
+      apiResourceId: [formGroup.get('id').value, Validators.required],
       userClaims: this.fb.array([])
     }));
   }
@@ -250,7 +252,8 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
     (formGroup.get('userClaims') as FormArray).push(this.fb.group({
       state: [EntityState.Added],
       id: [0, Validators.required],
-      type: [null, Validators.required]
+      type: [null, Validators.required],
+      apiScopeId: [formGroup.get('id').value, Validators.required]
     }));
   }
 
@@ -351,7 +354,13 @@ export class ApiResourceDetailComponent implements OnInit, OnDestroy {
             this.nzMessageService.info('ApiResource 新增完成');
             this.router.navigate(['../', result.data.id], { relativeTo: this.route });
           } else {
+            Object.assign(this.initModel, result.data);
             this.mainForm = ApiResource.toControl(this.fb, this.initModel);
+            this.mainForm.get('name').setAsyncValidators(uniqueApiResourceNameValidatorFn(this.apiResourceService, this.initModel.id));
+            (this.mainForm.get('scopes') as FormArray).controls.forEach(scope => {
+              (scope as FormGroup).get('name').setAsyncValidators(uniqueApiScopeNameValidatorFn(this.apiResourceService, (scope as FormGroup).get('id').value));
+            });
+            this.mainForm.reset(this.initModel);
             this.nzMessageService.info('ApiResource 更新完成');
           }
         } else {
