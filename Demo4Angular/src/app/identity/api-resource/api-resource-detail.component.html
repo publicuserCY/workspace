@@ -233,9 +233,68 @@
         </ng-container>
       </div>
     </ng-container>
+    <nz-form-split>
+      <h3>Api Scope Claim</h3>
+    </nz-form-split>
+    <ng-container *ngFor="let claim of mainForm.get('userClaims').controls;index as claimIndex">
+      <div [formGroup]="claim" class="sub-containner" [style.display]="apiResourceClaimState.value==2? 'none' : 'block'">
+        <input type="hidden" formControlName="state" #apiResourceClaimState />
+        <div nz-row>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{claim.get('id').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="type" nzRequired>Type</nz-form-label>
+              <nz-form-control nzSpan="18" nzHasFeedback>
+                <nz-form-text>{{claim.get('type').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <nz-form-split>
+      <h3>Api Resource Property</h3>
+    </nz-form-split>
+    <ng-container *ngFor="let property of mainForm.get('properties').controls;index as propertyIndex">
+      <div [formGroup]="property" class="sub-containner" [style.display]="apiResourcePropertyState.value==2? 'none' : 'block'">
+        <input type="hidden" formControlName="state" #apiResourcePropertyState />
+        <div nz-row>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{property.get('id').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="key" nzRequired>Key</nz-form-label>
+              <nz-form-control nzSpan="18" nzHasFeedback>
+                <nz-form-text>{{property.get('key').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="value" nzRequired>Value</nz-form-label>
+              <nz-form-control nzSpan="18" nzHasFeedback>
+                <nz-form-text>{{property.get('value').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </div>
+    </ng-container>
   </ng-container>
   <!-------------------------------------------------------------------------------------------------------------------------------------------------->
-
   <ng-container *ngIf="isEdit">
     <div nz-row nzGutter="16">
       <div nz-col [nzSpan]="mainFormSpan">
@@ -537,6 +596,105 @@
     <div class="new-item-containner">
       <button nz-button type="button" nzType="dashed" (click)="addApiScope(mainForm)">
         Add ApiScope
+      </button>
+    </div>
+    <nz-form-split>
+      <h3>Api Scope Claim</h3>
+    </nz-form-split>
+    <ng-container *ngFor="let claim of mainForm.get('userClaims').controls;index as claimIndex">
+      <div [formGroup]="claim" class="sub-containner" [style.display]="apiResourceClaimState.value==2? 'none' : 'block'">
+        <input type="hidden" formControlName="state" #apiResourceClaimState />
+        <div nz-row>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{claim.get('id').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="type" nzRequired>Type</nz-form-label>
+              <nz-form-control nzSpan="18" nzHasFeedback>
+                <input nz-input name="type" placeholder="Type" formControlName="type">
+                <nz-form-explain *ngIf="claim.get('type').dirty && claim.get('type').errors">
+                  <ng-container *ngIf="claim.get('type').hasError('required')">
+                    请输入Type
+                  </ng-container>
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div class="operation">
+          <nz-popconfirm [nzTitle]="'确定删除?'" (nzOnConfirm)="deleteApiRsourceClaim(claim,claimIndex)">
+            <a nz-popconfirm>
+              <i nz-icon type="delete" theme="twotone" twoToneColor="#eb2f96"></i>
+            </a>
+          </nz-popconfirm>
+        </div>
+      </div>
+    </ng-container>
+    <div class="new-item-containner">
+      <button nz-button type="button" nzType="dashed" (click)="addApiResourceClaim(mainForm)">
+        Add ApiResourceClaim
+      </button>
+    </div>
+    <nz-form-split>
+      <h3>Api Resource Property</h3>
+    </nz-form-split>
+    <ng-container *ngFor="let property of mainForm.get('properties').controls;index as propertyIndex">
+      <div [formGroup]="property" class="sub-containner" [style.display]="apiResourcePropertyState.value==2? 'none' : 'block'">
+        <input type="hidden" formControlName="state" #apiResourcePropertyState />
+        <div nz-row>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzRequired>Id</nz-form-label>
+              <nz-form-control nzSpan="18">
+                <nz-form-text>{{property.get('id').value}}</nz-form-text>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="key" nzRequired>Key</nz-form-label>
+              <nz-form-control nzSpan="18" nzHasFeedback>
+                <input nz-input name="key" placeholder="Key" formControlName="key">
+                <nz-form-explain *ngIf="property.get('key').dirty && property.get('key').errors">
+                  <ng-container *ngIf="property.get('key').hasError('required')">
+                    请输入Key
+                  </ng-container>
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col nzSpan="8">
+            <nz-form-item nzFlex>
+              <nz-form-label nzSpan="6" nzFor="value" nzRequired>Value</nz-form-label>
+              <nz-form-control nzSpan="18" nzHasFeedback>
+                <input nz-input name="value" placeholder="Value" formControlName="value">
+                <nz-form-explain *ngIf="property.get('value').dirty && property.get('value').errors">
+                  <ng-container *ngIf="property.get('value').hasError('required')">
+                    请输入Value
+                  </ng-container>
+                </nz-form-explain>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <div class="operation">
+          <nz-popconfirm [nzTitle]="'确定删除?'" (nzOnConfirm)="deleteApiRsourceProperty(property,propertyIndex)">
+            <a nz-popconfirm>
+              <i nz-icon type="delete" theme="twotone" twoToneColor="#eb2f96"></i>
+            </a>
+          </nz-popconfirm>
+        </div>
+      </div>
+    </ng-container>
+    <div class="new-item-containner">
+      <button nz-button type="button" nzType="dashed" (click)="addApiResourceProperty(mainForm)">
+        Add ApiResourceProperty
       </button>
     </div>
   </ng-container>

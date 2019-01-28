@@ -116,7 +116,6 @@ namespace Demo4DotNetCore.AuthorizationServer.Controllers
                 Logger.LogError(ex.Message);
                 return BadRequest();
             }
-
         }
 
         [HttpGet]
