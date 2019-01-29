@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { ImplicitLoginComponent } from './implicit-login/implicit-login.component';
 import { ResourceOwnerLoginComponent } from './resource-owner-login/resource-owner-login.component';
-import { ClientsComponent } from './clients/clients.component';
+import { ClientComponent } from './clients/client/client.component';
 import { UsersComponent } from './users/users.component';
 import { IdentityResourceComponent } from './identity-resource/identity-resource.component';
 import { ApiResourceComponent } from './api-resource/api-resource.component';
@@ -14,7 +14,7 @@ const routes: Routes = [
   { path: 'ApiResources', component: ApiResourceComponent },
   { path: 'ApiResources/:id', component: ApiResourceDetailComponent },
   { path: 'IdentityResources', component: IdentityResourceComponent },
-  { path: 'Clients', component: ClientsComponent },
+  { path: 'Clients', component: ClientComponent },
   { path: 'Users', component: UsersComponent },
 ];
 

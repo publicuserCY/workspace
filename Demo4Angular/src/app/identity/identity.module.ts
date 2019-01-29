@@ -9,12 +9,13 @@ import { ResourceOwnerLoginComponent } from './resource-owner-login/resource-own
 import { ApiResourceComponent } from './api-resource/api-resource.component';
 import { ApiResourceDetailComponent } from './api-resource/api-resource-detail.component';
 import { IdentityResourceComponent } from './identity-resource/identity-resource.component';
-import { ClientsComponent } from './clients/clients.component';
+import { ClientComponent } from './clients/client/client.component';
 import { UsersComponent } from './users/users.component';
 import { BaseService } from '../shared/base.service';
 import { PaginatedService } from '../shared/paginated.service';
 import { AuthorityInteractionService } from './service/authority-Interaction.service';
 import { ApiResourceService } from './service/api-resource.service';
+import { ClientService } from './service/client.service';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,7 @@ import { ApiResourceService } from './service/api-resource.service';
     ApiResourceComponent,
     ApiResourceDetailComponent,
     IdentityResourceComponent,
-    ClientsComponent,
+    ClientComponent,
     UsersComponent
   ],
   imports: [
@@ -36,8 +37,9 @@ import { ApiResourceService } from './service/api-resource.service';
   providers: [
     BaseService,
     PaginatedService,
+    AuthorityInteractionService,
     ApiResourceService,
-    AuthorityInteractionService
+    ClientService
   ]
 })
 export class IdentityModule { }

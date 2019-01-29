@@ -17,18 +17,12 @@ export const Uris = {
     UniqueApiResourceName: ResourceServer + '/api/Identity/ApiResource/UniqueApiResourceName',
     UniqueApiScopeName: ResourceServer + '/api/Identity/ApiResource/UniqueApiScopeName',
 
-    /* AddApiScope: ResourceServer + '/api/Identity/ApiScope/Add',
-    ModifyApiScope: ResourceServer + '/api/Identity/ApiScope/Modify',
-    DeleteApiScope: ResourceServer + '/api/Identity/ApiScope/Delete',
-
-    AddApiScopeClaim: ResourceServer + '/api/Identity/ApiScopeClaim/Add',
-    ModifyApiScopeClaim: ResourceServer + '/api/Identity/ApiScopeClaim/Modify',
-    DeleteApiScopeClaim: ResourceServer + '/api/Identity/ApiScopeClaim/Delete',
-    UniqueApiScopeName: ResourceServer + '/api/Identity/ApiScope/UniqueApiScopeName',
-
-    AddApiSecret: ResourceServer + '/api/Identity/ApiSecret/Add',
-    ModifyApiSecret: ResourceServer + '/api/Identity/ApiSecret/Modify',
-    DeleteApiSecret: ResourceServer + '/api/Identity/ApiSecret/Delete', */
+    RetrieveClient: ResourceServer + '/api/Identity/Client/Retrieve',
+    SingleClient: ResourceServer + '/api/Identity/Client/Single',
+    AddClient: ResourceServer + '/api/Identity/Client/Add',
+    ModifyClient: ResourceServer + '/api/Identity/Client/Modify',
+    DeleteClient: ResourceServer + '/api/Identity/Client/Delete',
+    UniqueClientId: ResourceServer + '/api/Identity/Client/UniqueClientId',
 };
 export const DefaultConfig = {
     PageSize: 10,

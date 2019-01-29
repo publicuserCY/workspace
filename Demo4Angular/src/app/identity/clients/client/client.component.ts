@@ -5,21 +5,21 @@ import { finalize, map } from 'rxjs/operators';
 import { NzModalService } from 'ng-zorro-antd';
 import { NzMessageService, NzModalRef } from 'ng-zorro-antd';
 
-import { ApiResourceRequestModel } from '../model/api-resource-request.model';
-import { ApiResource } from '../model/api-resource.model';
-import { ApiResourceService } from '../service/api-resource.service';
+import { Client } from '../../model/client.model';
+import { ClientService } from '../../service/client.service';
+import { ClientRequestModel } from '../../model/client-request.model';
 import { OperationResult, PaginatedResult } from 'src/app/shared/result';
 import { EntityState, Uris } from 'src/app/shared/const';
 
 @Component({
-  selector: 'app-authority-api-resource',
-  templateUrl: './api-resource.component.html',
-  styleUrls: ['./api-resource.component.css']
+  selector: 'app-identity-client',
+  templateUrl: './client.component.html',
+  styleUrls: ['./client.component.css']
 })
-export class ApiResourceComponent implements OnInit {
+export class ClientComponent implements OnInit {
   isSpinning = false;
   searchForm: FormGroup;
-  paginatedresult = new PaginatedResult<ApiResource>();
+  paginatedresult = new PaginatedResult<Client>();
   orderBy = 'created';
   direction = 'asc';
   enabledCandidate = [
@@ -33,23 +33,13 @@ export class ApiResourceComponent implements OnInit {
     private fb: FormBuilder,
     private nzMessageService: NzMessageService,
     private nzModalService: NzModalService,
-    private apiResourceService: ApiResourceService
-  ) { }
+    private clientService: ClientService) { }
 
   ngOnInit() {
-    /* this.route.paramMap.pipe(
-      switchMap(params => {
-        this.paginatedresult.pageSize = +params.get('pageSize');
-        this.paginatedresult.pageIndex = +params.get('pageIndex');
-        this.search();
-        return of(empty);
-      })
-    ); */
     this.searchForm = this.fb.group({
       enabled: [null],
-      name: [null],
-      displayName: [null],
-      description: [null]
+      clientId: [null],
+      clientName: [null]
     });
     this.route.queryParamMap
       .pipe(
@@ -65,12 +55,11 @@ export class ApiResourceComponent implements OnInit {
 
   private search() {
     this.isSpinning = true;
-    const model = new ApiResourceRequestModel(Uris.RetrieveApiResource, this.paginatedresult.pageIndex, this.paginatedresult.pageSize, this.orderBy, this.direction);
-    model.name = this.searchForm.get('name').value;
-    model.description = this.searchForm.get('description').value;
-    model.displayName = this.searchForm.get('displayName').value;
+    const model = new ClientRequestModel(Uris.RetrieveClient, this.paginatedresult.pageIndex, this.paginatedresult.pageSize, this.orderBy, this.direction);
     model.enabled = this.searchForm.get('enabled').value;
-    this.apiResourceService.retrieve(model).pipe(
+    model.clientId = this.searchForm.get('clientId').value;
+    model.clientName = this.searchForm.get('clientName').value;
+    this.clientService.retrieve(model).pipe(
       finalize(() => { this.isSpinning = false; })
     ).subscribe(
       result => {
@@ -109,19 +98,19 @@ export class ApiResourceComponent implements OnInit {
       nzOkText: '确认',
       nzOkType: 'danger',
       nzOnOk: () => new Promise((resolve, reject) => {
-        const apiResource = this.paginatedresult.list.find(p => p.id === id);
-        apiResource.state = EntityState.Deleted;
-        const model = new ApiResourceRequestModel(Uris.DeleteApiResource);
-        model.apiResource = apiResource;
-        this.apiResourceService.submit(model).subscribe(
+        const client = this.paginatedresult.list.find(p => p.id === id);
+        client.state = EntityState.Deleted;
+        const model = new ClientRequestModel(Uris.DeleteClient);
+        model.client = client;
+        this.clientService.submit(model).subscribe(
           result => { result.isSuccess ? resolve(result) : reject(result); });
       })
-        .then((result: OperationResult<ApiResource>) => {
+        .then((result: OperationResult<Client>) => {
           this.paginatedresult.list = this.paginatedresult.list.filter(p => p.id !== result.data.id);
           this.nzMessageService.info('ApiResource 删除完成');
           modelRef.destroy();
         })
-        .catch((result: OperationResult<ApiResource>) => {
+        .catch((result: OperationResult<Client>) => {
           this.nzMessageService.error(result.message);
           return false;
         }),
@@ -153,9 +142,9 @@ export class ApiResourceComponent implements OnInit {
     this.search();
   }
 
-  displayNameFilter(filterBy: string) {
+  clientNameFilter(filterBy: string) {
     this.resetCondition();
-    this.searchForm.patchValue({ displayName: filterBy });
+    this.searchForm.patchValue({ clientName: filterBy });
     this.search();
   }
 }

@@ -1,19 +1,19 @@
 <nz-breadcrumb class="breadcrumb">
   <nz-breadcrumb-item>
-    API Resources
+    Clients
   </nz-breadcrumb-item>
 </nz-breadcrumb>
 <form nz-form nzLayout="inline" [formGroup]="searchForm" class="search-form">
   <nz-form-item>
-    <nz-form-label nzFor="name">Name</nz-form-label>
+    <nz-form-label nzFor="name">ClientId</nz-form-label>
     <nz-form-control>
-      <input nz-input type="text" name="name" id="name" formControlName="name">
+      <input nz-input type="text" name="clientId" formControlName="clientId">
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-label nzFor="description">Description</nz-form-label>
+    <nz-form-label nzFor="description">clientName</nz-form-label>
     <nz-form-control>
-      <input nz-input type="text" name="description" id="description" formControlName="description">
+      <input nz-input type="text" name="clientName" formControlName="clientName">
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
@@ -38,29 +38,26 @@
     </nz-form-control>
   </nz-form-item>
 </form>
-<nz-table #table [nzData]="paginatedresult.list" [nzLoading]="isSpinning" [nzFrontPagination]="false" [nzTotal]="paginatedresult.totalCount"
-  [(nzPageIndex)]="paginatedresult.pageIndex" [(nzPageSize)]="paginatedresult.pageSize" (nzPageIndexChange)="search()">
+<nz-table #table [nzData]="paginatedresult.list" [nzLoading]="isSpinning" [nzFrontPagination]="false" [nzTotal]="paginatedresult.totalCount" [(nzPageIndex)]="paginatedresult.pageIndex" [(nzPageSize)]="paginatedresult.pageSize" (nzPageIndexChange)="search()">
   <thead (nzSortChange)="sort($event)" nzSingleSort>
     <tr>
       <th nzWidth="80px">序号</th>
-      <th>Id</th>
-      <th nzShowFilter [nzFilterMultiple]="false" [nzFilters]="enabledCandidate" (nzFilterChange)="enabledFilter($event)">Enabled</th>
-      <th nzShowSort nzSortKey="name">Name</th>
-      <th nzWidth="150px" nzCustomFilter>
-        DisplayName
+      <th nzWidth="50px">Id</th>
+      <th nzWidth="50px" nzShowFilter [nzFilterMultiple]="false" [nzFilters]="enabledCandidate" (nzFilterChange)="enabledFilter($event)">Enabled</th>
+      <th nzShowSort nzSortKey="ClientId">ClientId</th>
+      <th nzCustomFilter>
+        ClientName
         <nz-dropdown nzTrigger="click" [nzClickHide]="false" #dropdown>
           <i nz-dropdown nz-icon type="down" class="ant-table-filter-icon" [class.ant-table-filter-open]="dropdown.nzVisible"></i>
           <div class="custom-filter-dropdown">
-            <input nz-input type="text" placeholder="DisplayName" style="width:150px;margin-right: 8px;" #displayName>
-            <button nz-button nzType="primary" (click)="displayNameFilter(displayName.value)">Search</button>
+            <input nz-input type="text" placeholder="Client Name" style="width:150px;margin-right: 8px;" #clientName>
+            <button nz-button nzType="primary" (click)="clientNameFilter(clientName.value)">Search</button>
           </div>
         </nz-dropdown>
       </th>
       <th>Description</th>
       <th nzWidth="110px" nzShowSort nzSortKey="created">Created</th>
       <th nzWidth="110px">Updated</th>
-      <th nzWidth="110px">LastAccessed</th>
-      <th>NonEditable</th>
       <th nzWidth="110px">操作</th>
     </tr>
   </thead>
@@ -69,13 +66,11 @@
       <td>{{(paginatedresult.pageIndex-1)*paginatedresult.pageSize+i+1}}</td>
       <td>{{item.id}}</td>
       <td [nzShowCheckbox]="true" [nzDisabled]="true" [nzChecked]="item.enabled"></td>
-      <td><a [routerLink]="[item.id]" [queryParams]="{ pageIndex:paginatedresult.pageIndex}">{{item.name}}</a></td>
-      <td>{{item.displayName}}</td>
+      <td><a [routerLink]="[item.id]" [queryParams]="{ pageIndex:paginatedresult.pageIndex}">{{item.clientId}}</a></td>
+      <td>{{item.clientName}}</td>
       <td>{{item.description}}</td>
       <td>{{item.created}}</td>
       <td>{{item.updated}}</td>
-      <td>{{item.lastAccessed}}</td>
-      <td [nzShowCheckbox]="true" [nzDisabled]="true" [nzChecked]="item.nonEditable"></td>
       <td class="operation">
         <a (click)="edit(item.id)">
           <i nz-icon type="edit" theme="twotone"></i>

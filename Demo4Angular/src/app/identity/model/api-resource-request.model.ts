@@ -2,11 +2,11 @@ import { RequestModel, PaginatedRequestModel, } from 'src/app/shared/request.mod
 import { ApiResource, ApiScope, ApiSecret } from './api-resource.model';
 
 export class ApiResourceRequestModel extends PaginatedRequestModel {
+    apiResource: ApiResource;
     enabled?: boolean;
     name?: string;
     displayName?: string;
     description?: string;
-    apiResource: ApiResource;
 
     constructor(url: string, pageIndex?: number, pageSize?: number, orderBy?: string, direction?: string) {
         super(url, pageIndex, pageSize, orderBy, direction);

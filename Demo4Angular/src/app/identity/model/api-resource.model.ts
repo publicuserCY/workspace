@@ -85,7 +85,7 @@ export class ApiResource extends BaseModel<number> {
     }
 }
 
-abstract class Secret extends BaseModel<number> {
+export abstract class Secret extends BaseModel<number> {
     description?: string;
     value: string;
     expiration?: Date;
@@ -255,7 +255,7 @@ export class ApiResourceClaim extends UserClaim {
     }
 }
 
-abstract class Property extends BaseModel<number> {
+export abstract class Property extends BaseModel<number> {
     key: string;
     value: string;
     constructor() {
